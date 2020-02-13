@@ -1,0 +1,35 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29709.97
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MACPlugin", "MACPlugin\MACPlugin.csproj", "{8536920B-94AF-41DC-BC13-82CA9A484D75}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{405EEDAB-402C-46BA-9C86-B42A2606CF28}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		MACPlugin\ActionCamera.cs = MACPlugin\ActionCamera.cs
+		MACPlugin\ActionCameraPlugin.cs = MACPlugin\ActionCameraPlugin.cs
+		PlayerInfoUtil.cs = PlayerInfoUtil.cs
+		MACPlugin\PluginUtility.cs = MACPlugin\PluginUtility.cs
+		MACPlugin\ReflectionUtility.cs = MACPlugin\ReflectionUtility.cs
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8536920B-94AF-41DC-BC13-82CA9A484D75}.Debug|x64.ActiveCfg = Debug|x64
+		{8536920B-94AF-41DC-BC13-82CA9A484D75}.Debug|x64.Build.0 = Debug|x64
+		{8536920B-94AF-41DC-BC13-82CA9A484D75}.Release|x64.ActiveCfg = Deploy|x64
+		{8536920B-94AF-41DC-BC13-82CA9A484D75}.Release|x64.Build.0 = Deploy|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {9F6A0245-CDEA-4598-91A2-E41ACDD3347F}
+	EndGlobalSection
+EndGlobal
