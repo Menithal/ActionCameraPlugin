@@ -85,7 +85,7 @@ namespace MACPlugin
         private bool swappingSides;
         // Predefining this to get around having to convert them.
         public ShoulderActionCamera(ActionCameraSettings settings, Vector3 offset) :
-            base(settings, settings.shoulderCameraSwapTime / 2, offset)
+            base(settings, settings.shoulderCameraSwapTime, offset)
         {
 
 
@@ -165,7 +165,7 @@ namespace MACPlugin
         private readonly SimpleActionCamera betweenCamera;
         private bool swappingSides = false;
         public FBTActionCamera(ActionCameraSettings settings, Vector3 offset, bool staticCamera = false) :
-            base(settings, settings.bodyCameraSwapTime / 2, offset, false, staticCamera)
+            base(settings, settings.bodyCameraSwapTime, offset, false, staticCamera)
         {
 
             Vector3 neutralOffset = offset;

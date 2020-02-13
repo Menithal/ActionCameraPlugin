@@ -61,7 +61,7 @@ namespace MACPlugin
         public string ID => "ActionCamera";
         public string name => "Menithal' Action Camera";
         public string author => "MAL 'Menithal'";
-        public string version => "0.1.0a";
+        public string version => "0.5.1a";
 
         public event EventHandler ApplySettings;
 
@@ -129,7 +129,11 @@ namespace MACPlugin
             PluginLog.Log("ActionCameraPlugin", "UseDominantHand " + _settings.useDominantHand, true);
             PluginLog.Log("ActionCameraPlugin", "RightHandDominant " + _settings.rightHandDominant, true);
 
-            cameraManager.SetSettings(_settings);
+            PluginLog.Log("ActionCameraPlugin", "ShoulderCameraSwapTime " + _settings.shoulderCameraSwapTime, true);
+            PluginLog.Log("ActionCameraPlugin", "BodyCameraSwapTime " + _settings.bodyCameraSwapTime, true);
+            PluginLog.Log("ActionCameraPlugin", "ActionCameraDistance " + _settings.actionCameraDistance, true);
+
+        cameraManager.SetSettings(_settings);
         }
 
         public void OnAvatarChanged(Avatar avatar)
