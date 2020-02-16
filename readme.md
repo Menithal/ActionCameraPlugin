@@ -12,14 +12,16 @@ Install by moving the ActionCamera.dll from Releases into your Liv Plugins direc
 
 ## Use
 When in Liv, Set an Avatar Camera, and make sure to select Plugin > "Menithal' Action Camera" to start using the plugin.
-Closing Liv now wil update your settings file.
+Closing Liv now wil update your settings file. You can then create and configure multiple profiles with different configurations in Liv and modifying the json file. See Configuration for more detail
+
+
 
 ### Available Cameras
 
 - *OverShoulderAction* - Main feature of the plugin, Shows point of view over your shoulder. Looking around corners will always move the camera around to that shoulder towards where you are looking at, allowing your spectators to see
 what you will see before you do.  You can reverse this with the `reverseShoulder` config.
 - *FullBodyAction* - Front side view of your Liv Avatar. Turning your head moves the point of view similar to the shoulder view. You can reverse this with the `reverseShoulder` config. Can be turned off with `disableFBTCamera`.
-- *FirstPerson* - FPS view of the game. Smoothened, and similar to how the game would play, but you can turn on avatar visibility with `removeAvatarInsteadOfHead`.  Can be turned off with `disableFBTCamera`.
+- *FirstPerson* - FPS view of the game. Smoothened, and similar to how the game would play, but you can turn on avatar visibility with `removeAvatarInsteadOfHead`.  Can be turned off with `disableFPSCamera`.
 - *Tactical* - Top down view of the game. Can be turned off with `disableFBTCamera`. Default off due to some bugs with liv.
 
 ### Controlling Cameras and Gestures
@@ -101,6 +103,7 @@ Configurable after setting as a plugin for a camera, and closing Liv Composer: Y
 
 - `reverseFBT`: If true, inverses the side for full body camera. defaults false.
 - `reverseShoulder`: If true, inverses the side of the shoulder camera. defaults false.
+
 - `removeAvatarInsteadOfHead`: Instead of removing the avatar, when set to false, will remove only the head of the avatar, when in first person mode. defaults true.
 - `disableTopCamera`: If true, Disables Top Down Camera. defaults false.
 - `disableFBTCamera`: If true, Disables Full body Front-side Camera. defaults false.
@@ -129,6 +132,6 @@ Additionally, there might be later some behavior chaining, so that transitions b
 ### Contributing, Developing and Building
 
 Note if building using DEBUG, a textfile will be output to `%HOMEPATH%/Documents/Liv/Output` 
-and written into with debug messages. If releasing, make sure DEBUG is not set. 
-When building a release, make sure NOT to have the DEBUG flag set, otherwise the debug file will be filled to brim.
+and written into with debug messages. 
 
+When building a release, make sure NOT to have the DEBUG flag set, otherwise the debug file will be filled to brim. We do not want to flood end users.
