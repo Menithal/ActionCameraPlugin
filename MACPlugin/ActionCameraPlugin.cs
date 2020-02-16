@@ -68,7 +68,7 @@ namespace MACPlugin
 #endif
         public string ID => "ActionCamera";
         public string author => "MA 'Menithal' Lahtinen";
-        public string version => "0.5.2a";
+        public string version => "0.6.0a";
 
         public event EventHandler ApplySettings;
         private ActionCameraDirector cameraManager;
