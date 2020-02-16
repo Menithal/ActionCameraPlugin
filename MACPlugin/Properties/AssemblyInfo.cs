@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("ActionCamera")]
-[assembly: AssemblyCopyright("ActionCameraPlugin Copyright Matti Lahtinen © 2020. Liv Copyright Liv")]
+[assembly: AssemblyCopyright("ActionCameraPlugin Copyright Matti Lahtinen © 2020.")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

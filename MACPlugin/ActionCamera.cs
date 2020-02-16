@@ -21,12 +21,12 @@ namespace MACPlugin
     public abstract class ActionCamera
     {
         // Camera FOV
-        public float fov { get; set; } = 70f;
+        public float fov = 70f;
         // Distance from Avatar Head
-        public float distance { get; set; } = 5f;
-        public float timeBetweenChange { get; set; } = 1f;
-        public float horizontalOffset { get; set; } = 1f;
-        public float verticalOffset { get; set; } = 1f;
+        public float distance = 5f;
+        public float timeBetweenChange = 1f;
+        public float horizontalOffset = 1f;
+        public float verticalOffset = 1f;
         public bool removeHead = false;
         public bool staticCamera = false;
 
@@ -36,8 +36,7 @@ namespace MACPlugin
         protected ActionCameraSettings pluginSettings;
 
         protected sbyte currentSide;
-        public Vector3 offset { get; private set; }
-
+        public Vector3 offset { get; protected set; }
         public ActionCamera(ActionCameraSettings pluginSettings,
             float timeBetweenChange, Vector3 offset,
             bool removeHead = false, bool staticCamera = false)
@@ -49,6 +48,13 @@ namespace MACPlugin
             this.currentSide = 1;
             this.offset = offset;
         }
+        public ActionCamera(ActionCameraSettings pluginSettings,
+           float timeBetweenChange)
+        {
+            this.pluginSettings = pluginSettings;
+            this.timeBetweenChange = timeBetweenChange;
+            this.currentSide = 1;
+        }
 
         public virtual void SetPluginSettings(ActionCameraSettings settings)
         {
@@ -58,8 +64,6 @@ namespace MACPlugin
         abstract public void ApplyBehavior(ref Vector3 cameraTarget, ref Vector3 lookAtTarget,
             LivPlayerEntity player, bool isCameraAlreadyPlaced);
     }
-
-
 
     public class SimpleActionCamera : ActionCamera
     {
@@ -74,6 +78,9 @@ namespace MACPlugin
             cameraTarget = player.head.TransformPoint(offset);
             lookAtTarget = player.head.TransformPoint(lookAtOffset);
 
+            // average between Head and Waist to avoid head from flipping the camera around so much.s
+            lookAtTarget = (lookAtTarget + player.waist.position) / 2;
+
             cameraTarget.y = Mathf.Clamp(cameraTarget.y, player.head.position.y * 0.2f, player.head.position.y * 1.2f);
         }
     }
@@ -85,20 +92,27 @@ namespace MACPlugin
         private bool swappingSides;
         // Predefining this to get around having to convert them.
         public ShoulderActionCamera(ActionCameraSettings settings, Vector3 offset) :
-            base(settings, settings.shoulderCameraSwapTime, offset)
+            base(settings, settings.shoulderCameraPositioningTime)
         {
-
-
             Vector3 neutralOffset = offset;
             neutralOffset.x = 0;
-            neutralOffset.y += 0.5f;
-            betweenCamera = new SimpleActionCamera(settings, settings.shoulderCameraSwapTime / 2, neutralOffset );
+            neutralOffset.y += 1f;
+
+            betweenCamera = new SimpleActionCamera(settings, settings.shoulderCameraPositioningTime / 2, neutralOffset);
+            Vector3 calculatedOffset = offset;
+
+            // Gotta be from back not from front. 
+            calculatedOffset.z = -Mathf.Sqrt(Mathf.Abs(Mathf.Pow(offset.z, 2) - Mathf.Pow(offset.x, 2)));
+            this.offset = calculatedOffset;
+
+            PluginLog.Log("ShoulderActionCamera", "Calculated Offset " + calculatedOffset + " vs " + offset, true);
+
         }
         public override void SetPluginSettings(ActionCameraSettings settings)
         {
             pluginSettings = settings;
-            this.timeBetweenChange = settings.shoulderCameraSwapTime / 2;
-            betweenCamera.timeBetweenChange = settings.shoulderCameraSwapTime / 2f;
+            this.timeBetweenChange = settings.shoulderCameraPositioningTime;
+            betweenCamera.timeBetweenChange = settings.shoulderCameraPositioningTime / 2f;
             betweenCamera.SetPluginSettings(settings);
 
         }
@@ -118,11 +132,11 @@ namespace MACPlugin
                 player.timerHelper.actionCameraTimer > this.timeBetweenChange / 2 &&
                 estimatedSide != currentSide)
             {
-
                 PluginLog.Log("ShoulderCamera", "Swapping sides " + estimatedSide, true);
                 swappingSides = true;
+                player.timerHelper.ResetActionCameraTimer();
             }
-            else if (swappingSides && player.timerHelper.actionCameraTimer > this.timeBetweenChange)
+            else if (swappingSides && player.timerHelper.actionCameraTimer > this.timeBetweenChange / 2)
             {
                 swappingSides = false;
 
@@ -131,7 +145,7 @@ namespace MACPlugin
                 player.timerHelper.ResetActionCameraTimer();
             }
 
-            if (swappingSides)
+            if (swappingSides && pluginSettings.inBetweenCameraEnabled)
             {
                 betweenCamera.ApplyBehavior(ref cameraTarget, ref lookAtTarget, player, isCameraAlreadyPlaced);
             }
@@ -158,26 +172,33 @@ namespace MACPlugin
         }
     }
 
-    public class FBTActionCamera : ActionCamera
+    public class FullBodyActionCamera : ActionCamera
     {
         // This one really needs an intermediary camera
         private readonly Vector3 lookAtOffset = new Vector3(0f, 0f, 0.5f);
         private readonly SimpleActionCamera betweenCamera;
         private bool swappingSides = false;
-        public FBTActionCamera(ActionCameraSettings settings, Vector3 offset, bool staticCamera = false) :
-            base(settings, settings.bodyCameraSwapTime, offset, false, staticCamera)
+        public FullBodyActionCamera(ActionCameraSettings settings, Vector3 offset, bool staticCamera = false) :
+            base(settings, settings.bodyCameraPositioningTime, Vector3.zero, false, staticCamera)
         {
 
             Vector3 neutralOffset = offset;
             neutralOffset.x = 0;
             neutralOffset.y += 0.5f;
-            betweenCamera = new SimpleActionCamera(settings, settings.bodyCameraSwapTime / 2, neutralOffset);
+            betweenCamera = new SimpleActionCamera(settings, settings.bodyCameraPositioningTime / 2, neutralOffset);
+
+            Vector3 calculatedOffset = offset;
+
+            calculatedOffset.z = Mathf.Sqrt(Mathf.Abs(Mathf.Pow(offset.z, 2f) - Mathf.Pow(offset.x, 2f)));
+            PluginLog.Log("FullBodyActionCamera", "Calculated Position " + calculatedOffset, true);
+            PluginLog.Log("FullBodyActionCamera", "Calculated Offset " + calculatedOffset + " vs " + offset, true);
+            this.offset = calculatedOffset;
         }
         public override void SetPluginSettings(ActionCameraSettings settings)
         {
             pluginSettings = settings;
-            this.timeBetweenChange = settings.bodyCameraSwapTime / 2;
-            betweenCamera.timeBetweenChange = settings.bodyCameraSwapTime / 2f;
+            this.timeBetweenChange = settings.bodyCameraPositioningTime / 2;
+            betweenCamera.timeBetweenChange = settings.bodyCameraPositioningTime / 2f;
             betweenCamera.SetPluginSettings(settings);
         }
         public override void ApplyBehavior(ref Vector3 cameraTarget, ref Vector3 lookAtTarget, LivPlayerEntity player, bool isCameraAlreadyPlaced)
@@ -189,19 +210,20 @@ namespace MACPlugin
                 player.timerHelper.actionCameraTimer > this.timeBetweenChange / 2 &&
                 estimatedSide != currentSide)
             {
-                PluginLog.Log("FBTCamera", "Swapping sides " + estimatedSide, true);
+                PluginLog.Log("FullBodyActionCamera", "Swapping sides " + estimatedSide, true);
                 swappingSides = true;
+                player.timerHelper.ResetActionCameraTimer();
             }
-            else if (swappingSides && player.timerHelper.actionCameraTimer > this.timeBetweenChange)
+            else if (swappingSides && player.timerHelper.actionCameraTimer > this.timeBetweenChange / 2)
             {
                 swappingSides = false;
                 currentSide = estimatedSide;
 
-                PluginLog.Log("FBTCamera", "Done Swapping ", true);
+                PluginLog.Log("FullBodyActionCamera", "Done Swapping ", true);
                 player.timerHelper.ResetActionCameraTimer();
             }
 
-            if (swappingSides)
+            if (swappingSides && pluginSettings.inBetweenCameraEnabled)
             {
                 betweenCamera.ApplyBehavior(ref cameraTarget, ref lookAtTarget, player, isCameraAlreadyPlaced);
             }
@@ -213,7 +235,9 @@ namespace MACPlugin
 
                 // Floor and Ceiling Avoidance. Camera should not be too high or too low in ratio to player head position
                 cameraTarget.y = Mathf.Clamp(cameraTarget.y, player.head.position.y * 0.2f, player.head.position.y * 1.2f);
-                lookAtTarget = player.head.TransformPoint(lookAtOffset);
+
+                lookAtTarget = (player.waist.position + player.head.TransformPoint(lookAtOffset)) / 2;
+
             }
 
         }

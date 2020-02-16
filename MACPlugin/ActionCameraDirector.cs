@@ -21,7 +21,7 @@ namespace MACPlugin
     {
         public readonly ActionCamera OverShoulderCamera;
         public readonly ActionCamera FPSCamera;
-        public readonly ActionCamera DynamicFullBodyCamera;
+        public readonly ActionCamera FullBodyActionCamera;
         // CameraTop Could be saved for Twitch stuff. (UAV online)
         public readonly ActionCamera TacticalCamera;
 
@@ -45,8 +45,8 @@ namespace MACPlugin
         private readonly System.Random randomizer;
         private bool isCameraStatic = false;
 
-
-        private readonly static float CONTROLLER_THROTTLE = 1 / 45;
+        // 30 checks a second 
+        private readonly static float CONTROLLER_THROTTLE = 1 / 30;
         public ActionCameraDirector(ActionCameraSettings pluginSettings, PluginCameraHelper helper, ref TimerHelper timerHelper)
         {
             this.player = new LivPlayerEntity(helper, ref timerHelper);
@@ -58,8 +58,8 @@ namespace MACPlugin
             player.SetOffsets(pluginSettings.forwardHorizontalOffset, pluginSettings.forwardVerticalOffset, pluginSettings.forwardDistance);
 
             OverShoulderCamera = new ShoulderActionCamera(pluginSettings,  new Vector3(0.8f, -0f, -pluginSettings.actionCameraDistance));
+            FullBodyActionCamera = new FullBodyActionCamera(pluginSettings, new Vector3(1.6f, 0.4f, pluginSettings.actionCameraDistance));
             FPSCamera = new FPSCamera(pluginSettings, 0.1f);
-            DynamicFullBodyCamera = new FBTActionCamera(pluginSettings,  new Vector3(1.6f, -0.4f, pluginSettings.actionCameraDistance));
             TacticalCamera = new TopDownActionCamera(pluginSettings, 0.6f, 6f);
 
             SetCamera(OverShoulderCamera);
@@ -68,15 +68,15 @@ namespace MACPlugin
         {
             currentAvatar = avatar;
         }
-        public void SetSettings(ActionCameraSettings plugin)
+        public void SetSettings(ActionCameraSettings settings)
         {
-            pluginSettings = plugin;
-            player.SetOffsets(plugin.forwardHorizontalOffset, plugin.forwardVerticalOffset, plugin.forwardDistance);
+            pluginSettings = settings;
+            player.SetOffsets(settings.forwardHorizontalOffset, settings.forwardVerticalOffset, settings.forwardDistance);
 
-            OverShoulderCamera.SetPluginSettings(plugin);
-            FPSCamera.SetPluginSettings(plugin);
-            DynamicFullBodyCamera.SetPluginSettings(plugin);
-            TacticalCamera.SetPluginSettings(plugin);
+            OverShoulderCamera.SetPluginSettings(settings);
+            FPSCamera.SetPluginSettings(settings);
+            FullBodyActionCamera.SetPluginSettings(settings);
+            TacticalCamera.SetPluginSettings(settings);
         }
 
         private void SetCamera(ActionCamera camera)
@@ -121,9 +121,9 @@ namespace MACPlugin
 
                         PluginLog.Log("ActionCameraDirector", "Pointing Down, Moving Head Down: FPS or FullBody", true);
                         // Hands are pointing down is while head is moving down (probably inventory)
-                        if (randomizer.Next(0, 100) > 50 || pluginSettings.disableFPSCamera)
+                        if (randomizer.Next(0, 100) > 50 && !pluginSettings.disableFBTCamera || pluginSettings.disableFPSCamera)
                         {
-                            SetCamera(DynamicFullBodyCamera);
+                            SetCamera(FullBodyActionCamera);
                         }
                         else
                         {
@@ -137,13 +137,13 @@ namespace MACPlugin
                         // Hands Are Pointing up-ish, while head is moving up (probably checking on something, wrist, etc.)
 
                         PluginLog.Log("ActionCameraDirector", "Pointing Up, Moving Head Up: Tactical or FullBody", true);
-                        if (randomizer.Next(0, 100) > 80 || pluginSettings.disableFBTCamera)
+                        if (randomizer.Next(0, 100) > 80 && !pluginSettings.disableTopCamera || pluginSettings.disableFBTCamera)
                         {
                             SetCamera(TacticalCamera);
                         }
                         else
                         {
-                            SetCamera(DynamicFullBodyCamera);
+                            SetCamera(FullBodyActionCamera);
                         }
                     }
                     // Looking Side to Side while pointing forwards. Action is ahead.
@@ -179,6 +179,7 @@ namespace MACPlugin
             }
 
             // BAC data calculation
+            // TODO: Allow user to select MoveToward, SmoothDamp, Slerp and Lerp
 
             cameraPosition = Vector3.SmoothDamp(cameraPosition, cameraPositionTarget, ref cameraVelocity, currentCamera.timeBetweenChange);
             cameraLookAt = Vector3.SmoothDamp(cameraLookAt, cameraLookAtTarget, ref cameraLookAtVelocity, currentCamera.timeBetweenChange);

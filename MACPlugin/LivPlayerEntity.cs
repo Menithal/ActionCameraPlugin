@@ -20,7 +20,7 @@ namespace MACPlugin
     public class LivPlayerEntity
     {
         private PluginCameraHelper pluginCameraHelper;
-        public Transform waist { get { return pluginCameraHelper.playerWaist; } }
+        public Transform waist { get { return pluginCameraHelper.playerHead; } }
         public Transform rightHand { get { return pluginCameraHelper.playerRightHand; } }
         public Transform leftHand { get { return pluginCameraHelper.playerLeftHand; } }
         public Transform head { get { return pluginCameraHelper.playerHead; } }
@@ -93,7 +93,6 @@ namespace MACPlugin
 
             // The following will ALWAYS be forward relative. These are just to check where the player is currently pointing towards 
             // Users tend to be looking down if playinga  shooter already, thus the vertical offset up..
-
             headForwardRightDirection = head.TransformPoint(preCalculatedLeftHeadDirection);
             headForwardLeftDirection = head.TransformPoint(preCalculatedRightHeadDirection);
 
