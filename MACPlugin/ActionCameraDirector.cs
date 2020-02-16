@@ -111,7 +111,7 @@ namespace MACPlugin
                 * If Looking up they are about to do something, so
 
                 */
-                bool canSwapCamera = (timerHelper.globalTimer > pluginSettings.generalCameraSwapClamp);
+                bool canSwapCamera = (timerHelper.globalTimer > pluginSettings.cameraSwapTimeLock);
                 if (canSwapCamera)
                 {
                     if (PluginUtility.AverageCosAngleOfControllers(player.rightHand, player.leftHand, player.headBelowDirection) < 60 &&

@@ -23,9 +23,9 @@ using LIV.Avatar;
 public class ActionCameraSettings : IPluginSettings
 {
     // How many seconds until swapping another camera
-    public float generalCameraSwapClamp { get; set; } = 8;
+    public float cameraSwapTimeLock = 8;
     // actionCamera can swap faster than general Camera and people tend to change look directions quite quickly.
-    public float actionCameraSwapClamp { get; set; } = 0.8f;
+    public float cameraPositionTimeLock= 0.8f;
 
     // How fast should we swap between 
     public bool reverseFBT = false;
@@ -128,8 +128,8 @@ namespace MACPlugin
         public void OnSettingsDeserialized()
         {
             PluginLog.Log("ActionCameraPlugin", "OnSettingsDeserialized");
-            PluginLog.Log("ActionCameraPlugin", "generalCameraSwapClamp " + _settings.generalCameraSwapClamp);
-            PluginLog.Log("ActionCameraPlugin", "actionCameraSwapClamp " + _settings.actionCameraSwapClamp);
+            PluginLog.Log("ActionCameraPlugin", "generalCameraSwapClamp " + _settings.cameraSwapTimeLock);
+            PluginLog.Log("ActionCameraPlugin", "actionCameraSwapClamp " + _settings.cameraPositionTimeLock);
             PluginLog.Log("ActionCameraPlugin", "reverseFBT " + _settings.reverseFBT);
             PluginLog.Log("ActionCameraPlugin", "reverseShoulder " + _settings.reverseShoulder);
             PluginLog.Log("ActionCameraPlugin", "forwardVerticalOffset " + _settings.forwardVerticalOffset);

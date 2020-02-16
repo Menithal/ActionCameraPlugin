@@ -20,13 +20,9 @@ namespace MACPlugin
     // Predefining this to get around having to convert them.
     public abstract class ActionCamera
     {
-        // Camera FOV
-        public float fov = 70f;
-        // Distance from Avatar Head
-        public float distance = 5f;
+        // Do something with this in the future
+        public float fov = 90;
         public float timeBetweenChange = 1f;
-        public float horizontalOffset = 1f;
-        public float verticalOffset = 1f;
         public bool removeHead = false;
         public bool staticCamera = false;
 
@@ -36,7 +32,7 @@ namespace MACPlugin
         protected ActionCameraSettings pluginSettings;
 
         protected sbyte currentSide;
-        public Vector3 offset { get; protected set; }
+        public Vector3 offset;
         public ActionCamera(ActionCameraSettings pluginSettings,
             float timeBetweenChange, Vector3 offset = new Vector3(),
             bool removeHead = false, bool staticCamera = false)
@@ -72,6 +68,7 @@ namespace MACPlugin
             base(settings, timeBetweenChange, offset, removeHead, staticCamera)
         {
         }
+
         // Next to FPS Camera, simplest Camera
         public override void ApplyBehavior(ref Vector3 cameraTarget, ref Vector3 lookAtTarget, LivPlayerEntity player, bool isCameraAlreadyPlaced)
         {
@@ -108,6 +105,7 @@ namespace MACPlugin
             timeBetweenChange = settings.cameraShoulderPositioningTime / (settings.inBetweenCameraEnabled ? 2 : 1);;
             betweenCamera.timeBetweenChange = settings.cameraShoulderPositioningTime / 2f;
             betweenCamera.SetPluginSettings(settings);
+            betweenCamera.offset = new Vector3(0, 1f, -settings.cameraShoulderDistance);
             CalculateOffset();
 
         }
@@ -222,6 +220,8 @@ namespace MACPlugin
             this.timeBetweenChange = settings.cameraBodyPositioningTime / 2;
             betweenCamera.timeBetweenChange = settings.cameraBodyPositioningTime / 2f;
             betweenCamera.SetPluginSettings(settings);
+
+            betweenCamera.offset = new Vector3(0, 1f, settings.cameraBodyPositioningTime);
             CalculateOffset();
         }
         public override void ApplyBehavior(ref Vector3 cameraTarget, ref Vector3 lookAtTarget, LivPlayerEntity player, bool isCameraAlreadyPlaced)
