@@ -135,3 +135,7 @@ Note if building using DEBUG, a textfile will be output to `%HOMEPATH%/Documents
 and written into with debug messages. 
 
 When building a release, make sure NOT to have the DEBUG flag set, otherwise the debug file will be filled to brim. We do not want to flood end users.
+
+### Bug Reports 
+
+You can comments, suggestions, bug reports to me over Discord Malactus#3957 or just leave them as Github Issues
