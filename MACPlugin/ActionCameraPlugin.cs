@@ -49,7 +49,7 @@ public class ActionCameraSettings : IPluginSettings
     public float cameraShoulderAngle = 25;
 
     public float cameraBodyPositioningTime = 2f;
-    public float cameraBodyLookAtForward = 1f;
+    public float cameraBodyLookAtForward = 0.1f;
     public float cameraBodyDistance = 1.4f;
     public float cameraBodyAngle = 45;
 

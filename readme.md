@@ -62,10 +62,6 @@ Configurable after setting as a plugin for a camera, and closing Liv Composer: Y
     "selectedPluginCameraBehaviourID": "ActionCamera",
     "pluginSettings": {
         "ActionCamera": {
-	    "generalCameraSwapClamp": 8,
-	    "actionCameraSwapClamp": 0.8,
-	    "shoulderCameraPositioningTime": 0.9,
-	    "bodyCameraPositioningTime": 0.9,
             "cameraSwapTimeLock": 8,
             "cameraPositionTimeLock": 0.8f,
             "reverseFBT": false,
@@ -122,6 +118,52 @@ Configurable after setting as a plugin for a camera, and closing Liv Composer: Y
 - `cameraBodyLookAtForward`: The Look at target where the camera looks when showing the front in the relative Z.
 - `cameraBodyDistance`:  Distance from the avatar the Body Camera should be at
 - `cameraBodyAngle`: The Angle (in Degrees) the camera will be infront of the avatar
+
+
+By default the setting are configured for CQC Pistol Combat (ala pistolwhip) but playing aroudn with the values allows you to create entries for other games, such as Beat Saber or Audica.
+
+### Example "Dancing/Sabering" Profile
+```
+[...]
+"pluginCameraBehaviourSettings": {
+    "selectedPluginCameraBehaviourID": "ActionCamera",
+    "pluginSettings": {
+        "ActionCamera": {
+	        "shoulderCameraPositioningTime": 3,
+	        "bodyCameraPositioningTime": 3,
+            "cameraSwapTimeLock": 20,
+            "cameraPositionTimeLock": 6,
+            "reverseFBT": false,
+            "reverseShoulder": false,
+            "controlMovementThreshold": 1,
+            "forwardVerticalOffset": 0,
+            "forwardHorizontalOffset": 5,
+            "forwardDistance": 10,
+            
+            "removeAvatarInsteadOfHead": true,
+            "disableTopCamera": true,
+            "disableFBTCamera": false,
+            "disableFPSCamera": true,
+            "inBetweenCameraEnabled": false,
+            "cameraVerticalLock": true,
+            
+            "cameraShoulderPositioningTime": 1.8,
+            "cameraShoulderDistance": 2.6,
+            "cameraShoulderAngle": 35,
+            "cameraBodyPositioningTime": 4,
+            "cameraBodyLookAtForward": 2,
+            "cameraBodyDistance": 3,
+            "cameraBodyAngle": 45,
+
+            "averageHandsWithHead": true,
+            "useDominantHand": false,
+            "rightHandDominant": true
+        }
+    }
+}
+[...]
+```
+
 
 
 #### Not yet in use
