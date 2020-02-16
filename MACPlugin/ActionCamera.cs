@@ -63,7 +63,7 @@ namespace MACPlugin
 
     public class SimpleActionCamera : ActionCamera
     {
-        private readonly Vector3 lookAtOffset = new Vector3(0f, 0, 0.1f);
+        public Vector3 lookAtOffset = new Vector3(0f, 0, 0.1f);
         public SimpleActionCamera(ActionCameraSettings settings, float timeBetweenChange, Vector3 offset, bool removeHead = false, bool staticCamera = false) :
             base(settings, timeBetweenChange, offset, removeHead, staticCamera)
         {
@@ -76,7 +76,11 @@ namespace MACPlugin
             lookAtTarget = player.head.TransformPoint(lookAtOffset);
 
             // average between Head and Waist to avoid head from flipping the camera around so much.s
-            lookAtTarget = (lookAtTarget + player.waist.position) / 2;
+            lookAtTarget = (lookAtTarget + player.waist.TransformPoint(lookAtOffset)) / 2;
+            if (pluginSettings.cameraVerticalLock)
+            {
+                lookAtTarget.y = (player.waist.position.y + player.head.position.y) / 2;
+            }
 
             cameraTarget.y = Mathf.Clamp(cameraTarget.y, player.head.position.y * 0.2f, player.head.position.y * 1.2f);
         }
@@ -164,10 +168,15 @@ namespace MACPlugin
                 cameraOffsetTarget.x = -currentSide * Mathf.Abs(cameraOffsetTarget.x) * settingsReverse;
                 cameraTarget = player.head.TransformPoint(cameraOffsetTarget);
 
-                lookAtTarget = player.head.TransformPoint(lookAtOffset);
-
                 // Floor and Ceiling Avoidance. Camera should not be too high or too low in ratio to player head position
                 cameraTarget.y = Mathf.Clamp(cameraTarget.y, player.head.position.y * 0.2f, player.head.position.y * 1.2f);
+
+                lookAtTarget = player.head.TransformPoint(lookAtOffset);
+
+                if (pluginSettings.cameraVerticalLock)
+                {
+                    lookAtTarget.y = (player.waist.position.y + player.head.position.y) / 2;
+                }
             }
         }
 
@@ -183,7 +192,7 @@ namespace MACPlugin
     public class FullBodyActionCamera : ActionCamera
     {
         // This one really needs an intermediary camera
-        private readonly Vector3 lookAtOffset = new Vector3(0f, 0f, 0.5f);
+        private Vector3 lookAtOffset = new Vector3(0f, 0f, 0.5f);
         private readonly SimpleActionCamera betweenCamera;
         private bool swappingSides = false;
         public FullBodyActionCamera(ActionCameraSettings settings) :
@@ -212,12 +221,13 @@ namespace MACPlugin
 
           //  calculatedOffset.z = Mathf.Sqrt(Mathf.Abs(Mathf.Pow(offset.z, 2f) - Mathf.Pow(offset.x, 2f)));
             PluginLog.Log("FullBodyActionCamera", "Calculated Position " + calculatedOffset);
-            this.offset = calculatedOffset;
+            offset = calculatedOffset;
+            lookAtOffset.z = pluginSettings.cameraBodyDistance / 4;
         }
         public override void SetPluginSettings(ActionCameraSettings settings)
         {
             pluginSettings = settings;
-            this.timeBetweenChange = settings.cameraBodyPositioningTime / 2;
+            timeBetweenChange = settings.cameraBodyPositioningTime / 2;
             betweenCamera.timeBetweenChange = settings.cameraBodyPositioningTime / 2f;
             betweenCamera.SetPluginSettings(settings);
 
@@ -259,7 +269,13 @@ namespace MACPlugin
                 // Floor and Ceiling Avoidance. Camera should not be too high or too low in ratio to player head position
                 cameraTarget.y = Mathf.Clamp(cameraTarget.y, player.head.position.y * 0.2f, player.head.position.y * 1.2f);
 
-                lookAtTarget = (player.waist.position + player.head.TransformPoint(lookAtOffset)) / 2;
+               
+                lookAtTarget = (player.waist.TransformDirection(lookAtOffset) + player.head.TransformPoint(lookAtOffset)) / 2;
+
+                if (pluginSettings.cameraVerticalLock)
+                {
+                    lookAtTarget.y = (player.waist.position.y + player.head.position.y) / 2;
+                }
 
             }
 

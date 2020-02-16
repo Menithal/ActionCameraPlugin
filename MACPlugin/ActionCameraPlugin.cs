@@ -41,10 +41,10 @@ public class ActionCameraSettings : IPluginSettings
     public bool disableTopCamera = true;
     public bool disableFBTCamera = false;
     public bool disableFPSCamera = false;
-
     public bool inBetweenCameraEnabled = true;
 
 
+    public bool cameraVerticalLock = false;
     public float cameraShoulderPositioningTime = 0.9f;
     public float cameraShoulderDistance = 1.4f;
     public float cameraShoulderAngle = 25;
@@ -127,23 +127,13 @@ namespace MACPlugin
         // Called when Settings are deserialized (read) from file.
         public void OnSettingsDeserialized()
         {
+
+         
             PluginLog.Log("ActionCameraPlugin", "OnSettingsDeserialized");
             PluginLog.Log("ActionCameraPlugin", "generalCameraSwapClamp " + _settings.cameraSwapTimeLock);
             PluginLog.Log("ActionCameraPlugin", "actionCameraSwapClamp " + _settings.cameraPositionTimeLock);
-            PluginLog.Log("ActionCameraPlugin", "reverseFBT " + _settings.reverseFBT);
-            PluginLog.Log("ActionCameraPlugin", "reverseShoulder " + _settings.reverseShoulder);
-            PluginLog.Log("ActionCameraPlugin", "forwardVerticalOffset " + _settings.forwardVerticalOffset);
-            PluginLog.Log("ActionCameraPlugin", "forwardHorizontalOffset " + _settings.forwardHorizontalOffset);
-            PluginLog.Log("ActionCameraPlugin", "forwardDistance " + _settings.forwardDistance);
-            PluginLog.Log("ActionCameraPlugin", "removeAvatarInsteadOfHead " + _settings.removeAvatarInsteadOfHead);
-            PluginLog.Log("ActionCameraPlugin", "disableTopCamera " + _settings.disableTopCamera);
-            PluginLog.Log("ActionCameraPlugin", "disableFBTCamera " + _settings.disableFBTCamera);
-            PluginLog.Log("ActionCameraPlugin", "disableFPSCamera " + _settings.disableFPSCamera);
-            PluginLog.Log("ActionCameraPlugin", "inBetweenCameraEnabled " + _settings.inBetweenCameraEnabled);
-            PluginLog.Log("ActionCameraPlugin", "averageHandsWithHead " + _settings.averageHandsWithHead);
-            PluginLog.Log("ActionCameraPlugin", "useDominantHand " + _settings.useDominantHand);
-            PluginLog.Log("ActionCameraPlugin", "rightHandDominant " + _settings.rightHandDominant);
 
+            PluginLog.Log("ActionCameraPlugin", "cameraVerticalLock " + _settings.cameraVerticalLock);
             PluginLog.Log("ActionCameraPlugin", "cameraShoulderDistance " + _settings.cameraShoulderDistance);
             PluginLog.Log("ActionCameraPlugin", "cameraShoulderAngle " + _settings.cameraShoulderAngle);
             PluginLog.Log("ActionCameraPlugin", "cameraShoulderPositioningTime " + _settings.cameraShoulderPositioningTime);
@@ -151,6 +141,23 @@ namespace MACPlugin
             PluginLog.Log("ActionCameraPlugin", "cameraBodyPositioningTime " + _settings.cameraBodyPositioningTime);
             PluginLog.Log("ActionCameraPlugin", "cameraBodyAngle " + _settings.cameraBodyAngle);
             PluginLog.Log("ActionCameraPlugin", "cameraBodyDistance " + _settings.cameraBodyDistance);
+
+            PluginLog.Log("ActionCameraPlugin", "reverseFBT " + _settings.reverseFBT);
+            PluginLog.Log("ActionCameraPlugin", "reverseShoulder " + _settings.reverseShoulder);
+            PluginLog.Log("ActionCameraPlugin", "forwardVerticalOffset " + _settings.forwardVerticalOffset);
+            PluginLog.Log("ActionCameraPlugin", "forwardHorizontalOffset " + _settings.forwardHorizontalOffset);
+            PluginLog.Log("ActionCameraPlugin", "forwardDistance " + _settings.forwardDistance);
+            PluginLog.Log("ActionCameraPlugin", "removeAvatarInsteadOfHead " + _settings.removeAvatarInsteadOfHead);
+
+            PluginLog.Log("ActionCameraPlugin", "disableTopCamera " + _settings.disableTopCamera);
+            PluginLog.Log("ActionCameraPlugin", "disableFBTCamera " + _settings.disableFBTCamera);
+            PluginLog.Log("ActionCameraPlugin", "disableFPSCamera " + _settings.disableFPSCamera);
+            
+            PluginLog.Log("ActionCameraPlugin", "inBetweenCameraEnabled " + _settings.inBetweenCameraEnabled);
+            PluginLog.Log("ActionCameraPlugin", "averageHandsWithHead " + _settings.averageHandsWithHead);
+            PluginLog.Log("ActionCameraPlugin", "useDominantHand " + _settings.useDominantHand);
+            PluginLog.Log("ActionCameraPlugin", "rightHandDominant " + _settings.rightHandDominant);
+
             cameraManager.SetSettings(_settings);
         }
 
