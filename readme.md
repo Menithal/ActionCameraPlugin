@@ -64,26 +64,31 @@ Configurable after setting as a plugin for a camera, and closing Liv Composer: Y
         "ActionCamera": {
 	    "generalCameraSwapClamp": 8,
 	    "actionCameraSwapClamp": 0.8,
-	    "actionCameraSwapTime": 1f,
-	    "bodyCameraSwapTime": 1f,
+	    "shoulderCameraPositioningTime": 0.9f,
+	    "bodyCameraPositioningTime": 0.9f,
+            "actionCameraDistance": 1.4f,
+
+            "reverseFBT": false,
+            "reverseShoulder": false,
+            "controlMovementThreshold": 4.0,
+
+            "forwardVerticalOffset": 0.0,
+            "forwardHorizontalOffset": 5.0,
+            "forwardDistance": 10.0,
             "removeAvatarInsteadOfHead": true,
             "disableTopCamera": true,
             "disableFBTCamera": false,
             "disableFPSCamera": false,
-            "reverseFBT": false,
-            "reverseShoulder": false,
-            "controlMovementThreshold": 4.0,
-            "forwardVerticalOffset": 0.0,
-            "forwardHorizontalOffset": 5.0,
-            "forwardDistance": 10.0,
+
             "averageHandsWithHead": true,
             "useDominantHand": false,
-            "rightHandDominant": true
+            "rightHandDominant": true,
+            "inBetweenCameraEnabled": false
         }
     }
 }
 [...]
-
+```
 
 ### Configurables: 
 
@@ -91,15 +96,16 @@ Configurable after setting as a plugin for a camera, and closing Liv Composer: Y
 - `actionCameraSwapClamp`: Time in seconds, before changing camera sides
 - `shoulderCameraPositioningTime`: Time in seconds how long the camera takes to move to the new side when over shoulder
 - `bodyCameraPositioningTime`: Time in seconds how long the camera takes to move to the new side when Showing the Body.
-- `actionCameraDistance`: In Meters how far back or front the camera should be from the avatar. (Relative Z axis, not the actual distance)
+- `actionCameraDistance`: In Meters how far back or front the camera should be from the avatar. 
+- `inBetweenCameraEnabled`: If true, enables experimental inbetween cameras when swapping direction in an Action Camera (shoulder or body). Tries to keep an arc.
 
+- `reverseFBT`: If true, inverses the side for full body camera. defaults false.
+- `reverseShoulder`: If true, inverses the side of the shoulder camera. defaults false.
 - `removeAvatarInsteadOfHead`: Instead of removing the avatar, when set to false, will remove only the head of the avatar, when in first person mode. defaults true.
 - `disableTopCamera`: If true, Disables Top Down Camera. defaults false.
 - `disableFBTCamera`: If true, Disables Full body Front-side Camera. defaults false.
 - `disableFPSCamera`: If true, Disables FPS Camera. defaults false.
 - `disableFPSCamera`: If true, Disables FPS Camera. defaults false.
-- `reverseFBT`: If true, inverses the side for full body camera. defaults false.
-- `reverseShoulder`: If true, inverses the side of the shoulder camera. defaults false.
 - `forwardVerticalOffset`: Defaults to 0, Adds vertical offset to gesture detection points. Increase value if you tend to have your pointing higher or lower than normal when looking at first person view.
 
 #### Notice:
@@ -110,7 +116,7 @@ Most of the values are already tuned for the Offsets and movement treshold. Modi
 `forwardHorizontalOffset`: Offset for gesture detection points from center of your view.
 `forwardDistance`: Forward distance from where the radial velocity is measured from
 
-#### Future
+#### Not yet in use
 
 These have not yet been set to be used, but will be related to any gestures with the controllers
 `averageHandsWithHead`

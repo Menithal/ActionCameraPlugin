@@ -44,8 +44,6 @@ public class ActionCameraSettings : IPluginSettings
     public bool disableFBTCamera = false;
     public bool disableFPSCamera = false;
 
-
-
     public bool inBetweenCameraEnabled = false;
 
     // TODO: if Enabled, average head forward with Hand Forwards (dominance)
