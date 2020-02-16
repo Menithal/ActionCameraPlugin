@@ -6,9 +6,11 @@ a game pad strapped to control specifically the camera.
 See License.
 
 ## Installation
-Install by moving the ActionCamera.dll from Releases into your Liv Plugins directory at
 
-`%HOMEPATH%/Documents/Liv/Plugins`
+Make sure you are running LIV SDK2 build (1.3.5+)
+Install by moving the ActionCamera.dll from Releases into your Liv Plugins CameraBehaviours directory at
+
+`%HOMEPATH%/Documents/Liv/Plugins/CameraBehaviours/`
 
 ## Use
 When in Liv, Set an Avatar Camera, and make sure to select Plugin > "Menithal' Action Camera" to start using the plugin.
