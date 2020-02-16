@@ -35,8 +35,7 @@ into cover than games where you can mostly stand still (like BeatSaber):
 It can work, in Beatsaber, but you have to really exaggerate your head movements to get the camera to work in your favor, but its all about practice.
 
 
-- If you Point your fingers forward (controller forward) and turn your head left or right You **direct the camera to go *over your shoulders.*
-
+- If you Point your fingers forward (controller forward) and turn your head left or right You **direct the camera to go over your shoulders.**
 
 - If you **Angle the controllers slightly down before you look down**, your gesture direct to
 show something on your body, *view will swap to either FPS or Dynamic Full body camera*
@@ -67,21 +66,33 @@ Configurable after setting as a plugin for a camera, and closing Liv Composer: Y
 	    "actionCameraSwapClamp": 0.8,
 	    "shoulderCameraPositioningTime": 0.9,
 	    "bodyCameraPositioningTime": 0.9,
-            "actionCameraDistance": 1.4,
+            "cameraSwapTimeLock": 8,
+            "cameraPositionTimeLock": 0.8f,
             "reverseFBT": false,
             "reverseShoulder": false,
-            "controlMovementThreshold": 4.0,
-            "forwardVerticalOffset": 0.0,
-            "forwardHorizontalOffset": 5.0,
-            "forwardDistance": 10.0,
+            "controlMovementThreshold": 4,
+            "forwardVerticalOffset": 0,
+            "forwardHorizontalOffset": 5,
+            "forwardDistance": 10,
+            
             "removeAvatarInsteadOfHead": true,
             "disableTopCamera": true,
             "disableFBTCamera": false,
-            "disableFPSCamera": false,
+            "disableFPSCamera": true,
+            "inBetweenCameraEnabled": true,
+            "cameraVerticalLock": false,
+            
+            "cameraShoulderPositioningTime": 0.9,
+            "cameraShoulderdistance": 1.4,
+            "cameraShoulderAngle": 25,
+            "cameraBodyPositioningTime": 2,
+            "cameraBodyLookAtForward": 1,
+            "cameraBodyDistance": 1.4,
+            "cameraBodyAngle": 45,
+
             "averageHandsWithHead": true,
             "useDominantHand": false,
-            "rightHandDominant": true,
-            "inBetweenCameraEnabled": false
+            "rightHandDominant": true
         }
     }
 }
@@ -90,28 +101,28 @@ Configurable after setting as a plugin for a camera, and closing Liv Composer: Y
 
 ### Configurables: 
 
-- `generalCameraSwapClamp`: Time in seconds, before changing cameras again.
-- `actionCameraSwapClamp`: Time in seconds, before changing camera sides
-- `shoulderCameraPositioningTime`: Time in seconds how long the camera takes to move to the new side when over shoulder
-- `bodyCameraPositioningTime`: Time in seconds how long the camera takes to move to the new side when Showing the Body.
-- `actionCameraDistance`: In Meters how far back or front the camera should be from the avatar. 
-- `inBetweenCameraEnabled`: If true, enables experimental inbetween cameras when swapping direction in an Action Camera (shoulder or body). Tries to keep an arc.
+- `cameraSwapTimeLock`: Time in seconds, before changing cameras again.
+- `cameraPositionTimeLock`:  Time in seconds, before changing camera positioning when in action mode
 - `reverseFBT`: If true, inverses the side for full body camera. defaults false.
 - `reverseShoulder`: If true, inverses the side of the shoulder camera. defaults false.
-- `removeAvatarInsteadOfHead`: Instead of removing the avatar, when set to false, will remove only the head of the avatar, when in first person mode. defaults true.
-- `disableTopCamera`: If true, Disables Top Down Camera. defaults false.
-- `disableFBTCamera`: If true, Disables Full body Front-side Camera. defaults false.
-- `disableFPSCamera`: If true, Disables FPS Camera. defaults false.
-- `disableFPSCamera`: If true, Disables FPS Camera. defaults false.
+- `controlMovementThreshold`:  Numeric value that defines that relative radial velocity of the controllers / hmd before a gesture is accepted. 4.0 is default.
 - `forwardVerticalOffset`: Defaults to 0, Adds vertical offset to gesture detection points. Increase value if you tend to have your pointing higher or lower than normal when looking at first person view.
+- `forwardHorizontalOffset`:  Offset for gesture detection points from center of your view.
+- `forwardDistance`:  Forward distance from where the radial velocity is measured from     
+- `removeAvatarInsteadOfHead`: Instead of removing the head of the avatar when in first person mode, when set to true, will remove the avatar. defaults true.
+- `disableTopCamera`: If true, Disables Top Down Camera. defaults true.
+- `disableFBTCamera`: If true, Disables Full body Front-side Camera. defaults false.
+- `disableFPSCamera`:  If true, Disables FPS Camera. defaults false.
+- `inBetweenCameraEnabled`: If true, enables experimental inbetween cameras when swapping direction in an Action Camera (shoulder or body). Tries to keep an arc.
+- `cameraVerticalLock`: If true, locks the camera look at positioning to be between the user head and waist,       
+- `cameraShoulderPositioningTime`: Time in seconds how long the camera takes to move to the new side when over shoulder
+- `cameraShoulderDistance`: Distance from the avatar the Shoulder Camera should be at
+- `cameraShoulderAngle`: The Angle (in Degrees) the camera will be behind the avatar/
+- `cameraBodyPositioningTime`: Time in seconds how long the camera takes to move to the new side when showing the front
+- `cameraBodyLookAtForward`: The Look at target where the camera looks when showing the front in the relative Z.
+- `cameraBodyDistance`:  Distance from the avatar the Body Camera should be at
+- `cameraBodyAngle`: The Angle (in Degrees) the camera will be infront of the avatar
 
-#### Notice:
-
-Most of the values are already tuned for the Offsets and movement treshold. Modify these at your own peril.
-
-`controlMovementThreshold`: Numeric value that defines that relative radial velocity of the controllers / hmd before a gesture is accepted. 4.0 is default.
-`forwardHorizontalOffset`: Offset for gesture detection points from center of your view.
-`forwardDistance`: Forward distance from where the radial velocity is measured from
 
 #### Not yet in use
 

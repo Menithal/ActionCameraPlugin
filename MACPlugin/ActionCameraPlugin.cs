@@ -43,7 +43,6 @@ public class ActionCameraSettings : IPluginSettings
     public bool disableFPSCamera = true;
     public bool inBetweenCameraEnabled = true;
 
-
     public bool cameraVerticalLock = false;
     public float cameraShoulderPositioningTime = 0.9f;
     public float cameraShoulderDistance = 1.4f;
