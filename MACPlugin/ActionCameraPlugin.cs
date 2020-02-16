@@ -18,7 +18,8 @@ using System.Linq;
 using UnityEngine;
 using LIV.Avatar;
 
-// Keeping out of Namespace since otherwise Serialization wasnt succesfull (probably something to do with the Reflection done on the other end?)
+// Keeping out of Namespace since otherwise Serialization wasnt succesfull (probably something
+// to do with the Reflection done on the other end?)
 public class ActionCameraSettings : IPluginSettings
 {
     // How many seconds until swapping another camera
@@ -27,14 +28,11 @@ public class ActionCameraSettings : IPluginSettings
     public float actionCameraSwapClamp { get; set; } = 0.8f;
 
     // How fast should we swap between 
-    public float shoulderCameraPositioningTime = 0.9f;
-    public float bodyCameraPositioningTime = 0.9f;
-    public float actionCameraDistance = 1.4f;
-
     public bool reverseFBT = false;
     public bool reverseShoulder = false;
     public float controlMovementThreshold = 4; // Meters per framea
-    // Users tend to have headset a bit higher, so when they are looking down sights they are not fully looking up. This offsets that
+    // Users tend to have headset a bit higher, so when they are looking down sights they are not 
+    // fully looking up. This offsets that
     public float forwardVerticalOffset = 0;
     public float forwardHorizontalOffset = 5;
     public float forwardDistance = 10;
@@ -44,7 +42,16 @@ public class ActionCameraSettings : IPluginSettings
     public bool disableFBTCamera = false;
     public bool disableFPSCamera = false;
 
-    public bool inBetweenCameraEnabled = false;
+    public bool inBetweenCameraEnabled = true;
+
+
+    public float cameraShoulderPositioningTime = 0.9f;
+    public float cameraShoulderDistance = 1.4f;
+    public float cameraShoulderAngle = 25;
+
+    public float cameraBodyPositioningTime = 2f;
+    public float cameraBodyDistance = 1.4f;
+    public float cameraBodyAngle = 45;
 
     // TODO: if Enabled, average head forward with Hand Forwards (dominance)
     public bool averageHandsWithHead = false;
@@ -57,9 +64,9 @@ namespace MACPlugin
 {
     public class ActionCameraPlugin : IPluginCameraBehaviour
     {
-        public IPluginSettings settings => _settings ;
+        public IPluginSettings settings => _settings;
         // Matching naming schema
-        readonly ActionCameraSettings _settings  = new ActionCameraSettings();
+        ActionCameraSettings _settings = new ActionCameraSettings();
 
 #if DEBUG
         public string name => "Menithal' Action Camera DEV BUILD";
@@ -68,7 +75,7 @@ namespace MACPlugin
 #endif
         public string ID => "ActionCamera";
         public string author => "MA 'Menithal' Lahtinen";
-        public string version => "0.6.0a";
+        public string version => "0.7.0a";
 
         public event EventHandler ApplySettings;
         private ActionCameraDirector cameraManager;
@@ -80,7 +87,7 @@ namespace MACPlugin
         {
             PluginLog.Log("ActionCameraPlugin", "OnActivate");
             timerHelper = new TimerHelper();
-            cameraManager = new ActionCameraDirector(_settings , helper, ref timerHelper);
+            cameraManager = new ActionCameraDirector(_settings, helper, ref timerHelper);
 
             AvatarManager avatarManager = Resources.FindObjectsOfTypeAll<AvatarManager>().FirstOrDefault();
             avatarRefSignal = avatarManager?.GetPrivateField<AvatarReferenceSignal>("_avatarInstantiated");
@@ -92,9 +99,9 @@ namespace MACPlugin
         // called when the Plugin is deselected OR when Liv is being closed down.
         public void OnDeactivate()
         {
-            
-            PluginLog.Log("ActionCameraPlugin", "OnDeactivate ", true);
-        
+
+            PluginLog.Log("ActionCameraPlugin", "OnDeactivate ");
+
             ApplySettings?.Invoke(this, EventArgs.Empty);
 
             avatarRefSignal?.OnChanged.RemoveListener(OnAvatarChanged);
@@ -104,7 +111,7 @@ namespace MACPlugin
         // Called when Plugin component is destroyed.
         public void OnDestroy()
         {
-            PluginLog.Log("ActionCameraPlugin", "OnDestroy", true);
+            PluginLog.Log("ActionCameraPlugin", "OnDestroy");
         }
 
         //Equal to Unity FixedUpdate
@@ -120,32 +127,36 @@ namespace MACPlugin
         // Called when Settings are deserialized (read) from file.
         public void OnSettingsDeserialized()
         {
-            PluginLog.Log("ActionCameraPlugin", "OnSettingsDeserialized", true);
-            PluginLog.Log("ActionCameraPlugin", "generalCameraSwapClamp " + _settings.generalCameraSwapClamp, true);
-            PluginLog.Log("ActionCameraPlugin", "actionCameraSwapClamp " + _settings.actionCameraSwapClamp, true);
-            PluginLog.Log("ActionCameraPlugin", "shoulderCameraPositioningTime " + _settings.shoulderCameraPositioningTime, true);
-            PluginLog.Log("ActionCameraPlugin", "bodyCameraPositioningTime " + _settings.bodyCameraPositioningTime, true);
-            PluginLog.Log("ActionCameraPlugin", "actionCameraDistance " + _settings.actionCameraDistance, true);
-            PluginLog.Log("ActionCameraPlugin", "reverseFBT " + _settings.reverseFBT, true);
-            PluginLog.Log("ActionCameraPlugin", "reverseShoulder " + _settings.reverseShoulder, true);
-            PluginLog.Log("ActionCameraPlugin", "forwardVerticalOffset " + _settings.forwardVerticalOffset, true);
-            PluginLog.Log("ActionCameraPlugin", "forwardHorizontalOffset " + _settings.forwardHorizontalOffset, true);
-            PluginLog.Log("ActionCameraPlugin", "forwardDistance " + _settings.forwardDistance, true);
-            PluginLog.Log("ActionCameraPlugin", "removeAvatarInsteadOfHead " + _settings.removeAvatarInsteadOfHead, true);
-            PluginLog.Log("ActionCameraPlugin", "disableTopCamera " + _settings.disableTopCamera, true);
-            PluginLog.Log("ActionCameraPlugin", "disableFBTCamera " + _settings.disableFBTCamera, true);
-            PluginLog.Log("ActionCameraPlugin", "disableFPSCamera " + _settings.disableFPSCamera, true);
-            PluginLog.Log("ActionCameraPlugin", "inBetweenCameraEnabled " + _settings.inBetweenCameraEnabled, true);
-            PluginLog.Log("ActionCameraPlugin", "averageHandsWithHead " + _settings.averageHandsWithHead, true);
-            PluginLog.Log("ActionCameraPlugin", "useDominantHand " + _settings.useDominantHand, true);
-            PluginLog.Log("ActionCameraPlugin", "rightHandDominant " + _settings.rightHandDominant, true);
+            PluginLog.Log("ActionCameraPlugin", "OnSettingsDeserialized");
+            PluginLog.Log("ActionCameraPlugin", "generalCameraSwapClamp " + _settings.generalCameraSwapClamp);
+            PluginLog.Log("ActionCameraPlugin", "actionCameraSwapClamp " + _settings.actionCameraSwapClamp);
+            PluginLog.Log("ActionCameraPlugin", "reverseFBT " + _settings.reverseFBT);
+            PluginLog.Log("ActionCameraPlugin", "reverseShoulder " + _settings.reverseShoulder);
+            PluginLog.Log("ActionCameraPlugin", "forwardVerticalOffset " + _settings.forwardVerticalOffset);
+            PluginLog.Log("ActionCameraPlugin", "forwardHorizontalOffset " + _settings.forwardHorizontalOffset);
+            PluginLog.Log("ActionCameraPlugin", "forwardDistance " + _settings.forwardDistance);
+            PluginLog.Log("ActionCameraPlugin", "removeAvatarInsteadOfHead " + _settings.removeAvatarInsteadOfHead);
+            PluginLog.Log("ActionCameraPlugin", "disableTopCamera " + _settings.disableTopCamera);
+            PluginLog.Log("ActionCameraPlugin", "disableFBTCamera " + _settings.disableFBTCamera);
+            PluginLog.Log("ActionCameraPlugin", "disableFPSCamera " + _settings.disableFPSCamera);
+            PluginLog.Log("ActionCameraPlugin", "inBetweenCameraEnabled " + _settings.inBetweenCameraEnabled);
+            PluginLog.Log("ActionCameraPlugin", "averageHandsWithHead " + _settings.averageHandsWithHead);
+            PluginLog.Log("ActionCameraPlugin", "useDominantHand " + _settings.useDominantHand);
+            PluginLog.Log("ActionCameraPlugin", "rightHandDominant " + _settings.rightHandDominant);
 
+            PluginLog.Log("ActionCameraPlugin", "cameraShoulderDistance " + _settings.cameraShoulderDistance);
+            PluginLog.Log("ActionCameraPlugin", "cameraShoulderAngle " + _settings.cameraShoulderAngle);
+            PluginLog.Log("ActionCameraPlugin", "cameraShoulderPositioningTime " + _settings.cameraShoulderPositioningTime);
+
+            PluginLog.Log("ActionCameraPlugin", "cameraBodyPositioningTime " + _settings.cameraBodyPositioningTime);
+            PluginLog.Log("ActionCameraPlugin", "cameraBodyAngle " + _settings.cameraBodyAngle);
+            PluginLog.Log("ActionCameraPlugin", "cameraBodyDistance " + _settings.cameraBodyDistance);
             cameraManager.SetSettings(_settings);
         }
 
         public void OnAvatarChanged(Avatar avatar)
         {
-            PluginLog.Log("ActionCameraPlugin", "OnAvatarChanged ", true);
+            PluginLog.Log("ActionCameraPlugin", "OnAvatarChanged ");
             cameraManager.SetAvatar(avatar);
         }
 

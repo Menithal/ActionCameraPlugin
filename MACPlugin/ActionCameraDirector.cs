@@ -57,8 +57,8 @@ namespace MACPlugin
             randomizer = new System.Random();
             player.SetOffsets(pluginSettings.forwardHorizontalOffset, pluginSettings.forwardVerticalOffset, pluginSettings.forwardDistance);
 
-            OverShoulderCamera = new ShoulderActionCamera(pluginSettings,  new Vector3(0.8f, -0f, -pluginSettings.actionCameraDistance));
-            FullBodyActionCamera = new FullBodyActionCamera(pluginSettings, new Vector3(1.6f, 0.4f, pluginSettings.actionCameraDistance));
+            OverShoulderCamera = new ShoulderActionCamera(pluginSettings);
+            FullBodyActionCamera = new FullBodyActionCamera(pluginSettings);
             FPSCamera = new FPSCamera(pluginSettings, 0.1f);
             TacticalCamera = new TopDownActionCamera(pluginSettings, 0.6f, 6f);
 
@@ -119,7 +119,7 @@ namespace MACPlugin
                          !(pluginSettings.disableFPSCamera && pluginSettings.disableFBTCamera))
                     {
 
-                        PluginLog.Log("ActionCameraDirector", "Pointing Down, Moving Head Down: FPS or FullBody", true);
+                        PluginLog.Log("ActionCameraDirector", "Pointing Down, Moving Head Down: FPS or FullBody");
                         // Hands are pointing down is while head is moving down (probably inventory)
                         if (randomizer.Next(0, 100) > 50 && !pluginSettings.disableFBTCamera || pluginSettings.disableFPSCamera)
                         {
@@ -136,7 +136,7 @@ namespace MACPlugin
                     {
                         // Hands Are Pointing up-ish, while head is moving up (probably checking on something, wrist, etc.)
 
-                        PluginLog.Log("ActionCameraDirector", "Pointing Up, Moving Head Up: Tactical or FullBody", true);
+                        PluginLog.Log("ActionCameraDirector", "Pointing Up, Moving Head Up: Tactical or FullBody");
                         if (randomizer.Next(0, 100) > 80 && !pluginSettings.disableTopCamera || pluginSettings.disableFBTCamera)
                         {
                             SetCamera(TacticalCamera);
@@ -150,7 +150,7 @@ namespace MACPlugin
                     else if ((PluginUtility.AverageCosAngleOfControllers(player.rightHand, player.leftHand, player.headForwardDirection) < 80) &&
                         Mathf.Abs(player.headRRadialDelta.x) > pluginSettings.controlMovementThreshold)
                     {
-                        PluginLog.Log("ActionCameraDirector", "Moving on Side, Shoulder", true);
+                        PluginLog.Log("ActionCameraDirector", "Moving on Side, Shoulder");
                         SetCamera(OverShoulderCamera);
                     }
                 }

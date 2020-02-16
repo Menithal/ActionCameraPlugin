@@ -65,10 +65,10 @@ namespace MACPlugin
     {
         private static DebugUtility debugger = new DebugUtility();
 
-        public static void Log(String source, String message, bool writeOverride = false)
+        public static void Log(String source, String message)
         {
         #if DEBUG
-            debugger.Write("log", source, message, writeOverride);
+            debugger.Write("log", source, message, true);
         #endif
         }
         public static void Debug(String source, String message)

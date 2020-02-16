@@ -15,7 +15,6 @@ When in Liv, Set an Avatar Camera, and make sure to select Plugin > "Menithal' A
 Closing Liv now wil update your settings file. You can then create and configure multiple profiles with different configurations in Liv and modifying the json file. See Configuration for more detail
 
 
-
 ### Available Cameras
 
 - *OverShoulderAction* - Main feature of the plugin, Shows point of view over your shoulder. Looking around corners will always move the camera around to that shoulder towards where you are looking at, allowing your spectators to see
@@ -29,11 +28,11 @@ what you will see before you do.  You can reverse this with the `reverseShoulder
 You direct the camera direction with head movement (for now) with your controllers behaving as keylocks You must be mostly pointing forwards with your controllers for commands to work.. 
 
 Most of the swapping of the camera directions are done by pointing forwards (where your body is pointing towards), while you turn your head.
-Your Head velocity (as of now).
+Your Head velocity (as of now) controls the camera after.
 
 Passively this works best with games where you are doing alot of aiming, dodging or ducking (PistolWhip / H3 )
-into cover than games where you can mostly stand still (like BeatSaber): Audica works partially,
- but you have to really exaggerate your movements to get the camera to work in your favor, but its all about practice.
+into cover than games where you can mostly stand still (like BeatSaber):
+It can work, in Beatsaber, but you have to really exaggerate your head movements to get the camera to work in your favor, but its all about practice.
 
 
 - If you Point your fingers forward (controller forward) and turn your head left or right You **direct the camera to go *over your shoulders.*
@@ -48,7 +47,7 @@ show something on your body, *view will swap to either FPS or Dynamic Full body 
 
 When in a front side view, or a shoulder view, turning your head alternates between sides.
 
-Please note that having a visible viewport in your hud may be considered cheating as technically over the shoulder / backwards camera 
+Please note that having a visible viewport in your hud may be considered cheating as technically second view port
 gives you a small edge in some multiplayer games that support LIV. The intention of this is for streaming; not for being a naughty cheater.
 
 
@@ -66,14 +65,12 @@ Configurable after setting as a plugin for a camera, and closing Liv Composer: Y
         "ActionCamera": {
 	    "generalCameraSwapClamp": 8,
 	    "actionCameraSwapClamp": 0.8,
-	    "shoulderCameraPositioningTime": 0.9f,
-	    "bodyCameraPositioningTime": 0.9f,
-            "actionCameraDistance": 1.4f,
-
+	    "shoulderCameraPositioningTime": 0.9,
+	    "bodyCameraPositioningTime": 0.9,
+            "actionCameraDistance": 1.4,
             "reverseFBT": false,
             "reverseShoulder": false,
             "controlMovementThreshold": 4.0,
-
             "forwardVerticalOffset": 0.0,
             "forwardHorizontalOffset": 5.0,
             "forwardDistance": 10.0,
@@ -81,7 +78,6 @@ Configurable after setting as a plugin for a camera, and closing Liv Composer: Y
             "disableTopCamera": true,
             "disableFBTCamera": false,
             "disableFPSCamera": false,
-
             "averageHandsWithHead": true,
             "useDominantHand": false,
             "rightHandDominant": true,
@@ -100,10 +96,8 @@ Configurable after setting as a plugin for a camera, and closing Liv Composer: Y
 - `bodyCameraPositioningTime`: Time in seconds how long the camera takes to move to the new side when Showing the Body.
 - `actionCameraDistance`: In Meters how far back or front the camera should be from the avatar. 
 - `inBetweenCameraEnabled`: If true, enables experimental inbetween cameras when swapping direction in an Action Camera (shoulder or body). Tries to keep an arc.
-
 - `reverseFBT`: If true, inverses the side for full body camera. defaults false.
 - `reverseShoulder`: If true, inverses the side of the shoulder camera. defaults false.
-
 - `removeAvatarInsteadOfHead`: Instead of removing the avatar, when set to false, will remove only the head of the avatar, when in first person mode. defaults true.
 - `disableTopCamera`: If true, Disables Top Down Camera. defaults false.
 - `disableFBTCamera`: If true, Disables Full body Front-side Camera. defaults false.
@@ -121,7 +115,7 @@ Most of the values are already tuned for the Offsets and movement treshold. Modi
 
 #### Not yet in use
 
-These have not yet been set to be used, but will be related to any gestures with the controllers
+These have not yet been set to be used, but will be related to any other gestures with the controllers
 `averageHandsWithHead`
 `useDominantHand`
 `rightHandDominant`
@@ -134,7 +128,7 @@ Additionally, there might be later some behavior chaining, so that transitions b
 Note if building using DEBUG, a textfile will be output to `%HOMEPATH%/Documents/Liv/Output` 
 and written into with debug messages. 
 
-When building a release, make sure NOT to have the DEBUG flag set, otherwise the debug file will be filled to brim. We do not want to flood end users.
+When building a release, make sure NOT to have the DEBUG flag set, otherwise the debug file will be filled to brim. We do not want to flood end users disks with logs.
 
 ### Bug Reports 
 
