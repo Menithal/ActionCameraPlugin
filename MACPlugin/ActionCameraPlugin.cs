@@ -40,7 +40,7 @@ public class ActionCameraSettings : IPluginSettings
     public bool removeAvatarInsteadOfHead = true;
     public bool disableTopCamera = true;
     public bool disableFBTCamera = false;
-    public bool disableFPSCamera = false;
+    public bool disableFPSCamera = true;
     public bool inBetweenCameraEnabled = true;
 
 
@@ -50,6 +50,7 @@ public class ActionCameraSettings : IPluginSettings
     public float cameraShoulderAngle = 25;
 
     public float cameraBodyPositioningTime = 2f;
+    public float cameraBodyLookAtForward = 1f;
     public float cameraBodyDistance = 1.4f;
     public float cameraBodyAngle = 45;
 
@@ -75,10 +76,10 @@ namespace MACPlugin
 #endif
         public string ID => "ActionCamera";
         public string author => "MA 'Menithal' Lahtinen";
-        public string version => "0.7.0a";
+        public string version => "0.7.1a";
 
         public event EventHandler ApplySettings;
-        private ActionCameraDirector cameraManager;
+        private ActionCameraDirector cameraDirector;
         private TimerHelper timerHelper;
         private AvatarReferenceSignal avatarRefSignal;
 
@@ -87,7 +88,7 @@ namespace MACPlugin
         {
             PluginLog.Log("ActionCameraPlugin", "OnActivate");
             timerHelper = new TimerHelper();
-            cameraManager = new ActionCameraDirector(_settings, helper, ref timerHelper);
+            cameraDirector = new ActionCameraDirector(_settings, helper, ref timerHelper);
 
             AvatarManager avatarManager = Resources.FindObjectsOfTypeAll<AvatarManager>().FirstOrDefault();
             avatarRefSignal = avatarManager?.GetPrivateField<AvatarReferenceSignal>("_avatarInstantiated");
@@ -127,8 +128,6 @@ namespace MACPlugin
         // Called when Settings are deserialized (read) from file.
         public void OnSettingsDeserialized()
         {
-
-         
             PluginLog.Log("ActionCameraPlugin", "OnSettingsDeserialized");
             PluginLog.Log("ActionCameraPlugin", "generalCameraSwapClamp " + _settings.cameraSwapTimeLock);
             PluginLog.Log("ActionCameraPlugin", "actionCameraSwapClamp " + _settings.cameraPositionTimeLock);
@@ -141,6 +140,7 @@ namespace MACPlugin
             PluginLog.Log("ActionCameraPlugin", "cameraBodyPositioningTime " + _settings.cameraBodyPositioningTime);
             PluginLog.Log("ActionCameraPlugin", "cameraBodyAngle " + _settings.cameraBodyAngle);
             PluginLog.Log("ActionCameraPlugin", "cameraBodyDistance " + _settings.cameraBodyDistance);
+            PluginLog.Log("ActionCameraPlugin", "cameraBodyLookAtForward " + _settings.cameraBodyLookAtForward);
 
             PluginLog.Log("ActionCameraPlugin", "reverseFBT " + _settings.reverseFBT);
             PluginLog.Log("ActionCameraPlugin", "reverseShoulder " + _settings.reverseShoulder);
@@ -157,22 +157,22 @@ namespace MACPlugin
             PluginLog.Log("ActionCameraPlugin", "averageHandsWithHead " + _settings.averageHandsWithHead);
             PluginLog.Log("ActionCameraPlugin", "useDominantHand " + _settings.useDominantHand);
             PluginLog.Log("ActionCameraPlugin", "rightHandDominant " + _settings.rightHandDominant);
-
-            cameraManager.SetSettings(_settings);
+            // Need to make sure everything else is updated
+            cameraDirector.SetSettings(_settings);
         }
 
         public void OnAvatarChanged(Avatar avatar)
         {
             PluginLog.Log("ActionCameraPlugin", "OnAvatarChanged ");
-            cameraManager.SetAvatar(avatar);
+            cameraDirector.SetAvatar(avatar);
         }
 
         // Called Every Frame.
         public void OnUpdate()
         {
             timerHelper.AddTime(Time.deltaTime);
-            cameraManager.SelectCamera();
-            cameraManager.HandleCameraView();
+            cameraDirector.SelectCamera();
+            cameraDirector.HandleCameraView();
         }
     }
 

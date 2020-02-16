@@ -32,6 +32,7 @@ namespace MACPlugin
         protected ActionCameraSettings pluginSettings;
 
         protected sbyte currentSide;
+        protected sbyte destinationSide;
         public Vector3 offset;
         public ActionCamera(ActionCameraSettings pluginSettings,
             float timeBetweenChange, Vector3 offset = new Vector3(),
@@ -42,6 +43,7 @@ namespace MACPlugin
             this.removeHead = removeHead;
             this.staticCamera = staticCamera;
             this.currentSide = 1;
+            this.destinationSide = 1;
             this.offset = offset;
         }
         public ActionCamera(ActionCameraSettings pluginSettings,
@@ -107,7 +109,7 @@ namespace MACPlugin
         {
             pluginSettings = settings;
             timeBetweenChange = settings.cameraShoulderPositioningTime / (settings.inBetweenCameraEnabled ? 2 : 1);;
-            betweenCamera.timeBetweenChange = settings.cameraShoulderPositioningTime / 2f;
+            betweenCamera.timeBetweenChange = timeBetweenChange;
             betweenCamera.SetPluginSettings(settings);
             betweenCamera.offset = new Vector3(0, 1f, -settings.cameraShoulderDistance);
             CalculateOffset();
@@ -141,14 +143,14 @@ namespace MACPlugin
 
             sbyte estimatedSide = (player.headRRadialDelta.x < 0 ? NEGATIVE_SBYTE : POSITIVE_SBYTE);
             if (!swappingSides && Mathf.Abs(player.headRRadialDelta.x) > 3 &&
-                player.timerHelper.actionCameraTimer > this.timeBetweenChange / 2 &&
+                player.timerHelper.actionCameraTimer > this.timeBetweenChange  &&
                 estimatedSide != currentSide)
             {
                 PluginLog.Log("ShoulderCamera", "Swapping sides " + estimatedSide);
                 swappingSides = true;
                 player.timerHelper.ResetActionCameraTimer();
             }
-            else if (swappingSides && player.timerHelper.actionCameraTimer > this.timeBetweenChange / 2)
+            else if (swappingSides && player.timerHelper.actionCameraTimer > this.timeBetweenChange )
             {
                 swappingSides = false;
 
@@ -195,6 +197,7 @@ namespace MACPlugin
         private Vector3 lookAtOffset = new Vector3(0f, 0f, 0.5f);
         private readonly SimpleActionCamera betweenCamera;
         private bool swappingSides = false;
+        
         public FullBodyActionCamera(ActionCameraSettings settings) :
             base(settings, 0, Vector3.zero, false, false)
         {
@@ -204,7 +207,7 @@ namespace MACPlugin
             neutralOffset.x = 0;
             neutralOffset.y += 0.5f;
             neutralOffset.z = settings.cameraBodyDistance;
-            betweenCamera = new SimpleActionCamera(settings, settings.cameraBodyPositioningTime / 2, neutralOffset);
+            betweenCamera = new SimpleActionCamera(settings, settings.cameraBodyPositioningTime , neutralOffset);
 
             CalculateOffset();
            
@@ -222,7 +225,7 @@ namespace MACPlugin
           //  calculatedOffset.z = Mathf.Sqrt(Mathf.Abs(Mathf.Pow(offset.z, 2f) - Mathf.Pow(offset.x, 2f)));
             PluginLog.Log("FullBodyActionCamera", "Calculated Position " + calculatedOffset);
             offset = calculatedOffset;
-            lookAtOffset.z = pluginSettings.cameraBodyDistance / 4;
+            lookAtOffset.z = pluginSettings.cameraBodyLookAtForward;
         }
         public override void SetPluginSettings(ActionCameraSettings settings)
         {
@@ -240,14 +243,14 @@ namespace MACPlugin
 
             sbyte estimatedSide = (player.headRRadialDelta.x < 0 ? NEGATIVE_SBYTE : POSITIVE_SBYTE);
             if (!swappingSides && Mathf.Abs(player.headRRadialDelta.x) > 3 &&
-                player.timerHelper.actionCameraTimer > this.timeBetweenChange / 2 &&
+                player.timerHelper.actionCameraTimer > this.timeBetweenChange &&
                 estimatedSide != currentSide)
             {
                 PluginLog.Log("FullBodyActionCamera", "Swapping sides " + estimatedSide);
                 swappingSides = true;
                 player.timerHelper.ResetActionCameraTimer();
             }
-            else if (swappingSides && player.timerHelper.actionCameraTimer > this.timeBetweenChange / 2)
+            else if (swappingSides && player.timerHelper.actionCameraTimer > this.timeBetweenChange)
             {
                 swappingSides = false;
                 currentSide = estimatedSide;
