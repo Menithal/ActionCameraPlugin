@@ -54,7 +54,9 @@ gives you a small edge in some multiplayer games that support LIV. The intention
 
 ## Configuring
 
-Configurable after setting as a plugin for a camera, and closing Liv Composer: You can find the settings at
+Configurable after setting as a plugin for a camera, and closing Liv Composer AND App. It is a bit fiddly, but with sufficient configuration you can do quite a bit.
+
+You can find the settings at
 `%LOCALAPPDATA%/Liv/App/<LivVersion>.json`
 
 ## Default Setting Example: 
@@ -65,7 +67,7 @@ Configurable after setting as a plugin for a camera, and closing Liv Composer: Y
     "pluginSettings": {
         "ActionCamera": {
             "cameraSwapTimeLock": 8,
-            "cameraPositionTimeLock": 0.8f,
+            "cameraPositionTimeLock": 0.8,
             "reverseFBT": false,
             "reverseShoulder": false,
             "controlMovementThreshold": 4,
@@ -131,32 +133,29 @@ By default the setting are configured for CQC Pistol Combat (ala pistolwhip) but
     "selectedPluginCameraBehaviourID": "ActionCamera",
     "pluginSettings": {
         "ActionCamera": {
-	        "shoulderCameraPositioningTime": 3,
-	        "bodyCameraPositioningTime": 3,
-            "cameraSwapTimeLock": 20,
-            "cameraPositionTimeLock": 6,
+            "shoulderCameraPositioningTime": 2,
+            "bodyCameraPositioningTime": 2,
+            "cameraSwapTimeLock": 10,
+            "cameraPositionTimeLock": 3,
             "reverseFBT": false,
             "reverseShoulder": false,
             "controlMovementThreshold": 1,
             "forwardVerticalOffset": 0,
             "forwardHorizontalOffset": 5,
             "forwardDistance": 10,
-            
             "removeAvatarInsteadOfHead": true,
             "disableTopCamera": true,
             "disableFBTCamera": false,
             "disableFPSCamera": true,
             "inBetweenCameraEnabled": false,
             "cameraVerticalLock": true,
-            
             "cameraShoulderPositioningTime": 1.8,
             "cameraShoulderDistance": 2.6,
             "cameraShoulderAngle": 35,
             "cameraBodyPositioningTime": 4,
-            "cameraBodyLookAtForward": 2,
+            "cameraBodyLookAtForward": 1.6,
             "cameraBodyDistance": 3,
             "cameraBodyAngle": 45,
-
             "averageHandsWithHead": true,
             "useDominantHand": false,
             "rightHandDominant": true
