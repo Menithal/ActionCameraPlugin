@@ -53,16 +53,17 @@
     <Compile Include="ActionCameraPlugin.cs" />
     <Compile Include="ActionCamera.cs" />
     <Compile Include="ActionCameraDirector.cs" />
-    <Compile Include="DebugUtility.cs" />
+    <Compile Include="Utility\ConfigAttributes.cs" />
+    <Compile Include="Utility\DebugUtility.cs" />
     <Compile Include="LivPlayerEntity.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="ReflectionUtility.cs" />
+    <Compile Include="Utility\ReflectionUtility.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="PluginUtility.cs" />
+    <Compile Include="Utility\PluginUtility.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\.editorconfig">

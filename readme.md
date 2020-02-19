@@ -21,6 +21,8 @@ Closing Liv now wil update your settings file. You can then create and configure
 what you will see before you do.  You can reverse this with the `reverseShoulder` config.
 - *FullBodyAction* - Front side view of your Liv Avatar. Turning your head moves the point of view similar to the shoulder view. You can reverse this with the `reverseShoulder` config. Can be turned off with `disableFBTCamera`.
 - *FirstPerson* - FPS view of the game. Smoothened, and similar to how the game would play, but you can turn on avatar visibility with `removeAvatarInsteadOfHead`.  Can be turned off with `disableFPSCamera`.
+- *GunCam/Sights* - Down Sights view of the game when holding a weapon two handed, and looking down the sights. Shows avatar if 
+`removeAvatarInsteadOfHead` is disabled.  Can be turned off with `disableGunCamera`.
 - *Tactical* - Top down view of the game. Can be turned off with `disableFBTCamera`. Default off due to some bugs with liv.
 
 ### Controlling Cameras and Gestures
@@ -75,20 +77,31 @@ Configurable after setting as a plugin for a camera, and closing Liv Composer: Y
             "disableTopCamera": true,
             "disableFBTCamera": false,
             "disableFPSCamera": true,
+            "disableGunCamera": true,
             "inBetweenCameraEnabled": true,
             "cameraVerticalLock": false,
             
             "cameraShoulderPositioningTime": 0.9,
-            "cameraShoulderdistance": 1.4,
-            "cameraShoulderAngle": 25,
+            "cameraShoulderdistance": 1.8,
+            "cameraShoulderAngle": 35,
+            "cameraShoulderSensitivity": 2,
+
             "cameraBodyPositioningTime": 2,
             "cameraBodyLookAtForward": 1,
             "cameraBodyDistance": 1.4,
             "cameraBodyAngle": 45,
+            "cameraBodySensitivity": 2,
 
             "averageHandsWithHead": true,
             "useDominantHand": false,
-            "rightHandDominant": true
+            "rightHandDominant": true,
+            "disableGunCamera": true,
+            "cameraGunFov": 90,
+            "cameraGunZoom": 0.25,
+            "cameraGunHeadDistanceTrigger": 0.25,
+            "cameraMaxTwoHandedDistance": 0.4,
+            "cameraMinTwoHandedDistance": 0.08,
+            "cameraGunSimple": true
         }
     }
 }
@@ -114,11 +127,24 @@ Configurable after setting as a plugin for a camera, and closing Liv Composer: Y
 - `cameraShoulderPositioningTime`: Time in seconds how long the camera takes to move to the new side when over shoulder
 - `cameraShoulderDistance`: Distance from the avatar the Shoulder Camera should be at
 - `cameraShoulderAngle`: The Angle (in Degrees) the camera will be behind the avatar/
+- `cameraBodySensitivity`: How fast to detect a turn to swap sides. Smaller the value, the more sensitive.
+
 - `cameraBodyPositioningTime`: Time in seconds how long the camera takes to move to the new side when showing the front
 - `cameraBodyLookAtForward`: The Look at target where the camera looks when showing the front in the relative Z.
 - `cameraBodyDistance`:  Distance from the avatar the Body Camera should be at
 - `cameraBodyAngle`: The Angle (in Degrees) the camera will be infront of the avatar
+- `cameraBodySensitivity`: How fast to detect a turn to swap sides. Smaller the value, the more sensitive.
+- `disableGunCamera`: Disable Gun / Scope Camera
+- `cameraGunFov`: Degrees the camera will goto. 60 is default, CHANGE ONLY IF GAME SUPPORTS THIS ON RUN TIME. Suggested 50-90
+- `cameraGunZoom`: Amount of distance in (0.00-1.00) % between the hands and the dominant eye.
+- `cameraGunHeadAlignAngleTrigger`: the amount of degrees your head must be aligned with the path your weapons to count as looking down the sights. by default it is 25 degrees
+- `cameraGunHeadDistanceTrigger`: Distance at which the gun camera starts to be triggered.
+- `cameraGunEyeVerticalOffset`:  the amount of vertical offset from your dominant eye to down the ironsight raycast.
+- `cameraGunMaxTwoHandedDistance`: Max Distance between hands when still counting as using the gun camera.
+- `cameraGunMinTwoHandedDistance`: Minimum Distance between hands when still counting as using the gun camera.
+- `cameraGunPositioningTime`: Minimum Distance between hands when still counting as using the gun camera.
 
+- `rightHandDominant` Sets either your right hand dominant or left hand dominant. This effects which eye and hand is used to measure two handness. If right handed, the right hand must be close to the right eye, if left handed, vice versa. by default assumes righthandness
 
 By default the setting are configured for CQC Pistol Combat (ala pistolwhip) but playing aroudn with the values allows you to create entries for other games, such as Beat Saber or Audica.
 
@@ -141,6 +167,7 @@ By default the setting are configured for CQC Pistol Combat (ala pistolwhip) but
             "forwardDistance": 10,
             
             "removeAvatarInsteadOfHead": true,
+            "disableGunCamera": true,
             "disableTopCamera": true,
             "disableFBTCamera": false,
             "disableFPSCamera": true,
@@ -150,14 +177,24 @@ By default the setting are configured for CQC Pistol Combat (ala pistolwhip) but
             "cameraShoulderPositioningTime": 1.8,
             "cameraShoulderDistance": 2.6,
             "cameraShoulderAngle": 35,
+            "cameraShoulderSensitivity": 1,
             "cameraBodyPositioningTime": 4,
             "cameraBodyLookAtForward": 2,
             "cameraBodyDistance": 3,
             "cameraBodyAngle": 45,
+            "cameraBodySensitivity": 1,
 
             "averageHandsWithHead": true,
             "useDominantHand": false,
-            "rightHandDominant": true
+            "rightHandDominant": true,
+
+            
+            "cameraGunFov": 90,
+            "cameraGunZoom": 0.25,
+            "cameraGunHeadDistanceTrigger": 0.25,
+            "cameraMaxTwoHandedDistance": 0.4,
+            "cameraMinTwoHandedDistance": 0.08,
+            "cameraGunSimple": true
         }
     }
 }
@@ -171,7 +208,6 @@ By default the setting are configured for CQC Pistol Combat (ala pistolwhip) but
 These have not yet been set to be used, but will be related to any other gestures with the controllers
 `averageHandsWithHead`
 `useDominantHand`
-`rightHandDominant`
 
 Additionally, there might be later some behavior chaining, so that transitions between different types of cameras would be smoother, but this is underworks.
 
