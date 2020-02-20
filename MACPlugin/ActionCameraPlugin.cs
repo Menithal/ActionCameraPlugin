@@ -48,7 +48,7 @@ public class ActionCameraSettings : IPluginSettings
     public float cameraDefaultFov = 80f;
 
     public bool cameraVerticalLock = true;
-    public float cameraShoulderPositioningTime = 0.9f;
+    public float cameraShoulderPositioningTime = 2f;
     public float cameraShoulderDistance = 1.8f;
     public float cameraShoulderAngle = 35;
     public float cameraShoulderSensitivity = 2f;
@@ -71,7 +71,7 @@ public class ActionCameraSettings : IPluginSettings
     public float cameraGunHeadAlignAngleTrigger = 15;
     public float cameraGunHeadDistanceTrigger = 0.3f;
     public float cameraGunEyeVerticalOffset = 0.00f;
-    public float cameraGunMaxTwoHandedDistance = 0.5f;
+    public float cameraGunMaxTwoHandedDistance = 0.6f;
     public float cameraGunMinTwoHandedDistance = 0.15f;
     public float cameraGunSmoothing = 0.1f;
 
