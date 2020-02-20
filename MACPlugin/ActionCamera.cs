@@ -111,7 +111,7 @@ namespace MACPlugin
         {
             base.SetPluginSettings(settings);
             offset = new Vector3(0, -settings.cameraGunEyeVerticalOffset, 0);
-            timeBetweenChange = settings.cameraGunPositioningTime;
+            timeBetweenChange = settings.cameraGunSmoothing;
             fov = settings.cameraGunFov;
         }
         public override Quaternion GetRotation(Vector3 lookDirection, LivPlayerEntity player)

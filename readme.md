@@ -80,6 +80,7 @@ Configurable after setting as a plugin for a camera, and closing Liv Composer: Y
             "disableGunCamera": true,
             "inBetweenCameraEnabled": true,
             "cameraVerticalLock": false,
+            "cameraDefaultFov": 80.0,
             
             "cameraShoulderPositioningTime": 0.9,
             "cameraShoulderdistance": 1.8,
@@ -96,12 +97,11 @@ Configurable after setting as a plugin for a camera, and closing Liv Composer: Y
             "useDominantHand": false,
             "rightHandDominant": true,
             "disableGunCamera": true,
-            "cameraGunFov": 90,
+            "cameraGunFov": 80.0,
             "cameraGunZoom": 0.25,
             "cameraGunHeadDistanceTrigger": 0.25,
             "cameraMaxTwoHandedDistance": 0.4,
-            "cameraMinTwoHandedDistance": 0.08,
-            "cameraGunSimple": true
+            "cameraMinTwoHandedDistance": 0.08
         }
     }
 }
@@ -173,6 +173,7 @@ By default the setting are configured for CQC Pistol Combat (ala pistolwhip) but
             "disableFPSCamera": true,
             "inBetweenCameraEnabled": false,
             "cameraVerticalLock": true,
+            "cameraDefaultFov": 90.0,
             
             "cameraShoulderPositioningTime": 1.8,
             "cameraShoulderDistance": 2.6,
@@ -188,13 +189,11 @@ By default the setting are configured for CQC Pistol Combat (ala pistolwhip) but
             "useDominantHand": false,
             "rightHandDominant": true,
 
-            
             "cameraGunFov": 90,
             "cameraGunZoom": 0.25,
             "cameraGunHeadDistanceTrigger": 0.25,
             "cameraMaxTwoHandedDistance": 0.4,
-            "cameraMinTwoHandedDistance": 0.08,
-            "cameraGunSimple": true
+            "cameraMinTwoHandedDistance": 0.08
         }
     }
 }

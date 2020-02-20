@@ -73,7 +73,7 @@ public class ActionCameraSettings : IPluginSettings
     public float cameraGunEyeVerticalOffset = 0.00f;
     public float cameraGunMaxTwoHandedDistance = 0.5f;
     public float cameraGunMinTwoHandedDistance = 0.15f;
-    public float cameraGunPositioningTime = 0.1f;
+    public float cameraGunSmoothing = 0.1f;
 
 }
 
