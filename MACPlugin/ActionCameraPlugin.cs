@@ -45,6 +45,7 @@ public class ActionCameraSettings : IPluginSettings
     public bool disableFPSCamera = true;
     public bool disableGunCamera = false;
     public bool inBetweenCameraEnabled = true;
+    public float cameraDefaultFov = 80f;
 
     public bool cameraVerticalLock = true;
     public float cameraShoulderPositioningTime = 0.9f;
@@ -64,12 +65,12 @@ public class ActionCameraSettings : IPluginSettings
     public bool rightHandDominant = true;
     // Uses right hand info to determine additional pointt
 
-    public float cameraGunFov = 65f;
+    public float cameraGunFov = 80f;
     public float cameraGunZoom = 0.0125f;
     
     public float cameraGunHeadAlignAngleTrigger = 15;
     public float cameraGunHeadDistanceTrigger = 0.3f;
-    public float cameraGunEyeVerticalOffset = 0.012f;
+    public float cameraGunEyeVerticalOffset = 0.00f;
     public float cameraGunMaxTwoHandedDistance = 0.5f;
     public float cameraGunMinTwoHandedDistance = 0.15f;
     public float cameraGunPositioningTime = 0.1f;
@@ -85,7 +86,7 @@ namespace MACPlugin
         ActionCameraSettings _settings = new ActionCameraSettings();
 
 #if DEBUG
-        public string name => "Menithal' Action Camera DEV BUILD";
+        public string name => "Menithal' Action Camera DEV BUILD";r 
 #else
         public string name => "Menithal' Action Camera";
 #endif

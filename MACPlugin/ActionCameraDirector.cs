@@ -49,7 +49,7 @@ namespace MACPlugin
         private bool inGunMode = false;
 
         // 30 checks a second 
-        private static float CONTROLLER_THROTTLE = 1 / 30f;
+        private static float CONTROLLER_THROTTLE = 1f;//1 / 30f;
         public ActionCameraDirector(ActionCameraSettings pluginSettings, PluginCameraHelper helper, ref TimerHelper timerHelper)
         {
             this.player = new LivPlayerEntity(helper, ref timerHelper);
@@ -125,7 +125,7 @@ namespace MACPlugin
                 */
                 bool canSwapCamera = (timerHelper.globalTimer > pluginSettings.cameraSwapTimeLock);
 
-
+                PluginLog.Log("ActionCameraDirector", "" +(player.head.position - player.rightEye));
 
                 Vector3 averageHandPosition = player.handAverage;
                 Vector3 handDirection;
@@ -152,6 +152,7 @@ namespace MACPlugin
                     {
                         SetCamera(ScopeActionCamera, true, pluginSettings.cameraSwapTimeLock - 0.5f);
                         inGunMode = true;
+                        SnapCamera(currentCamera);
                         timerHelper.ResetCameraGunTimer();
                         PluginLog.Log("ActionCameraDirector", "In Sights");
                     }
@@ -195,20 +196,31 @@ namespace MACPlugin
                     PluginLog.Log("ActionCameraDirector", "Moving on Side, Shoulder");
                     SetCamera(OverShoulderCamera);
                 }
-                else if (inGunMode && timerHelper.cameraGunTimer > 3f)
+                else if (inGunMode && timerHelper.cameraGunTimer > 1f)
                 {
                     if (!isWithinTwoHandedUse || !(isHeadWithinAimingDistance && isAimingTwoHandedForward))
                     {
+
+                        SnapCamera(lastCamera);
                         SetCamera(lastCamera);
+                        // Should actually just snap to the new positions instead, so
+
                     }
                     timerHelper.ResetCameraGunTimer();
                 }
                 timerHelper.ResetControllerTimer();
             }
-
             HandleCameraView();
         }
 
+        public void SnapCamera(ActionCamera camera)
+        {
+            camera.ApplyBehavior(ref cameraPositionTarget, ref cameraLookAtTarget, player, isCameraStatic); 
+            cameraLookAtVelocity = Vector3.zero;
+            cameraVelocity = Vector3.zero;
+            cameraPosition = cameraPositionTarget;
+            cameraLookAt = cameraLookAtTarget;
+        }
         public void HandleCameraView()
         {
             // Call the camera's behavior.
@@ -216,7 +228,7 @@ namespace MACPlugin
             isCameraStatic = currentCamera.staticCamera;
 
 
-            if (currentAvatar != null && ((currentCamera.removeHead && timerHelper.removeAvatarTimer > currentCamera.timeBetweenChange) || !currentCamera.removeHead))
+            if (currentAvatar != null )
             {
                 if (pluginSettings.removeAvatarInsteadOfHead)
                 {
@@ -234,8 +246,8 @@ namespace MACPlugin
 
             Vector3 lookDirection = cameraLookAt - cameraPosition;
 
-            Quaternion rotation = Quaternion.LookRotation(lookDirection);
-
+            Quaternion rotation = currentCamera.GetRotation(lookDirection, player);
+            
             cameraHelper.UpdateCameraPose(cameraPosition, rotation);
             cameraHelper.UpdateFov(currentCamera.fov);
         }

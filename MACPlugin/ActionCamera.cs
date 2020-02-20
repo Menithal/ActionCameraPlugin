@@ -57,10 +57,16 @@ namespace MACPlugin
         public virtual void SetPluginSettings(ActionCameraSettings settings)
         {
             pluginSettings = settings;
+            fov = settings.cameraDefaultFov; 
         }
 
         abstract public void ApplyBehavior(ref Vector3 cameraTarget, ref Vector3 lookAtTarget,
             LivPlayerEntity player, bool isCameraAlreadyPlaced);
+
+        public virtual Quaternion GetRotation(Vector3 lookDirection, LivPlayerEntity player)
+        {
+            return Quaternion.LookRotation(lookDirection);
+        }
     }
 
     public class SimpleActionCamera : ActionCamera
@@ -90,7 +96,12 @@ namespace MACPlugin
     }
     public class ScopeActionCamera : ActionCamera
     {
-        public Vector3 lookAtOffset = new Vector3(0f, 0f, 1f);
+        public Vector3 lookAtOffset = new Vector3(0f, 0f, 10f);
+
+        Transform dominantHand;
+        Transform nonDominantHand;
+        Vector3 dominantEye;
+        Vector3 lookAtDirection;
         public ScopeActionCamera(ActionCameraSettings settings) :
             base(settings, 0.1f, Vector3.zero, true)
         {
@@ -103,12 +114,12 @@ namespace MACPlugin
             timeBetweenChange = settings.cameraGunPositioningTime;
             fov = settings.cameraGunFov;
         }
+        public override Quaternion GetRotation(Vector3 lookDirection, LivPlayerEntity player)
+        {
+            return Quaternion.LookRotation(lookAtDirection, Vector3.up);
+        }
         public override void ApplyBehavior(ref Vector3 cameraTarget, ref Vector3 lookAtTarget, LivPlayerEntity player, bool isCameraAlreadyPlaced)
         {
-            Transform dominantHand;
-            Transform nonDominantHand;
-            Vector3 dominantEye;
-
             // Automatic determination which is closest?
             if (pluginSettings.rightHandDominant)
             {
@@ -123,13 +134,10 @@ namespace MACPlugin
                 dominantEye = player.leftEye + player.head.rotation * offset;
             }
 
-            Quaternion gunOffsetRotation = Quaternion.LookRotation((nonDominantHand.position - dominantHand.position).normalized, dominantHand.up);
-
-            Vector3 averagePosition = player.handAverage;
-            Vector3 lookAtOffsetCorrection = averagePosition - player.head.position;
-            lookAtOffset.y = -lookAtOffsetCorrection.y / 2;
-            lookAtTarget = averagePosition + gunOffsetRotation * (lookAtOffset);
-            cameraTarget = Vector3.Lerp(dominantEye, lookAtTarget, pluginSettings.cameraGunZoom);
+            lookAtDirection = (nonDominantHand.position - dominantHand.position);
+            // We will override the lookAtTarget and use GetRotation to define the actual rotation.
+            lookAtTarget = Vector3.zero;
+            cameraTarget = dominantEye;// Vector3.Lerp(dominantEye, lookAtTarget, pluginSettings.cameraGunZoom);
         }
     }
 
