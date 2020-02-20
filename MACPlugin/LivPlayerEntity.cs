@@ -27,6 +27,9 @@ namespace MACPlugin
         public Transform leftFoot { get { return pluginCameraHelper.playerLeftFoot; } }
         public Transform rightFoot { get { return pluginCameraHelper.playerRightFoot; } }
 
+        public Vector3 handAverage { get { return ((rightHand.position + leftHand.position) / 2); } } 
+        public Vector3 leftEye { get { return pluginCameraHelper.playerLeftEyePosition; } }
+        public Vector3 rightEye { get { return pluginCameraHelper.playerRightEyePosition; } }
         // TODO: Probably better in the future to actually look into ANGULAR velocities, instead of cheaping it out like this.
         public Vector3 headRRadialDelta { get; private set; } = Vector3.zero;
         public Vector3 leftHandRRadialDelta { get; private set; } = Vector3.zero;
@@ -48,17 +51,14 @@ namespace MACPlugin
         private Vector3 preCalculatedBelowHeadDirection;
         private Vector3 preCalculatedFrontDirection;
 
-
         // Smooth Damp Used values, which are predetermiend with the offsets.
         public Vector3 headAboveDirection { get; private set; } = Vector3.zero;
         public Vector3 headBelowDirection { get; private set; } = Vector3.zero;
-
         // The following will ALWAYS be forward relative. These are just to check where the player is currently pointing towards 
         // Users tend to be looking down if playinga  shooter already, thus the vertical offset up..
 
         public Vector3 headForwardRightDirection { get; private set; } = Vector3.zero;
         public Vector3 headForwardLeftDirection { get; private set; } = Vector3.zero;
-
         // Saving these for probably later, when I figure in what cases could these be useful.
         public Vector3 headForwardUpDirection { get; private set; } = Vector3.zero;
         public Vector3 headForwardDownDirection { get; private set; } = Vector3.zero;
@@ -71,10 +71,10 @@ namespace MACPlugin
         private Vector3 dampedRightHandForwardVelocity = Vector3.zero;
         private Vector3 dampedLeftHandForwardVelocity = Vector3.zero;
 
-
         private Vector3 dampedForwardCamera = Vector3.zero;
         private Vector3 dampedRightHand = Vector3.zero;
         private Vector3 dampedLeftHand = Vector3.zero;
+
         public void SetOffsets(float horizontalOffset, float verticalOffset, float distance)
         {
             preCalculatedAbovePlayer = new Vector3(0, verticalOffset, 0);
@@ -102,7 +102,7 @@ namespace MACPlugin
 
             headForwardDirection = head.TransformPoint(preCalculatedFrontDirection);
             rightHandForwardDirection = rightHand.TransformPoint(preCalculatedFrontDirection);
-            leftHandForwardDirection = rightHand.TransformPoint(preCalculatedFrontDirection);
+            leftHandForwardDirection = leftHand.TransformPoint(preCalculatedFrontDirection);
 
             // Trying to make this is as simple as possible: Check the distance between the last damped location and the current one, relative to the head rotation.
             // RRadia being "Relative Radial", as thats what it... technically is. Its not TRUE radial velocity, but its the difference between the damped and the current values
@@ -120,32 +120,59 @@ namespace MACPlugin
     {
         public float globalTimer { get; private set; }
         public float controllerTimer { get; private set; }
-        public float actionCameraTimer { get; private set; }
+        public float cameraTimer { get; private set; }
+        public float cameraActionTimer { get; private set; }
+        public float removeAvatarTimer { get; private set; }
+        public float cameraGunTimer { get; private set; }
+
 
         public TimerHelper()
         {
             globalTimer = 0;
-            actionCameraTimer = 0;
+            cameraTimer = 0;
+            cameraActionTimer = 0;
+            removeAvatarTimer = 0;
+            cameraGunTimer = 0;
         }
 
         public void AddTime(float delta)
         {
             globalTimer += delta;
             controllerTimer += delta;
-            actionCameraTimer += delta;
+            cameraActionTimer += delta;
+            cameraTimer += delta;
+            removeAvatarTimer += delta;
+            cameraGunTimer += delta;
         }
         public void ResetGlobalCameraTimer()
         {
             globalTimer = 0;
         }
-
-        public void ResetActionCameraTimer()
+        public void ResetCameraTimer()
         {
-            actionCameraTimer = 0;
+            cameraTimer = 0;
+        }
+
+        public void SetGlobalTimer(float timer)
+        {
+            globalTimer = timer;
+        }
+
+        public void ResetCameraActionTimer()
+        {
+            cameraActionTimer = 0;
         }
         public void ResetControllerTimer()
         {
             controllerTimer = 0;
+        }
+        public void ResetRemoveAvatarTimer()
+        {
+            removeAvatarTimer = 0;
+        }
+        public void ResetCameraGunTimer()
+        {
+            cameraGunTimer = 0;
         }
     }
 

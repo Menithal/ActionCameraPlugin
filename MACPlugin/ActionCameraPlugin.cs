@@ -22,15 +22,17 @@ using LIV.Avatar;
 // to do with the Reflection done on the other end?)
 public class ActionCameraSettings : IPluginSettings
 {
+
+    // TODO: SEparate settings to serializable classes intead.
     // How many seconds until swapping another camera
     public float cameraSwapTimeLock = 8;
     // actionCamera can swap faster than general Camera and people tend to change look directions quite quickly.
-    public float cameraPositionTimeLock= 0.8f;
+    public float cameraPositionTimeLock = 0.8f;
 
     // How fast should we swap between 
     public bool reverseFBT = false;
     public bool reverseShoulder = false;
-    public float controlMovementThreshold = 4; // Meters per framea
+    public float controlMovementThreshold = 2; // Meters per framea
     // Users tend to have headset a bit higher, so when they are looking down sights they are not 
     // fully looking up. This offsets that
     public float forwardVerticalOffset = 0;
@@ -41,23 +43,38 @@ public class ActionCameraSettings : IPluginSettings
     public bool disableTopCamera = true;
     public bool disableFBTCamera = false;
     public bool disableFPSCamera = true;
+    public bool disableGunCamera = false;
     public bool inBetweenCameraEnabled = true;
+    public float cameraDefaultFov = 80f;
 
-    public bool cameraVerticalLock = false;
-    public float cameraShoulderPositioningTime = 0.9f;
-    public float cameraShoulderDistance = 1.4f;
-    public float cameraShoulderAngle = 25;
+    public bool cameraVerticalLock = true;
+    public float cameraShoulderPositioningTime = 2f;
+    public float cameraShoulderDistance = 1.8f;
+    public float cameraShoulderAngle = 35;
+    public float cameraShoulderSensitivity = 2f;
 
     public float cameraBodyPositioningTime = 2f;
     public float cameraBodyLookAtForward = 0.1f;
     public float cameraBodyDistance = 1.4f;
-    public float cameraBodyAngle = 45;
+    public float cameraBodyAngle = 55;
+    public float cameraBodySensitivity = 2f;
 
     // TODO: if Enabled, average head forward with Hand Forwards (dominance)
     public bool averageHandsWithHead = false;
     public bool useDominantHand = false;
     public bool rightHandDominant = true;
     // Uses right hand info to determine additional pointt
+
+    public float cameraGunFov = 80f;
+    public float cameraGunZoom = 0.0125f;
+    
+    public float cameraGunHeadAlignAngleTrigger = 15;
+    public float cameraGunHeadDistanceTrigger = 0.3f;
+    public float cameraGunEyeVerticalOffset = 0.00f;
+    public float cameraGunMaxTwoHandedDistance = 0.6f;
+    public float cameraGunMinTwoHandedDistance = 0.15f;
+    public float cameraGunSmoothing = 0.1f;
+
 }
 
 namespace MACPlugin
@@ -75,7 +92,7 @@ namespace MACPlugin
 #endif
         public string ID => "ActionCamera";
         public string author => "MA 'Menithal' Lahtinen";
-        public string version => "0.7.1a";
+        public string version => "0.8.0a";
 
         public event EventHandler ApplySettings;
         private ActionCameraDirector cameraDirector;
@@ -151,12 +168,24 @@ namespace MACPlugin
             PluginLog.Log("ActionCameraPlugin", "disableTopCamera " + _settings.disableTopCamera);
             PluginLog.Log("ActionCameraPlugin", "disableFBTCamera " + _settings.disableFBTCamera);
             PluginLog.Log("ActionCameraPlugin", "disableFPSCamera " + _settings.disableFPSCamera);
-            
+
             PluginLog.Log("ActionCameraPlugin", "inBetweenCameraEnabled " + _settings.inBetweenCameraEnabled);
             PluginLog.Log("ActionCameraPlugin", "averageHandsWithHead " + _settings.averageHandsWithHead);
             PluginLog.Log("ActionCameraPlugin", "useDominantHand " + _settings.useDominantHand);
             PluginLog.Log("ActionCameraPlugin", "rightHandDominant " + _settings.rightHandDominant);
             // Need to make sure everything else is updated
+
+
+
+            PluginLog.Log("ActionCameraPlugin", "disableGunCamera " + _settings.disableGunCamera);
+            PluginLog.Log("ActionCameraPlugin", "cameraGunFov " + _settings.cameraGunFov);
+            PluginLog.Log("ActionCameraPlugin", "cameraGunZoom " + _settings.cameraGunZoom);
+            PluginLog.Log("ActionCameraPlugin", "cameraGunHeadDistanceTrigger " + _settings.cameraGunHeadDistanceTrigger);
+            PluginLog.Log("ActionCameraPlugin", "cameraMaxTwoHandedDistance " + _settings.cameraGunMaxTwoHandedDistance);
+            PluginLog.Log("ActionCameraPlugin", "cameraMinTwoHandedDistance " + _settings.cameraGunMinTwoHandedDistance);
+
+
+
             cameraDirector.SetSettings(_settings);
         }
 
@@ -164,6 +193,7 @@ namespace MACPlugin
         {
             PluginLog.Log("ActionCameraPlugin", "OnAvatarChanged ");
             cameraDirector.SetAvatar(avatar);
+
         }
 
         // Called Every Frame.
