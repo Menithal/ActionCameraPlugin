@@ -86,7 +86,7 @@ namespace MACPlugin
         ActionCameraSettings _settings = new ActionCameraSettings();
 
 #if DEBUG
-        public string name => "Menithal' Action Camera DEV BUILD";r 
+        public string name => "Menithal' Action Camera DEV BUILD";
 #else
         public string name => "Menithal' Action Camera";
 #endif
