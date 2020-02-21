@@ -33,6 +33,7 @@ public class ActionCameraSettings : IPluginSettings
     public bool reverseFBT = false;
     public bool reverseShoulder = false;
     public float controlMovementThreshold = 2; // Meters per framea
+    public float controlVerticalMovementThreshold = 4; // Meters per framea
     // Users tend to have headset a bit higher, so when they are looking down sights they are not 
     // fully looking up. This offsets that
     public float forwardVerticalOffset = 0;
@@ -42,10 +43,13 @@ public class ActionCameraSettings : IPluginSettings
     public bool removeAvatarInsteadOfHead = true;
     public bool disableTopCamera = true;
     public bool disableFBTCamera = false;
-    public bool disableFPSCamera = true;
+    public bool disableFPSCamera = false;
     public bool disableGunCamera = false;
     public bool inBetweenCameraEnabled = true;
     public float cameraDefaultFov = 80f;
+
+    public float cameraFPSChance = 90;
+    public float cameraFPSHeadAlignAngleTrigger = 30;
 
     public bool cameraVerticalLock = true;
     public float cameraShoulderPositioningTime = 2f;
@@ -62,10 +66,10 @@ public class ActionCameraSettings : IPluginSettings
     // TODO: if Enabled, average head forward with Hand Forwards (dominance)
     public bool averageHandsWithHead = false;
     public bool useDominantHand = false;
-    public bool rightHandDominant = true;
+    public bool rightHandDominant = true; 
     // Uses right hand info to determine additional pointt
 
-    public float cameraGunFov = 80f;
+    public float cameraGunFov = 50f;
     public float cameraGunZoom = 0.0125f;
     
     public float cameraGunHeadAlignAngleTrigger = 15;
@@ -73,7 +77,8 @@ public class ActionCameraSettings : IPluginSettings
     public float cameraGunEyeVerticalOffset = 0.00f;
     public float cameraGunMaxTwoHandedDistance = 0.6f;
     public float cameraGunMinTwoHandedDistance = 0.15f;
-    public float cameraGunSmoothing = 0.1f;
+    public float cameraGunSmoothing = 0.3f;
+    public bool cameraGunInFPSOnly = true;
 
 }
 

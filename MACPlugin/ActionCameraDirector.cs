@@ -20,19 +20,20 @@ namespace MACPlugin
     public class ActionCameraDirector
     {
         public readonly ActionCamera OverShoulderCamera;
-        public readonly ActionCamera FPSCamera;
+        public readonly FPSCamera FPSCamera;
         public readonly ActionCamera FullBodyActionCamera;
         // CameraTop Could be saved for Twitch stuff. (UAV online)
         public readonly ActionCamera TacticalCamera;
-        public readonly ActionCamera ScopeActionCamera;
-
-
         private readonly PluginCameraHelper cameraHelper;
         private readonly TimerHelper timerHelper;
 
         private Vector3 cameraPosition;
         private Vector3 cameraLookAt;
         private Vector3 cameraLookAtTarget;
+
+
+        private Vector3 cameraLastLookAtVelocity = Vector3.zero;
+        private Vector3 cameraLastVelocity = Vector3.zero;
 
         private Vector3 cameraLookAtVelocity = Vector3.zero;
         private Vector3 cameraVelocity = Vector3.zero;
@@ -49,7 +50,7 @@ namespace MACPlugin
         private bool inGunMode = false;
 
         // 30 checks a second 
-        private static float CONTROLLER_THROTTLE = 1f;//1 / 30f;
+        private static float CONTROLLER_THROTTLE = 1f;
         public ActionCameraDirector(ActionCameraSettings pluginSettings, PluginCameraHelper helper, ref TimerHelper timerHelper)
         {
             this.player = new LivPlayerEntity(helper, ref timerHelper);
@@ -62,9 +63,8 @@ namespace MACPlugin
 
             OverShoulderCamera = new ShoulderActionCamera(pluginSettings);
             FullBodyActionCamera = new FullBodyActionCamera(pluginSettings);
-            FPSCamera = new FPSCamera(pluginSettings, 0.1f);
+            FPSCamera = new FPSCamera(pluginSettings, 0.2f);
             TacticalCamera = new TopDownActionCamera(pluginSettings, 0.6f, 6f);
-            ScopeActionCamera = new ScopeActionCamera(pluginSettings);
 
             SetCamera(OverShoulderCamera);
         }
@@ -81,7 +81,6 @@ namespace MACPlugin
             FPSCamera.SetPluginSettings(settings);
             FullBodyActionCamera.SetPluginSettings(settings);
             TacticalCamera.SetPluginSettings(settings);
-            ScopeActionCamera.SetPluginSettings(settings);
         }
 
         private void SetCamera(ActionCamera camera, bool saveLast = true, float timerOverride = 0)
@@ -121,11 +120,8 @@ namespace MACPlugin
                 * the Left Angle, the controllers should be reverse of where the user is looking at.
                 * If looking completely down, user is most likely interacting with their inventory so show fps or full body
                 * If Looking up they are about to do something, so
-
                 */
                 bool canSwapCamera = (timerHelper.globalTimer > pluginSettings.cameraSwapTimeLock);
-
-                PluginLog.Log("ActionCameraDirector", "" +(player.head.position - player.rightEye));
 
                 Vector3 averageHandPosition = player.handAverage;
                 Vector3 handDirection;
@@ -138,43 +134,59 @@ namespace MACPlugin
                     handDirection = (player.rightHand.position - player.leftHand.position).normalized;
                 }
 
-                float handDistance = Vector3.Distance(player.rightHand.position, player.leftHand.position);
-                bool isWithinTwoHandedUse = handDistance > pluginSettings.cameraGunMinTwoHandedDistance && handDistance < pluginSettings.cameraGunMaxTwoHandedDistance;
-                bool isHeadWithinAimingDistance = Vector3.Distance(averageHandPosition, player.head.position) < pluginSettings.cameraGunHeadDistanceTrigger;
-                bool isAimingTwoHandedForward = Mathf.Rad2Deg * PluginUtility.GetConeAngle(player.head.position, averageHandPosition + handDirection * 4f, player.head.right) <
-                        pluginSettings.cameraGunHeadAlignAngleTrigger;
-                // Player should be stationary, looking down sights. 
-                if (!pluginSettings.disableGunCamera && timerHelper.cameraGunTimer > 2 && Mathf.Abs(player.headRRadialDelta.x) < pluginSettings.controlMovementThreshold / 2 &&
-                    isHeadWithinAimingDistance && isAimingTwoHandedForward)
+                Vector3 headForwardPosition = player.head.InverseTransformPoint(Vector3.up * 0.2f);
+                bool areHandsAboveThreshold = (headForwardPosition.y) > player.leftHand.position.y || (headForwardPosition.y) > player.rightHand.position.y;
+                bool isAimingTwoHandedForward = Mathf.Rad2Deg *
+                    PluginUtility.GetConeAngle(player.head.position, averageHandPosition + handDirection * 4f, player.head.right) <
+                    pluginSettings.cameraGunHeadAlignAngleTrigger * 2f;
+                bool isAimingOneHandedForward = PluginUtility.AverageCosAngleOfControllers(player.rightHand, player.leftHand, player.headForwardDirection) <
+                    pluginSettings.cameraGunHeadAlignAngleTrigger * 1.2f;
+                // player should be looking down sights, two handed or onehanded 
+
+                if (!pluginSettings.disableGunCamera
+                    && Mathf.Abs(player.headRRadialDelta.x) < pluginSettings.controlMovementThreshold
+                    && Mathf.Abs(player.headRRadialDelta.y) < pluginSettings.controlVerticalMovementThreshold
+                    && isAimingTwoHandedForward)
                 {
                     // GUN CAMERA OVERRIDES ALL THE OTHER CAMERAS ALWAYS.
-                    if (isWithinTwoHandedUse)
+                    if (!inGunMode)
                     {
-                        SetCamera(ScopeActionCamera, true, pluginSettings.cameraSwapTimeLock - 0.5f);
+                        SetCamera(FPSCamera, true);
                         inGunMode = true;
                         SnapCamera(currentCamera);
                         timerHelper.ResetCameraGunTimer();
                         PluginLog.Log("ActionCameraDirector", "In Sights");
                     }
                 }
-                else if (PluginUtility.AverageCosAngleOfControllers(player.rightHand, player.leftHand, player.headBelowDirection) < 45 &&
-                     player.headRRadialDelta.y < -pluginSettings.controlMovementThreshold &&
-                     !(pluginSettings.disableFPSCamera && pluginSettings.disableFBTCamera) && canSwapCamera)
+                else if (inGunMode && canSwapCamera)
                 {
-
-                    PluginLog.Log("ActionCameraDirector", "Pointing Down, Moving Head Down: FPS or FullBody");
-                    // Hands are pointing down is while head is moving down (probably inventory)
-                    if (randomizer.Next(0, 100) > 50 && !pluginSettings.disableFBTCamera || pluginSettings.disableFPSCamera)
+                    if (!(isAimingOneHandedForward && isAimingTwoHandedForward))
                     {
-                        SetCamera(FullBodyActionCamera);
+                        SnapCamera(lastCamera, true);
+                        SetCamera(lastCamera);
+
+                        PluginLog.Log("ActionCameraDirector", "Returning Out");
+                        // Should actually just snap to the new positions instead, so
                     }
-                    else
+                    timerHelper.ResetCameraGunTimer();
+                }
+
+                if (PluginUtility.AverageCosAngleOfControllers(player.rightHand, player.leftHand, player.headBelowDirection) < 45 &&
+                    player.headRRadialDelta.y < -pluginSettings.controlVerticalMovementThreshold &&
+                    !pluginSettings.disableFBTCamera && canSwapCamera)
+                {
+                    PluginLog.Log("ActionCameraDirector", "Pointing Down FullBody");
+                    if (randomizer.Next(0, 100) > 50 && !pluginSettings.disableFPSCamera || pluginSettings.disableFBTCamera)
                     {
                         SetCamera(FPSCamera);
                     }
+                    else
+                    {
+                        SetCamera(FullBodyActionCamera);
+                    }
                 }
                 else if (PluginUtility.AverageCosAngleOfControllers(player.rightHand, player.leftHand, player.headAboveDirection) < 45 &&
-                     player.headRRadialDelta.y > pluginSettings.controlMovementThreshold &&
+                     player.headRRadialDelta.y > pluginSettings.controlVerticalMovementThreshold &&
                     !(pluginSettings.disableTopCamera && pluginSettings.disableFBTCamera) && canSwapCamera)
                 {
                     // Hands Are Pointing up-ish, while head is moving up (probably checking on something, wrist, etc.)
@@ -186,8 +198,16 @@ namespace MACPlugin
                     }
                     else
                     {
-                        SetCamera(FullBodyActionCamera);
+                        if (randomizer.Next(0, 100) > 50 && !pluginSettings.disableFPSCamera || pluginSettings.disableFBTCamera)
+                        {
+                            SetCamera(FPSCamera);
+                        }
+                        else
+                        {
+                            SetCamera(FullBodyActionCamera);
+                        }
                     }
+
                 }
                 // Looking Side to Side while pointing forwards. Action is ahead.
                 else if ((PluginUtility.AverageCosAngleOfControllers(player.rightHand, player.leftHand, player.headForwardDirection) < 80) &&
@@ -196,28 +216,31 @@ namespace MACPlugin
                     PluginLog.Log("ActionCameraDirector", "Moving on Side, Shoulder");
                     SetCamera(OverShoulderCamera);
                 }
-                else if (inGunMode && timerHelper.cameraGunTimer > 1f)
-                {
-                    if (!isWithinTwoHandedUse || !(isHeadWithinAimingDistance && isAimingTwoHandedForward))
-                    {
-
-                        SnapCamera(lastCamera);
-                        SetCamera(lastCamera);
-                        // Should actually just snap to the new positions instead, so
-
-                    }
-                    timerHelper.ResetCameraGunTimer();
-                }
+                
                 timerHelper.ResetControllerTimer();
             }
             HandleCameraView();
         }
 
-        public void SnapCamera(ActionCamera camera)
+        public void SnapCamera(ActionCamera camera, bool revert = false)
         {
-            camera.ApplyBehavior(ref cameraPositionTarget, ref cameraLookAtTarget, player, isCameraStatic); 
-            cameraLookAtVelocity = Vector3.zero;
-            cameraVelocity = Vector3.zero;
+
+            PluginLog.Log("ActionCameraDirector", "SNAP ");
+            camera.ApplyBehavior(ref cameraPositionTarget, ref cameraLookAtTarget, player, isCameraStatic);
+
+            if (revert)
+            {
+                cameraLookAtVelocity = cameraLastLookAtVelocity;
+                cameraVelocity = cameraLastVelocity;
+            }
+            else
+            {
+                cameraLastLookAtVelocity = cameraLookAt;
+                cameraLastVelocity = cameraVelocity;
+                cameraLookAtVelocity = Vector3.zero;
+                cameraVelocity = Vector3.zero;
+            }
+
             cameraPosition = cameraPositionTarget;
             cameraLookAt = cameraLookAtTarget;
         }
@@ -228,7 +251,7 @@ namespace MACPlugin
             isCameraStatic = currentCamera.staticCamera;
 
 
-            if (currentAvatar != null )
+            if (currentAvatar != null)
             {
                 if (pluginSettings.removeAvatarInsteadOfHead)
                 {
@@ -241,15 +264,15 @@ namespace MACPlugin
                 timerHelper.ResetRemoveAvatarTimer();
             }
 
-            cameraPosition = Vector3.SmoothDamp(cameraPosition, cameraPositionTarget, ref cameraVelocity, currentCamera.timeBetweenChange);
-            cameraLookAt = Vector3.SmoothDamp(cameraLookAt, cameraLookAtTarget, ref cameraLookAtVelocity, currentCamera.timeBetweenChange);
+            cameraPosition = Vector3.SmoothDamp(cameraPosition, cameraPositionTarget, ref cameraVelocity, currentCamera.GetBetweenTime());
+            cameraLookAt = Vector3.SmoothDamp(cameraLookAt, cameraLookAtTarget, ref cameraLookAtVelocity, currentCamera.GetBetweenTime());
 
             Vector3 lookDirection = cameraLookAt - cameraPosition;
 
             Quaternion rotation = currentCamera.GetRotation(lookDirection, player);
-            
+         
             cameraHelper.UpdateCameraPose(cameraPosition, rotation);
-            cameraHelper.UpdateFov(currentCamera.fov);
+            cameraHelper.UpdateFov(currentCamera.GetFOV());
         }
     }
 }
