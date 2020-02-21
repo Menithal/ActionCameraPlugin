@@ -22,7 +22,7 @@ namespace MACPlugin
     {
         // Do something with this in the future
         protected float fov = 90;
-        private float timeBetweenChange  = 1f;
+        private float timeBetweenChange = 1f;
         public bool removeHead = false;
         public bool staticCamera = false;
 
@@ -126,7 +126,7 @@ namespace MACPlugin
             offset = new Vector3(0, -settings.cameraGunEyeVerticalOffset, 0);
             lookAtOffset.y = offset.y;
             SetBetweenTime(settings.cameraGunSmoothing);
-            
+
         }
         public override Quaternion GetRotation(Vector3 lookDirection, LivPlayerEntity player)
         {
@@ -178,7 +178,7 @@ namespace MACPlugin
             base.SetPluginSettings(settings);
 
             SetBetweenTime(settings.cameraShoulderPositioningTime / (settings.inBetweenCameraEnabled ? 2 : 1));
-            betweenCamera.SetBetweenTime(settings.cameraShoulderPositioningTime / (settings.inBetweenCameraEnabled ? 2 : 1)); 
+            betweenCamera.SetBetweenTime(settings.cameraShoulderPositioningTime / (settings.inBetweenCameraEnabled ? 2 : 1));
             betweenCamera.SetPluginSettings(settings);
             betweenCamera.offset = new Vector3(0, 1f, -settings.cameraShoulderDistance);
             CalculateOffset();
@@ -263,15 +263,15 @@ namespace MACPlugin
             IronSights = new ScopeActionCamera(settings);
             ironSightsEnabled = false;
         }
-      
+
         public override float GetFOV()
         {
-           return Mathf.Lerp(base.GetFOV(), IronSights.GetFOV(), blend);
+            return Mathf.Lerp(base.GetFOV(), IronSights.GetFOV(), blend);
         }
-         
+
         public override float GetBetweenTime()
         {
-            return Mathf.Lerp(base.GetBetweenTime(),IronSights.GetBetweenTime(), blend);
+            return Mathf.Lerp(base.GetBetweenTime(), IronSights.GetBetweenTime(), blend);
         }
         public ActionCamera GetScope()
         {
@@ -312,15 +312,16 @@ namespace MACPlugin
                 ironSightsEnabled = true;
                 // Should have a smooth transition between Iron Sights and non iron sights.
                 IronSights.ApplyBehavior(ref cameraTarget, ref lookAtTarget, player, isCameraAlreadyPlaced);
-                blend += 3*Time.deltaTime;
-            } else
+                blend += 3 * Time.deltaTime;
+            }
+            else
             {
                 ironSightsEnabled = false;
                 cameraTarget = player.head.TransformPoint(offset);
                 lookAtTarget = player.head.TransformPoint(lookAtOffset);
 
 
-                blend -= 3*Time.deltaTime;
+                blend -= 3 * Time.deltaTime;
             }
 
             blend = Mathf.Clamp(blend, 0, 1.0f);
@@ -370,7 +371,7 @@ namespace MACPlugin
         public override void SetPluginSettings(ActionCameraSettings settings)
         {
             pluginSettings = settings;
-            SetBetweenTime( settings.cameraBodyPositioningTime / (settings.inBetweenCameraEnabled ? 2 : 1));
+            SetBetweenTime(settings.cameraBodyPositioningTime / (settings.inBetweenCameraEnabled ? 2 : 1));
             betweenCamera.SetBetweenTime(settings.cameraBodyPositioningTime / (settings.inBetweenCameraEnabled ? 2 : 1));
             betweenCamera.SetPluginSettings(settings);
 
@@ -410,7 +411,7 @@ namespace MACPlugin
             {
                 sbyte settingsReverse = pluginSettings.reverseFBT ? NEGATIVE_SBYTE : POSITIVE_SBYTE;
                 cameraPositionOffsetTarget.x = -currentSide * Mathf.Abs(cameraPositionOffsetTarget.x) * settingsReverse;
-                
+
                 cameraTarget = player.head.TransformPoint(cameraPositionOffsetTarget);
 
                 // Floor and Ceiling Avoidance. Camera should not be too high or too low in ratio to player head position

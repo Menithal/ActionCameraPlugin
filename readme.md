@@ -72,7 +72,7 @@ You can find the settings at
             "cameraPositionTimeLock": 0.8,
             "reverseFBT": false,
             "reverseShoulder": false,
-            "controlMovementThreshold": 4,
+            "controlMovementThreshold": 3,
             "forwardVerticalOffset": 0,
             "forwardHorizontalOffset": 5,
             "forwardDistance": 10,
@@ -118,7 +118,8 @@ You can find the settings at
 - `cameraPositionTimeLock`:  Time in seconds, before changing camera positioning when in action mode
 - `reverseFBT`: If true, inverses the side for full body camera. defaults false.
 - `reverseShoulder`: If true, inverses the side of the shoulder camera. defaults false.
-- `controlMovementThreshold`:  Numeric value that defines that relative radial velocity of the controllers / hmd before a gesture is accepted. 4.0 is default.
+- `controlMovementThreshold`:  Numeric value that defines that relative radial velocity of the controllers / hmd before a gesture is accepted. 2.0 is default.
+- `controlMovementVerticalThreshold`:  Numeric value that defines that relative radial velocity of the controllers / hmd before a gesture is accepted for up and down movements.. 4.0 is default.
 - `forwardVerticalOffset`: Defaults to 0, Adds vertical offset to gesture detection points. Increase value if you tend to have your pointing higher or lower than normal when looking at first person view.
 - `forwardHorizontalOffset`:  Offset for gesture detection points from center of your view.
 - `forwardDistance`:  Forward distance from where the radial velocity is measured from     
@@ -132,22 +133,20 @@ You can find the settings at
 - `cameraShoulderDistance`: Distance from the avatar the Shoulder Camera should be at
 - `cameraShoulderAngle`: The Angle (in Degrees) the camera will be behind the avatar/
 - `cameraBodySensitivity`: How fast to detect a turn to swap sides. Smaller the value, the more sensitive.
-
+- `cameraBodyVerticalTargetOffset`: Adjust Body camera position up and down.
 - `cameraBodyPositioningTime`: Time in seconds how long the camera takes to move to the new side when showing the front
 - `cameraBodyLookAtForward`: The Look at target where the camera looks when showing the front in the relative Z.
 - `cameraBodyDistance`:  Distance from the avatar the Body Camera should be at
 - `cameraBodyAngle`: The Angle (in Degrees) the camera will be infront of the avatar
 - `cameraBodySensitivity`: How fast to detect a turn to swap sides. Smaller the value, the more sensitive.
 - `disableGunCamera`: Disable Gun / Scope Camera
-- `cameraGunFov`: Degrees the camera will goto. 60 is default, CHANGE ONLY IF GAME SUPPORTS THIS ON RUN TIME. Suggested 50-90
-- `cameraGunZoom`: Amount of distance in (0.00-1.00) % between the hands and the dominant eye.
+- `cameraGunFov`: Degrees the camera will goto. 45 is default, CHANGE ONLY IF GAME SUPPORTS THIS ON RUN TIME. Suggested 40-90
 - `cameraGunHeadAlignAngleTrigger`: the amount of degrees your head must be aligned with the path your weapons to count as looking down the sights. by default it is 25 degrees
 - `cameraGunHeadDistanceTrigger`: Distance at which the gun camera starts to be triggered.
 - `cameraGunEyeVerticalOffset`:  the amount of vertical offset from your dominant eye to down the ironsight raycast.
 - `cameraGunMaxTwoHandedDistance`: Max Distance between hands when still counting as using the gun camera.
 - `cameraGunMinTwoHandedDistance`: Minimum Distance between hands when still counting as using the gun camera.
-- `cameraGunPositioningTime`: Minimum Distance between hands when still counting as using the gun camera.
-
+- `cameraGunSmoothing`: Time it takes to get to new point
 - `rightHandDominant` Sets either your right hand dominant or left hand dominant. This effects which eye and hand is used to measure two handness. If right handed, the right hand must be close to the right eye, if left handed, vice versa. by default assumes righthandness
 
 By default the setting are configured for CQC Pistol Combat (ala pistolwhip) but playing aroudn with the values allows you to create entries for other games, such as Beat Saber or Audica.

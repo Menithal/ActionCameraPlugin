@@ -64,11 +64,11 @@ public class ActionCameraSettings : IPluginSettings
     // TODO: if Enabled, average head forward with Hand Forwards (dominance)
     public bool averageHandsWithHead = false;
     public bool useDominantHand = false;
-    public bool rightHandDominant = true; 
+    public bool rightHandDominant = true;
     // Uses right hand info to determine additional pointt
 
     public float cameraGunFov = 45f;
-    
+
     public float cameraGunHeadAlignAngleTrigger = 15;
     public float cameraGunHeadDistanceTrigger = 0.3f;
     public float cameraGunEyeVerticalOffset = 0.15f;
@@ -148,12 +148,15 @@ namespace MACPlugin
             PluginLog.Log("ActionCameraPlugin", "OnSettingsDeserialized");
             PluginLog.Log("ActionCameraPlugin", "generalCameraSwapClamp " + _settings.cameraSwapTimeLock);
             PluginLog.Log("ActionCameraPlugin", "actionCameraSwapClamp " + _settings.cameraPositionTimeLock);
+            PluginLog.Log("ActionCameraPlugin", "controlMovementThreshold " + _settings.controlMovementThreshold);
+            PluginLog.Log("ActionCameraPlugin", "controlVerticalMovementThreshold " + _settings.controlVerticalMovementThreshold);
 
             PluginLog.Log("ActionCameraPlugin", "cameraVerticalLock " + _settings.cameraVerticalLock);
             PluginLog.Log("ActionCameraPlugin", "cameraShoulderDistance " + _settings.cameraShoulderDistance);
             PluginLog.Log("ActionCameraPlugin", "cameraShoulderAngle " + _settings.cameraShoulderAngle);
             PluginLog.Log("ActionCameraPlugin", "cameraShoulderPositioningTime " + _settings.cameraShoulderPositioningTime);
 
+            PluginLog.Log("ActionCameraPlugin", "cameraBodyVerticalTargetOffset " + _settings.cameraBodyPositioningTime);
             PluginLog.Log("ActionCameraPlugin", "cameraBodyPositioningTime " + _settings.cameraBodyPositioningTime);
             PluginLog.Log("ActionCameraPlugin", "cameraBodyAngle " + _settings.cameraBodyAngle);
             PluginLog.Log("ActionCameraPlugin", "cameraBodyDistance " + _settings.cameraBodyDistance);
@@ -176,19 +179,14 @@ namespace MACPlugin
             PluginLog.Log("ActionCameraPlugin", "rightHandDominant " + _settings.rightHandDominant);
             // Need to make sure everything else is updated
 
-
-
             PluginLog.Log("ActionCameraPlugin", "disableGunCamera " + _settings.disableGunCamera);
 
-
-
-        PluginLog.Log("ActionCameraPlugin", "cameraGunFov " + _settings.cameraGunFov);
+            PluginLog.Log("ActionCameraPlugin", "cameraGunFov " + _settings.cameraGunFov);
             PluginLog.Log("ActionCameraPlugin", "cameraGunHeadAlignAngleTrigger " + _settings.cameraGunHeadAlignAngleTrigger);
             PluginLog.Log("ActionCameraPlugin", "cameraGunHeadDistanceTrigger " + _settings.cameraGunHeadDistanceTrigger);
             PluginLog.Log("ActionCameraPlugin", "cameraGunEyeVerticalOffset " + _settings.cameraGunEyeVerticalOffset);
             PluginLog.Log("ActionCameraPlugin", "cameraGunMaxTwoHandedDistance " + _settings.cameraGunMaxTwoHandedDistance);
             PluginLog.Log("ActionCameraPlugin", "cameraGunMinTwoHandedDistance " + _settings.cameraGunMinTwoHandedDistance);
-            PluginLog.Log("ActionCameraPlugin", "cameraGunSmoothing " + _settings.cameraGunSmoothing);
             PluginLog.Log("ActionCameraPlugin", "cameraGunSmoothing " + _settings.cameraGunSmoothing);
 
 
