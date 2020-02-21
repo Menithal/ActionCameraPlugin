@@ -33,7 +33,7 @@ public class ActionCameraSettings : IPluginSettings
     public bool reverseFBT = false;
     public bool reverseShoulder = false;
     public float controlMovementThreshold = 2; // Meters per framea
-    public float controlVerticalMovementThreshold = 4; // Meters per framea
+    public float controlVerticalMovementThreshold = 3; // Meters per framea
     // Users tend to have headset a bit higher, so when they are looking down sights they are not 
     // fully looking up. This offsets that
     public float forwardVerticalOffset = 0;
@@ -48,15 +48,13 @@ public class ActionCameraSettings : IPluginSettings
     public bool inBetweenCameraEnabled = true;
     public float cameraDefaultFov = 80f;
 
-    public float cameraFPSChance = 90;
-    public float cameraFPSHeadAlignAngleTrigger = 30;
-
     public bool cameraVerticalLock = true;
     public float cameraShoulderPositioningTime = 2f;
     public float cameraShoulderDistance = 1.8f;
     public float cameraShoulderAngle = 35;
     public float cameraShoulderSensitivity = 2f;
 
+    public float cameraBodyVerticalTargetOffset = 0f;
     public float cameraBodyPositioningTime = 2f;
     public float cameraBodyLookAtForward = 0.1f;
     public float cameraBodyDistance = 1.4f;
@@ -69,16 +67,14 @@ public class ActionCameraSettings : IPluginSettings
     public bool rightHandDominant = true; 
     // Uses right hand info to determine additional pointt
 
-    public float cameraGunFov = 50f;
-    public float cameraGunZoom = 0.0125f;
+    public float cameraGunFov = 45f;
     
     public float cameraGunHeadAlignAngleTrigger = 15;
     public float cameraGunHeadDistanceTrigger = 0.3f;
-    public float cameraGunEyeVerticalOffset = 0.00f;
+    public float cameraGunEyeVerticalOffset = 0.15f;
     public float cameraGunMaxTwoHandedDistance = 0.6f;
     public float cameraGunMinTwoHandedDistance = 0.15f;
     public float cameraGunSmoothing = 0.3f;
-    public bool cameraGunInFPSOnly = true;
 
 }
 
@@ -183,11 +179,17 @@ namespace MACPlugin
 
 
             PluginLog.Log("ActionCameraPlugin", "disableGunCamera " + _settings.disableGunCamera);
-            PluginLog.Log("ActionCameraPlugin", "cameraGunFov " + _settings.cameraGunFov);
-            PluginLog.Log("ActionCameraPlugin", "cameraGunZoom " + _settings.cameraGunZoom);
+
+
+
+        PluginLog.Log("ActionCameraPlugin", "cameraGunFov " + _settings.cameraGunFov);
+            PluginLog.Log("ActionCameraPlugin", "cameraGunHeadAlignAngleTrigger " + _settings.cameraGunHeadAlignAngleTrigger);
             PluginLog.Log("ActionCameraPlugin", "cameraGunHeadDistanceTrigger " + _settings.cameraGunHeadDistanceTrigger);
-            PluginLog.Log("ActionCameraPlugin", "cameraMaxTwoHandedDistance " + _settings.cameraGunMaxTwoHandedDistance);
-            PluginLog.Log("ActionCameraPlugin", "cameraMinTwoHandedDistance " + _settings.cameraGunMinTwoHandedDistance);
+            PluginLog.Log("ActionCameraPlugin", "cameraGunEyeVerticalOffset " + _settings.cameraGunEyeVerticalOffset);
+            PluginLog.Log("ActionCameraPlugin", "cameraGunMaxTwoHandedDistance " + _settings.cameraGunMaxTwoHandedDistance);
+            PluginLog.Log("ActionCameraPlugin", "cameraGunMinTwoHandedDistance " + _settings.cameraGunMinTwoHandedDistance);
+            PluginLog.Log("ActionCameraPlugin", "cameraGunSmoothing " + _settings.cameraGunSmoothing);
+            PluginLog.Log("ActionCameraPlugin", "cameraGunSmoothing " + _settings.cameraGunSmoothing);
 
 
 

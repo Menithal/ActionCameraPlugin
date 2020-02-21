@@ -107,7 +107,7 @@ namespace MACPlugin
     }
     public class ScopeActionCamera : ActionCamera
     {
-        public Vector3 lookAtOffset = new Vector3(0f, -2f, 5f);
+        public Vector3 lookAtOffset = new Vector3(0f, 0f, 0f);
 
         Transform dominantHand;
         Transform nonDominantHand;
@@ -130,7 +130,7 @@ namespace MACPlugin
         }
         public override Quaternion GetRotation(Vector3 lookDirection, LivPlayerEntity player)
         {
-            return Quaternion.LookRotation(lookAtDirection, Vector3.up);
+            return Quaternion.LookRotation(lookAtDirection, player.head.up);
         }
         public override void ApplyBehavior(ref Vector3 cameraTarget, ref Vector3 lookAtTarget, LivPlayerEntity player, bool isCameraAlreadyPlaced)
         {
@@ -139,19 +139,19 @@ namespace MACPlugin
             {
                 dominantHand = player.rightHand;
                 nonDominantHand = player.leftHand;
-                dominantEye = player.rightEye + player.head.rotation * offset;
+                dominantEye = player.rightEye;
             }
             else
             {
                 dominantHand = player.leftHand;
                 nonDominantHand = player.rightHand;
-                dominantEye = player.leftEye + player.head.rotation * offset;
+                dominantEye = player.leftEye;
             }
 
-            lookAtDirection = (nonDominantHand.position - dominantHand.position);
+            lookAtDirection = (nonDominantHand.position - new Vector3(0, pluginSettings.cameraGunEyeVerticalOffset, 0) - dominantHand.position);
             // We will override the lookAtTarget and use GetRotation to define the actual rotation.
             lookAtTarget = Vector3.zero;
-            cameraTarget = dominantEye;// Vector3.Lerp(dominantEye, lookAtTarget, pluginSettings.cameraGunZoom);
+            cameraTarget = dominantEye;
         }
     }
 
@@ -257,26 +257,21 @@ namespace MACPlugin
     {
         ActionCamera IronSights;
         bool ironSightsEnabled;
-        float time = 0;
+        float blend = 0;
         public FPSCamera(ActionCameraSettings settings, float timeBetweenChange) : base(settings, timeBetweenChange, Vector3.zero, true, false)
         {
             IronSights = new ScopeActionCamera(settings);
             ironSightsEnabled = false;
         }
-        /*
+      
         public override float GetFOV()
         {
-           // Unfortunately too many issues here :< 
-           return Mathf.Lerp(base.GetFOV(), IronSights.GetFOV(), time);
+           return Mathf.Lerp(base.GetFOV(), IronSights.GetFOV(), blend);
         }
-         */
+         
         public override float GetBetweenTime()
         {
-            if (ironSightsEnabled)
-            {
-                return IronSights.GetBetweenTime();
-            }
-            return base.GetBetweenTime();
+            return Mathf.Lerp(base.GetBetweenTime(),IronSights.GetBetweenTime(), blend);
         }
         public ActionCamera GetScope()
         {
@@ -287,7 +282,6 @@ namespace MACPlugin
             base.SetPluginSettings(settings);
             IronSights.SetPluginSettings(settings);
         }
-        // TODO: Contineu from here tommorrow
         /*
          * 
          * Logic for Scope should only occur when 
@@ -318,7 +312,7 @@ namespace MACPlugin
                 ironSightsEnabled = true;
                 // Should have a smooth transition between Iron Sights and non iron sights.
                 IronSights.ApplyBehavior(ref cameraTarget, ref lookAtTarget, player, isCameraAlreadyPlaced);
-                time += 3*Time.deltaTime;
+                blend += 3*Time.deltaTime;
             } else
             {
                 ironSightsEnabled = false;
@@ -326,15 +320,15 @@ namespace MACPlugin
                 lookAtTarget = player.head.TransformPoint(lookAtOffset);
 
 
-                time -= 3*Time.deltaTime;
+                blend -= 3*Time.deltaTime;
             }
 
-            time = Mathf.Clamp(time, 0, 1.0f);
+            blend = Mathf.Clamp(blend, 0, 1.0f);
         }
 
         public override Quaternion GetRotation(Vector3 lookDirection, LivPlayerEntity player)
         {
-            return Quaternion.Slerp(base.GetRotation(lookDirection, player), IronSights.GetRotation(lookDirection, player), time);
+            return Quaternion.Slerp(base.GetRotation(lookDirection, player), IronSights.GetRotation(lookDirection, player), blend);
         }
     }
 
@@ -370,6 +364,7 @@ namespace MACPlugin
             //  calculatedOffset.z = Mathf.Sqrt(Mathf.Abs(Mathf.Pow(offset.z, 2f) - Mathf.Pow(offset.x, 2f)));
             PluginLog.Log("FullBodyActionCamera", "Calculated Position " + calculatedOffset);
             offset = calculatedOffset;
+            lookAtOffset.y = pluginSettings.cameraBodyVerticalTargetOffset;
             lookAtOffset.z = pluginSettings.cameraBodyLookAtForward;
         }
         public override void SetPluginSettings(ActionCameraSettings settings)
@@ -415,6 +410,7 @@ namespace MACPlugin
             {
                 sbyte settingsReverse = pluginSettings.reverseFBT ? NEGATIVE_SBYTE : POSITIVE_SBYTE;
                 cameraPositionOffsetTarget.x = -currentSide * Mathf.Abs(cameraPositionOffsetTarget.x) * settingsReverse;
+                
                 cameraTarget = player.head.TransformPoint(cameraPositionOffsetTarget);
 
                 // Floor and Ceiling Avoidance. Camera should not be too high or too low in ratio to player head position
@@ -427,9 +423,7 @@ namespace MACPlugin
                 {
                     lookAtTarget.y = (player.waist.position.y + player.head.position.y) / 2;
                 }
-
             }
-
         }
     }
 
