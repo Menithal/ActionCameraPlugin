@@ -314,7 +314,7 @@ namespace MACPlugin
                 ironSightsEnabled = true;
                 // Should have a smooth transition between Iron Sights and non iron sights.
                 sightsCamera.ApplyBehavior(ref cameraTarget, ref lookAtTarget, player, isCameraAlreadyPlaced);
-                blend += 1/pluginSettings.cameraGunSmoothing * Time.deltaTime;
+                blend += (pluginSettings.cameraGunSmoothing / 2) * Time.deltaTime;
             }
             else
             {
@@ -323,7 +323,7 @@ namespace MACPlugin
                 lookAtTarget = player.head.TransformPoint(lookAtOffset);
 
 
-                blend -= 1 / pluginSettings.cameraGunSmoothing * Time.deltaTime;
+                blend -= 1 / (pluginSettings.cameraGunSmoothing/2) * Time.deltaTime;
             }
 
             blend = Mathf.Clamp(blend, 0, 1.0f);
