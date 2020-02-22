@@ -47,15 +47,16 @@ public class ActionCameraSettings : IPluginSettings
     public bool disableGunCamera = false;
     public bool inBetweenCameraEnabled = true;
     public float cameraDefaultFov = 80f;
+    public bool FPSCameraOverride = false;
 
     public bool cameraVerticalLock = true;
     public float cameraShoulderPositioningTime = 2f;
     public float cameraShoulderDistance = 1.8f;
-    public float cameraShoulderAngle = 35;
+    public float cameraShoulderAngle = 20;
     public float cameraShoulderSensitivity = 2f;
 
-    public float cameraBodyVerticalTargetOffset = 0f;
-    public float cameraBodyPositioningTime = 2f;
+    public float cameraBodyVerticalTargetOffset = 0.5f;
+    public float cameraBodyPositioningTime = 1.8f;
     public float cameraBodyLookAtForward = 0.1f;
     public float cameraBodyDistance = 1.4f;
     public float cameraBodyAngle = 55;
@@ -67,14 +68,15 @@ public class ActionCameraSettings : IPluginSettings
     public bool rightHandDominant = true;
     // Uses right hand info to determine additional pointt
 
-    public float cameraGunFov = 45f;
+    public float cameraGunFov = 80f;
+    public bool cameraFovLerp = false;
 
     public float cameraGunHeadAlignAngleTrigger = 15;
     public float cameraGunHeadDistanceTrigger = 0.3f;
     public float cameraGunEyeVerticalOffset = 0.15f;
     public float cameraGunMaxTwoHandedDistance = 0.6f;
     public float cameraGunMinTwoHandedDistance = 0.15f;
-    public float cameraGunSmoothing = 0.3f;
+    public float cameraGunSmoothing = 0.2f;
 
 }
 

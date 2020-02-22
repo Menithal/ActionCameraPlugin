@@ -125,7 +125,6 @@ namespace MACPlugin
         public float removeAvatarTimer { get; private set; }
         public float cameraGunTimer { get; private set; }
 
-
         public TimerHelper()
         {
             globalTimer = 0;

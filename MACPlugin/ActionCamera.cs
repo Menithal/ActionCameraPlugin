@@ -126,8 +126,8 @@ namespace MACPlugin
             offset = new Vector3(0, -settings.cameraGunEyeVerticalOffset, 0);
             lookAtOffset.y = offset.y;
             SetBetweenTime(settings.cameraGunSmoothing);
-
         }
+
         public override Quaternion GetRotation(Vector3 lookDirection, LivPlayerEntity player)
         {
             return Quaternion.LookRotation(lookAtDirection, player.head.up);
@@ -255,32 +255,34 @@ namespace MACPlugin
 
     public class FPSCamera : SimpleActionCamera
     {
-        ActionCamera IronSights;
+        readonly ActionCamera sightsCamera;
         bool ironSightsEnabled;
         float blend = 0;
         public FPSCamera(ActionCameraSettings settings, float timeBetweenChange) : base(settings, timeBetweenChange, Vector3.zero, true, false)
         {
-            IronSights = new ScopeActionCamera(settings);
+            sightsCamera = new ScopeActionCamera(settings);
             ironSightsEnabled = false;
         }
 
         public override float GetFOV()
         {
-            return Mathf.Lerp(base.GetFOV(), IronSights.GetFOV(), blend);
+            if (pluginSettings.cameraFovLerp) return Mathf.Lerp(base.GetFOV(), sightsCamera.GetFOV(), blend);
+
+            return ironSightsEnabled ? sightsCamera.GetFOV() : base.GetFOV();
         }
 
         public override float GetBetweenTime()
         {
-            return Mathf.Lerp(base.GetBetweenTime(), IronSights.GetBetweenTime(), blend);
+            return Mathf.Lerp(base.GetBetweenTime(), sightsCamera.GetBetweenTime(), blend);
         }
         public ActionCamera GetScope()
         {
-            return IronSights;
+            return sightsCamera;
         }
         public override void SetPluginSettings(ActionCameraSettings settings)
         {
             base.SetPluginSettings(settings);
-            IronSights.SetPluginSettings(settings);
+            sightsCamera.SetPluginSettings(settings);
         }
         /*
          * 
@@ -311,8 +313,8 @@ namespace MACPlugin
             {
                 ironSightsEnabled = true;
                 // Should have a smooth transition between Iron Sights and non iron sights.
-                IronSights.ApplyBehavior(ref cameraTarget, ref lookAtTarget, player, isCameraAlreadyPlaced);
-                blend += 3 * Time.deltaTime;
+                sightsCamera.ApplyBehavior(ref cameraTarget, ref lookAtTarget, player, isCameraAlreadyPlaced);
+                blend += 1/pluginSettings.cameraGunSmoothing * Time.deltaTime;
             }
             else
             {
@@ -321,7 +323,7 @@ namespace MACPlugin
                 lookAtTarget = player.head.TransformPoint(lookAtOffset);
 
 
-                blend -= 3 * Time.deltaTime;
+                blend -= 1 / pluginSettings.cameraGunSmoothing * Time.deltaTime;
             }
 
             blend = Mathf.Clamp(blend, 0, 1.0f);
@@ -329,7 +331,7 @@ namespace MACPlugin
 
         public override Quaternion GetRotation(Vector3 lookDirection, LivPlayerEntity player)
         {
-            return Quaternion.Slerp(base.GetRotation(lookDirection, player), IronSights.GetRotation(lookDirection, player), blend);
+            return Quaternion.Slerp(base.GetRotation(lookDirection, player), sightsCamera.GetRotation(lookDirection, player), blend);
         }
     }
 
