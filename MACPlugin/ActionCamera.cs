@@ -82,20 +82,20 @@ namespace MACPlugin
 
     public class SimpleActionCamera : ActionCamera
     {
-        public Vector3 lookAtOffset = new Vector3(0f, 0, 10f);
+        public Vector3 lookAtOffset = new Vector3(0f, 0, 0.25f);
         public SimpleActionCamera(ActionCameraSettings settings, float timeBetweenChange, Vector3 offset, bool removeHead = false, bool staticCamera = false) :
             base(settings, timeBetweenChange, offset, removeHead, staticCamera)
         {
         }
 
-        // Next to FPS Camera, simplest Camera
+        // Next to FPS Camera, simplest Camerda
         public override void ApplyBehavior(ref Vector3 cameraTarget, ref Vector3 lookAtTarget, LivPlayerEntity player, bool isCameraAlreadyPlaced)
         {
             cameraTarget = player.head.TransformPoint(offset);
             lookAtTarget = player.head.TransformPoint(lookAtOffset);
-
+            PluginLog.Log("SIMPLE CAMERA", ""+lookAtOffset);
             // average between Head and Waist to avoid head from flipping the camera around so much.s
-            lookAtTarget = (lookAtTarget + player.waist.position) / 2;
+            lookAtTarget = (lookAtTarget + player.waist.TransformPoint(lookAtOffset)) / 2;
 
             if (pluginSettings.cameraVerticalLock)
             {
@@ -167,7 +167,7 @@ namespace MACPlugin
         {
             Vector3 neutralOffset = offset;
             neutralOffset.x = 0;
-            neutralOffset.y += 1f;
+            neutralOffset.y = -settings.cameraBodyVerticalTargetOffset;
             neutralOffset.z = -settings.cameraShoulderDistance;
             betweenCamera = new SimpleActionCamera(settings, settings.cameraShoulderPositioningTime / 2, neutralOffset);
 
@@ -180,7 +180,7 @@ namespace MACPlugin
             SetBetweenTime(settings.cameraShoulderPositioningTime / (settings.inBetweenCameraEnabled ? 2 : 1));
             betweenCamera.SetBetweenTime(settings.cameraShoulderPositioningTime / (settings.inBetweenCameraEnabled ? 2 : 1));
             betweenCamera.SetPluginSettings(settings);
-            betweenCamera.offset = new Vector3(0, 1f, -settings.cameraShoulderDistance);
+            betweenCamera.offset = new Vector3(0, -settings.cameraBodyVerticalTargetOffset, -settings.cameraShoulderDistance);
             CalculateOffset();
 
         }
@@ -201,7 +201,6 @@ namespace MACPlugin
         }
         public override void ApplyBehavior(ref Vector3 cameraTarget, ref Vector3 lookAtTarget, LivPlayerEntity player, bool isCameraAlreadyPlaced)
         {
-            Vector3 cameraOffsetTarget = offset;
 
             /**
              * Logic for betweenCamera
@@ -234,6 +233,7 @@ namespace MACPlugin
             }
             else
             {
+                Vector3 cameraOffsetTarget = offset;
                 sbyte settingsReverse = pluginSettings.reverseShoulder ? NEGATIVE_SBYTE : POSITIVE_SBYTE;
 
                 cameraOffsetTarget.x = -currentSide * Mathf.Abs(cameraOffsetTarget.x) * settingsReverse;
@@ -379,8 +379,15 @@ namespace MACPlugin
 
             betweenCamera.offset = new Vector3(0, 1f, settings.cameraBodyDistance);
 
-
             CalculateOffset();
+        }
+        public override float GetBetweenTime()
+        {
+            if (swappingSides)
+            {
+                return betweenCamera.GetBetweenTime();
+            }
+            return base.GetBetweenTime();
         }
         public override void ApplyBehavior(ref Vector3 cameraTarget, ref Vector3 lookAtTarget, LivPlayerEntity player, bool isCameraAlreadyPlaced)
         {

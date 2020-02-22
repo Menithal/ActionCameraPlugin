@@ -33,7 +33,7 @@ public class ActionCameraSettings : IPluginSettings
     public bool reverseFBT = false;
     public bool reverseShoulder = false;
     public float controlMovementThreshold = 2; // Meters per framea
-    public float controlVerticalMovementThreshold = 3; // Meters per framea
+    public float controlVerticalMovementThreshold = 2; // Meters per framea
     // Users tend to have headset a bit higher, so when they are looking down sights they are not 
     // fully looking up. This offsets that
     public float forwardVerticalOffset = 0;
@@ -95,7 +95,7 @@ namespace MACPlugin
 #endif
         public string ID => "ActionCamera";
         public string author => "MA 'Menithal' Lahtinen";
-        public string version => "0.8.0a";
+        public string version => "0.9.0a";
 
         public event EventHandler ApplySettings;
         private ActionCameraDirector cameraDirector;
