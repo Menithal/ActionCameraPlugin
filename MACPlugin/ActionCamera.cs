@@ -328,10 +328,10 @@ namespace MACPlugin
 
             blend = Mathf.Clamp(blend, 0, 1.0f);
         }
-
+    
         public override Quaternion GetRotation(Vector3 lookDirection, LivPlayerEntity player)
         {
-            return Quaternion.Slerp(base.GetRotation(lookDirection, player), sightsCamera.GetRotation(lookDirection, player), blend);
+            return Quaternion.Slerp(Quaternion.LookRotation(player.head.forward, player.head.up), sightsCamera.GetRotation(lookDirection, player), blend);
         }
     }
 
