@@ -14,16 +14,31 @@
 * 
 **/
 using LIV.Avatar;
+using System.Runtime.InteropServices;
 using UnityEngine;
+using Valve.VR;
+
+
+
+#if !SIMPLIFIED
 namespace MACPlugin
+#else
+namespace SimpleMacPlugin
+#endif
 {
     public class ActionCameraDirector
     {
-        public readonly ActionCamera OverShoulderCamera;
         public readonly FPSCamera FPSCamera;
+        public readonly ActionCamera OverShoulderCamera;
+#if !SIMPLIFIED
         public readonly ActionCamera FullBodyActionCamera;
         // CameraTop Could be saved for Twitch stuff. (UAV online)
         public readonly ActionCamera TacticalCamera;
+     
+// private SteamVR_Action_Boolean triggerAction = SteamVR_Input.GetAction<SteamVR_Action_Boolean>("default", "ResetAction");
+  //      private SteamVR_Action_Vector1 triggerSensitivityActivity = SteamVR_Input.GetAction<SteamVR_Action_Boolean>("default", "GunTriggerAction");
+      
+#endif
         private readonly PluginCameraHelper cameraHelper;
         private readonly TimerHelper timerHelper;
 
@@ -47,10 +62,17 @@ namespace MACPlugin
         private readonly LivPlayerEntity player;
         private readonly System.Random randomizer;
         private bool isCameraStatic = false;
-        private bool inGunMode = false;
 
         // 30 checks a second 
+        private bool inGunMode = false;
+#if SIMPLIFIED
+
+        private static float CONTROLLER_THROTTLE = 0.5f;
+#else
         private static float CONTROLLER_THROTTLE = 1f;
+#endif
+
+        private ulong TriggerHandle = 0;
         public ActionCameraDirector(ActionCameraSettings pluginSettings, PluginCameraHelper helper, ref TimerHelper timerHelper)
         {
             this.player = new LivPlayerEntity(helper, ref timerHelper);
@@ -60,11 +82,24 @@ namespace MACPlugin
 
             randomizer = new System.Random();
             player.SetOffsets(pluginSettings.forwardHorizontalOffset, pluginSettings.forwardVerticalOffset, pluginSettings.forwardDistance);
-
-            OverShoulderCamera = new ShoulderActionCamera(pluginSettings);
-            FullBodyActionCamera = new FullBodyActionCamera(pluginSettings);
+            
             FPSCamera = new FPSCamera(pluginSettings, 0.2f);
+            OverShoulderCamera = new ShoulderActionCamera(pluginSettings);
+
+
+            
+
+            EVRInputError err = OpenVR.Input.GetActionHandle("/actions/default/in/use", ref TriggerHandle);
+            if (err != EVRInputError.None)
+            {
+                TriggerHandle = 0;
+                PluginLog.Error("ActionCameraDirector", "Could not setup handle listener");
+            }
+
+#if !SIMPLIFIED
+            FullBodyActionCamera = new FullBodyActionCamera(pluginSettings);
             TacticalCamera = new TopDownActionCamera(pluginSettings, 0.6f, 6f);
+#endif
 
             SetCamera(OverShoulderCamera);
         }
@@ -77,10 +112,14 @@ namespace MACPlugin
             pluginSettings = settings;
             player.SetOffsets(settings.forwardHorizontalOffset, settings.forwardVerticalOffset, settings.forwardDistance);
 
-            OverShoulderCamera.SetPluginSettings(settings);
             FPSCamera.SetPluginSettings(settings);
+
+            OverShoulderCamera.SetPluginSettings(settings);
+#if !SIMPLIFIED
             FullBodyActionCamera.SetPluginSettings(settings);
             TacticalCamera.SetPluginSettings(settings);
+#endif
+
         }
 
         private void SetCamera(ActionCamera camera, bool saveLast = true, float timerOverride = 0)
@@ -99,7 +138,9 @@ namespace MACPlugin
                 {
                     timerHelper.SetGlobalTimer(timerOverride);
                 }
+#if !SIMPLIFIED
                 inGunMode = false;
+#endif
             }
         }
         public void SelectCamera()
@@ -125,30 +166,55 @@ namespace MACPlugin
 
                 Vector3 averageHandPosition = player.handAverage;
                 Vector3 handDirection;
-                if (pluginSettings.rightHandDominant)
+
+#if SIMPLIFIED
+                ulong leftHandle = 0;
+                OpenVR.Input.GetInputSourceHandle("/user/hand/left", ref leftHandle);
+                ulong rightHandle = 0;
+                OpenVR.Input.GetInputSourceHandle("/user/hand/right", ref rightHandle);
+
+                var size = (uint)Marshal.SizeOf((typeof(InputDigitalActionData_t)));
+                InputDigitalActionData_t data= new InputDigitalActionData_t();
+
+                EVRInputError error;
+
+                bool trigger = false;
+                if (pluginSettings.rightHandDominant) 
                 {
                     handDirection = (player.leftHand.position - player.rightHand.position).normalized;
+                    error = OpenVR.Input.GetDigitalActionData(TriggerHandle, ref data, size, leftHandle);
                 }
                 else
                 {
                     handDirection = (player.rightHand.position - player.leftHand.position).normalized;
+                    error = OpenVR.Input.GetDigitalActionData(TriggerHandle, ref data, size, rightHandle);
                 }
 
+                if (error == EVRInputError.None)
+                {
+                    trigger = data.bState; 
+                }
+#endif
+
                 Vector3 headForwardPosition = player.head.TransformPoint(Vector3.up * 0.05f);
+                Vector3 headBackPosition = player.head.TransformPoint(Vector3.back * 0.1f);
                 bool areHandsAboveThreshold = (headForwardPosition.y) > player.leftHand.position.y || (headForwardPosition.y) > player.rightHand.position.y;
+
                 bool isAimingTwoHandedForward = Mathf.Rad2Deg *
-                    PluginUtility.GetConeAngle(player.head.position, averageHandPosition + handDirection * 4f, player.head.right) <
-                    pluginSettings.cameraGunHeadAlignAngleTrigger * 1.2f;
+                    PluginUtility.GetConeAngle(headBackPosition, averageHandPosition + handDirection * 2f, player.head.right) <
+                        pluginSettings.cameraGunHeadAlignAngleTrigger * 1.4f;
 
                 // player is looking down sights.
+
                 if (!pluginSettings.disableGunCamera && areHandsAboveThreshold
                     && Mathf.Abs(player.headRRadialDelta.x) < pluginSettings.controlMovementThreshold
                     && Mathf.Abs(player.headRRadialDelta.y) < pluginSettings.controlVerticalMovementThreshold 
                     && isAimingTwoHandedForward && (canSwapCamera || pluginSettings.FPSCameraOverride) && !inGunMode)
+
                 {
-                    SetCamera(FPSCamera, true);
                     inGunMode = true;
-                    SnapCamera(currentCamera);
+
+                    SetCamera(FPSCamera, true);
                     timerHelper.ResetCameraGunTimer();
                     PluginLog.Log("ActionCameraDirector", "In FPS Override (two handed forward)");
                 }
@@ -162,14 +228,18 @@ namespace MACPlugin
                         // Should actually just snap to the new positions instead, so
                     }
                     timerHelper.ResetCameraGunTimer();
+                }
 
-                } else if (PluginUtility.AverageCosAngleOfControllers(player.rightHand, player.leftHand, player.headBelowDirection) < 45 &&
+                else if (PluginUtility.AverageCosAngleOfControllers(player.rightHand, player.leftHand, player.headBelowDirection) < 45 &&
                     player.headRRadialDelta.y < -pluginSettings.controlVerticalMovementThreshold &&
                     !pluginSettings.disableFBTCamera && canSwapCamera)
                 {
                     PluginLog.Log("ActionCameraDirector", "Pointing Down FullBody");
-
+#if !SIMPLIFIED
                     SetCamera(FullBodyActionCamera);
+#else
+                    SetCamera(FPSCamera);
+#endif
                 }
                 else if (PluginUtility.AverageCosAngleOfControllers(player.rightHand, player.leftHand, player.headAboveDirection) < 45 &&
                      player.headRRadialDelta.y > pluginSettings.controlVerticalMovementThreshold &&
@@ -180,21 +250,31 @@ namespace MACPlugin
                     PluginLog.Log("ActionCameraDirector", "Pointing Up, Moving Head Up: Tactical or FullBody");
                     if (randomizer.Next(0, 100) > 80 && !pluginSettings.disableTopCamera || pluginSettings.disableFBTCamera)
                     {
+#if !SIMPLIFIED
                         SetCamera(TacticalCamera);
+#else
+                        SetCamera(FPSCamera);
+#endif
                     }
                     else
                     {
-                        SetCamera(FullBodyActionCamera);
-                    }
+#if !SIMPLIFIED
+                         SetCamera(FullBodyActionCamera);
+#else
+                        SetCamera(OverShoulderCamera);
+#endif
 
+
+                    }
                 }
+
                 // Looking Side to Side while pointing forwards. Action is ahead.
                 else if ((PluginUtility.AverageCosAngleOfControllers(player.rightHand, player.leftHand, player.headForwardDirection) < 80) &&
                     Mathf.Abs(player.headRRadialDelta.x) > pluginSettings.controlMovementThreshold && canSwapCamera)
                 {
-                    PluginLog.Log("ActionCameraDirector", "Moving on Side, Shoulder");
                     SetCamera(OverShoulderCamera);
                 }
+
 
                 timerHelper.ResetControllerTimer();
             }

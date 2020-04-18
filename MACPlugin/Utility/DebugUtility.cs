@@ -17,7 +17,11 @@ using System;
 using System.IO;
 using UnityEngine;
 
+#if !SIMPLIFIED
 namespace MACPlugin
+#else
+namespace SimpleMacPlugin
+#endif
 {
     class DebugUtility
     {

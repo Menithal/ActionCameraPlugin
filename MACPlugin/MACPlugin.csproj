@@ -32,14 +32,24 @@
     <OutputPath>..\..\..\..\..\LIV\Plugins\CameraBehaviours\</OutputPath>
     <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DeploySimplified|x64'">
+    <OutputPath>bin\x64\DeploySimplified\</OutputPath>
+    <DefineConstants>DEBUG;SIMPLIFIED</DefineConstants>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Assembly-CSharp">
       <HintPath>E:\Steam\steamapps\common\LIV\resources\VIVR\VIVR_Data\Managed\Assembly-CSharp.dll</HintPath>
       <Private>False</Private>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
-    <Reference Include="System" />
+    <Reference Include="LIV.Shared">
+      <HintPath>E:\Steam\steamapps\common\LIV\LIV.Shared.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>E:\Steam\steamapps\common\LIV\resources\VIVR\VIVR_Data\Managed\System.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEngine, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>E:\Steam\steamapps\common\LIV\resources\VIVR\VIVR_Data\Managed\UnityEngine.dll</HintPath>

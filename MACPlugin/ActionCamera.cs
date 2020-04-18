@@ -14,7 +14,11 @@
 * 
 **/
 using UnityEngine;
+#if !SIMPLIFIED
 namespace MACPlugin
+#else
+namespace SimpleMacPlugin
+#endif
 {
 
     // Predefining this to get around having to convert them.
@@ -93,7 +97,6 @@ namespace MACPlugin
         {
             cameraTarget = player.head.TransformPoint(offset);
             lookAtTarget = player.head.TransformPoint(lookAtOffset);
-            PluginLog.Log("SIMPLE CAMERA", ""+lookAtOffset);
             // average between Head and Waist to avoid head from flipping the camera around so much.s
             lookAtTarget = (lookAtTarget + player.waist.TransformPoint(lookAtOffset)) / 2;
 
@@ -308,7 +311,12 @@ namespace MACPlugin
             bool isAimingTwoHandedForward = Mathf.Rad2Deg * PluginUtility.GetConeAngle(player.head.position, averageHandPosition + handDirection * 4f, player.head.right) <
                     pluginSettings.cameraGunHeadAlignAngleTrigger;
 
-            if (!pluginSettings.disableGunCamera && Mathf.Abs(player.headRRadialDelta.x) < pluginSettings.controlMovementThreshold / 2 &&
+#if !SIMPLIFIED
+            bool snapToGun = !pluginSettings.disableGunCamera && Mathf.Abs(player.headRRadialDelta.x) < pluginSettings.controlMovementThreshold / 2;
+#else
+            bool snapToGun = Mathf.Abs(player.headRRadialDelta.x) < pluginSettings.controlMovementThreshold / 2;
+#endif
+            if (snapToGun &&
                    isWithinTwoHandedUse && isHeadWithinAimingDistance && isAimingTwoHandedForward)
             {
                 ironSightsEnabled = true;
@@ -335,6 +343,7 @@ namespace MACPlugin
         }
     }
 
+#if !SIMPLIFIED
     public class FullBodyActionCamera : ActionCamera
     {
         // This one really needs an intermediary camera
@@ -443,11 +452,11 @@ namespace MACPlugin
             base(settings, timeBetweenChange, new Vector3(0, distance, 0), false, false)
         {
         }
-
         public override void ApplyBehavior(ref Vector3 cameraTarget, ref Vector3 lookAtTarget, LivPlayerEntity player, bool isCameraAlreadyPlaced)
         {
             cameraTarget = player.head.position + offset;
             lookAtTarget = player.head.position;
         }
     }
+#endif
 }

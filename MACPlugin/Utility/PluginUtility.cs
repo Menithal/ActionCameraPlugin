@@ -14,8 +14,11 @@
 * 
 **/
 using UnityEngine;
-
+#if !SIMPLIFIED
 namespace MACPlugin
+#else
+namespace SimpleMacPlugin
+#endif
 {
     static class PluginUtility
     {

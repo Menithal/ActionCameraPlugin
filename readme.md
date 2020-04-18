@@ -64,51 +64,52 @@ You can find the settings at
 ## Default Setting Example: 
 ```
 [...]
-"pluginCameraBehaviourSettings": {
-    "selectedPluginCameraBehaviourID": "ActionCamera",
-    "pluginSettings": {
-        "ActionCamera": {
-            "cameraSwapTimeLock": 8,
-            "cameraPositionTimeLock": 0.8,
-            "reverseFBT": false,
-            "reverseShoulder": false,
-            "controlMovementThreshold": 3,
-            "forwardVerticalOffset": 0,
-            "forwardHorizontalOffset": 5,
-            "forwardDistance": 10,
-            
-            "removeAvatarInsteadOfHead": true,
-            "disableTopCamera": true,
-            "disableFBTCamera": false,
-            "disableFPSCamera": true,
-            "disableGunCamera": true,
-            "inBetweenCameraEnabled": true,
-            "cameraVerticalLock": false,
-            "cameraDefaultFov": 80.0,
-            
-            "cameraShoulderPositioningTime": 0.9,
-            "cameraShoulderdistance": 1.8,
-            "cameraShoulderAngle": 35,
-            "cameraShoulderSensitivity": 2,
-
-            "cameraBodyPositioningTime": 2,
-            "cameraBodyLookAtForward": 1,
-            "cameraBodyDistance": 1.4,
-            "cameraBodyAngle": 45,
-            "cameraBodySensitivity": 2,
-
-            "averageHandsWithHead": true,
-            "useDominantHand": false,
-            "rightHandDominant": true,
-            "disableGunCamera": true,
-            "cameraGunFov": 80.0,
-            "cameraGunZoom": 0.25,
-            "cameraGunHeadDistanceTrigger": 0.25,
-            "cameraMaxTwoHandedDistance": 0.4,
-            "cameraMinTwoHandedDistance": 0.08
-        }
-    }
-}
+            "pluginCameraBehaviourSettings": {
+              "selectedPluginCameraBehaviourID": "ActionCamera",
+              "pluginSettings": {
+                "ActionCamera": {
+                  "cameraSwapTimeLock": 8,
+                  "cameraPositionTimeLock": 0.8,
+                  "reverseFBT": false,
+                  "reverseShoulder": false,
+                  "controlMovementThreshold": 2,
+                  "controlVerticalMovementThreshold": 2,
+                  "forwardVerticalOffset": 0,
+                  "forwardHorizontalOffset": 5,
+                  "forwardDistance": 10,
+                  "removeAvatarInsteadOfHead": true,
+                  "disableTopCamera": true,
+                  "disableFBTCamera": false,
+                  "disableFPSCamera": false,
+                  "disableGunCamera": false,
+                  "inBetweenCameraEnabled": true,
+                  "cameraDefaultFov": 80,
+                  "FPSCameraOverride": false,
+                  "cameraVerticalLock": true,
+                  "cameraShoulderPositioningTime": 2,
+                  "cameraShoulderDistance": 1.8,
+                  "cameraShoulderAngle": 20,
+                  "cameraShoulderSensitivity": 2,
+                  "cameraBodyVerticalTargetOffset": 0.5,
+                  "cameraBodyPositioningTime": 1.8,
+                  "cameraBodyLookAtForward": 0.1,
+                  "cameraBodyDistance": 1.4,
+                  "cameraBodyAngle": 55,
+                  "cameraBodySensitivity": 2,
+                  "averageHandsWithHead": false,
+                  "useDominantHand": false,
+                  "rightHandDominant": true,
+                  "cameraGunFov": 80,
+                  "cameraFovLerp": false,
+                  "cameraGunHeadAlignAngleTrigger": 15,
+                  "cameraGunHeadDistanceTrigger": 0.3,
+                  "cameraGunEyeVerticalOffset": 0.15,
+                  "cameraGunMaxTwoHandedDistance": 0.6,
+                  "cameraGunMinTwoHandedDistance": 0.15,
+                  "cameraGunSmoothing": 0.2
+                }
+              }
+            }
 [...]
 ```
 
@@ -154,51 +155,52 @@ By default the setting are configured for CQC Pistol Combat (ala pistolwhip) but
 ### Example "Dancing/Sabering" Profile
 ```
 [...]
-"pluginCameraBehaviourSettings": {
-    "selectedPluginCameraBehaviourID": "ActionCamera",
-    "pluginSettings": {
-        "ActionCamera": {
-            "shoulderCameraPositioningTime": 2,
-            "bodyCameraPositioningTime": 2,
-            "cameraSwapTimeLock": 10,
-            "cameraPositionTimeLock": 3,
-            "reverseFBT": false,
-            "reverseShoulder": false,
-            "controlMovementThreshold": 1,
-            "forwardVerticalOffset": 0,
-            "forwardHorizontalOffset": 5,
-            "forwardDistance": 10,
-            "removeAvatarInsteadOfHead": true,
-            "disableGunCamera": true,
-            "disableTopCamera": true,
-            "disableFBTCamera": false,
-            "disableFPSCamera": true,
-            "inBetweenCameraEnabled": false,
-            "cameraVerticalLock": true,
-            "cameraDefaultFov": 90.0,
-            
-            "cameraShoulderPositioningTime": 1.8,
-            "cameraShoulderDistance": 2.6,
-            "cameraShoulderAngle": 35,
-            "cameraShoulderSensitivity": 1,
-            "cameraBodyPositioningTime": 4,
-            "cameraBodyLookAtForward": 1.6,
-            "cameraBodyDistance": 3,
-            "cameraBodyAngle": 45,
-            "cameraBodySensitivity": 1,
-
-            "averageHandsWithHead": true,
-            "useDominantHand": false,
-            "rightHandDominant": true,
-
-            "cameraGunFov": 90,
-            "cameraGunZoom": 0.25,
-            "cameraGunHeadDistanceTrigger": 0.25,
-            "cameraMaxTwoHandedDistance": 0.4,
-            "cameraMinTwoHandedDistance": 0.08
-        }
-    }
-}
+            "pluginCameraBehaviourSettings": {
+              "selectedPluginCameraBehaviourID": "ActionCamera",
+              "pluginSettings": {
+                "ActionCamera": {
+                  "cameraSwapTimeLock": 10,
+                  "cameraPositionTimeLock": 2,
+                  "reverseFBT": false,
+                  "reverseShoulder": false,
+                  "controlMovementThreshold": 1,
+                  "controlVerticalMovementThreshold": 1,
+                  "forwardVerticalOffset": 0,
+                  "forwardHorizontalOffset": 5,
+                  "forwardDistance": 10,
+                  "removeAvatarInsteadOfHead": true,
+                  "disableTopCamera": true,
+                  "disableFBTCamera": false,
+                  "disableFPSCamera": true,
+                  "disableGunCamera": true,
+                  "inBetweenCameraEnabled": true,
+                  "cameraDefaultFov": 90,
+                  "FPSCameraOverride": false,
+                  "cameraVerticalLock": true,
+                  "cameraShoulderPositioningTime": 2,
+                  "cameraShoulderDistance": 2.6,
+                  "cameraShoulderAngle": 35,
+                  "cameraShoulderSensitivity": 1,
+                  "cameraBodyVerticalTargetOffset": 0.5,
+                  "cameraBodyPositioningTime": 4,
+                  "cameraBodyLookAtForward": 1.6,
+                  "cameraBodyDistance": 3,
+                  "cameraBodyAngle": 45,
+                  "cameraBodySensitivity": 1,
+                  "averageHandsWithHead": false,
+                  "useDominantHand": false,
+                  "rightHandDominant": true,
+                  "cameraGunFov": 80,
+                  "cameraFovLerp": false,
+                  "cameraGunHeadAlignAngleTrigger": 15,
+                  "cameraGunHeadDistanceTrigger": 0.3,
+                  "cameraGunEyeVerticalOffset": 0.15,
+                  "cameraGunMaxTwoHandedDistance": 0.6,
+                  "cameraGunMinTwoHandedDistance": 0.15,
+                  "cameraGunSmoothing": 0.2
+                }
+              }
+            }
 [...]
 ```
 

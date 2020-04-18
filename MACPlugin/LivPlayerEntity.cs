@@ -14,8 +14,11 @@
 * 
 **/
 using UnityEngine;
-
+#if !SIMPLIFIED
 namespace MACPlugin
+#else
+namespace SimpleMacPlugin
+#endif
 {
     public class LivPlayerEntity
     {
@@ -64,6 +67,8 @@ namespace MACPlugin
         public Vector3 headForwardDownDirection { get; private set; } = Vector3.zero;
 
         public Vector3 headForwardDirection { get; private set; } = Vector3.zero;
+        public Vector3 headBackwardDirection { get; private set; } = Vector3.zero;
+        public Vector3 preCalculatedBackDirection { get; private set; } = Vector3.zero;
         public Vector3 leftHandForwardDirection { get; private set; } = Vector3.zero;
         public Vector3 rightHandForwardDirection { get; private set; } = Vector3.zero;
 
@@ -84,6 +89,7 @@ namespace MACPlugin
             preCalculatedAboveHeadDirection = new Vector3(0, verticalOffset, distance);
             preCalculatedBelowHeadDirection = new Vector3(0, -verticalOffset, distance);
             preCalculatedFrontDirection = new Vector3(0, 0, distance);
+            preCalculatedBackDirection = new Vector3(0, 0, -0.5f);
         }
         public void CalculateInfo()
         {
@@ -101,6 +107,7 @@ namespace MACPlugin
             headForwardDownDirection = head.TransformPoint(preCalculatedBelowHeadDirection);
 
             headForwardDirection = head.TransformPoint(preCalculatedFrontDirection);
+            headBackwardDirection = head.TransformPoint(preCalculatedBackDirection);
             rightHandForwardDirection = rightHand.TransformPoint(preCalculatedFrontDirection);
             leftHandForwardDirection = leftHand.TransformPoint(preCalculatedFrontDirection);
 
