@@ -41,7 +41,7 @@ namespace MACPlugin
 
         private ActionCamera currentCamera;
         private ActionCamera lastCamera;
-        private ActionCameraSettings pluginSettings;
+        private ActionCameraConfig pluginSettings;
         private Avatar currentAvatar;
 
         private readonly LivPlayerEntity player;
@@ -51,7 +51,7 @@ namespace MACPlugin
 
         // 30 checks a second 
         private static float CONTROLLER_THROTTLE = 1f;
-        public ActionCameraDirector(ActionCameraSettings pluginSettings, PluginCameraHelper helper, ref TimerHelper timerHelper)
+        public ActionCameraDirector(ActionCameraConfig pluginSettings, PluginCameraHelper helper, ref TimerHelper timerHelper)
         {
             this.player = new LivPlayerEntity(helper, ref timerHelper);
             this.timerHelper = timerHelper;
@@ -72,7 +72,7 @@ namespace MACPlugin
         {
             currentAvatar = avatar;
         }
-        public void SetSettings(ActionCameraSettings settings)
+        public void SetSettings(ActionCameraConfig settings)
         {
             pluginSettings = settings;
             player.SetOffsets(settings.forwardHorizontalOffset, settings.forwardVerticalOffset, settings.forwardDistance);
@@ -143,7 +143,7 @@ namespace MACPlugin
                 // player is looking down sights.
                 if (!pluginSettings.disableGunCamera && areHandsAboveThreshold
                     && Mathf.Abs(player.headRRadialDelta.x) < pluginSettings.controlMovementThreshold
-                    && Mathf.Abs(player.headRRadialDelta.y) < pluginSettings.controlVerticalMovementThreshold 
+                    && Mathf.Abs(player.headRRadialDelta.y) < pluginSettings.controlVerticalMovementThreshold
                     && isAimingTwoHandedForward && (canSwapCamera || pluginSettings.FPSCameraOverride) && !inGunMode)
                 {
                     SetCamera(FPSCamera, true);
@@ -163,9 +163,10 @@ namespace MACPlugin
                     }
                     timerHelper.ResetCameraGunTimer();
 
-                } else if (PluginUtility.AverageCosAngleOfControllers(player.rightHand, player.leftHand, player.headBelowDirection) < 45 &&
-                    player.headRRadialDelta.y < -pluginSettings.controlVerticalMovementThreshold &&
-                    !pluginSettings.disableFBTCamera && canSwapCamera)
+                }
+                else if (PluginUtility.AverageCosAngleOfControllers(player.rightHand, player.leftHand, player.headBelowDirection) < 45 &&
+                  player.headRRadialDelta.y < -pluginSettings.controlVerticalMovementThreshold &&
+                  !pluginSettings.disableFBTCamera && canSwapCamera)
                 {
                     PluginLog.Log("ActionCameraDirector", "Pointing Down FullBody");
 
@@ -225,33 +226,36 @@ namespace MACPlugin
         }
         public void HandleCameraView()
         {
-            // Call the camera's behavior.
-            currentCamera.ApplyBehavior(ref cameraPositionTarget, ref cameraLookAtTarget, player, isCameraStatic);
-            isCameraStatic = currentCamera.staticCamera;
 
-
-            if (currentAvatar != null)
+            if (pluginSettings.ready)
             {
-                if (pluginSettings.removeAvatarInsteadOfHead)
+                // Call the camera's behavior.
+                currentCamera.ApplyBehavior(ref cameraPositionTarget, ref cameraLookAtTarget, player, isCameraStatic);
+                isCameraStatic = currentCamera.staticCamera;
+
+
+                if (currentAvatar != null)
                 {
-                    currentAvatar.avatarSettings.showAvatar.Value = !currentCamera.removeHead;
+                    if (pluginSettings.removeAvatarInsteadOfHead)
+                    {
+                        currentAvatar.avatarSettings.showAvatar.Value = !currentCamera.removeHead;
+                    }
+                    else
+                    {
+                        currentAvatar.avatarSettings.showAvatarHead.Value = !currentCamera.removeHead;
+                    }
+                    timerHelper.ResetRemoveAvatarTimer();
                 }
-                else
-                {
-                    currentAvatar.avatarSettings.showAvatarHead.Value = !currentCamera.removeHead;
-                }
-                timerHelper.ResetRemoveAvatarTimer();
+
+                cameraPosition = Vector3.SmoothDamp(cameraPosition, cameraPositionTarget, ref cameraVelocity, currentCamera.GetBetweenTime());
+                cameraLookAt = Vector3.SmoothDamp(cameraLookAt, cameraLookAtTarget, ref cameraLookAtVelocity, currentCamera.GetBetweenTime());
+
+                Vector3 lookDirection = cameraLookAt - cameraPosition;
+
+                Quaternion rotation = currentCamera.GetRotation(lookDirection, player);
+
+                cameraHelper.UpdateCameraPose(cameraPosition, rotation, currentCamera.GetFOV());
             }
-
-            cameraPosition = Vector3.SmoothDamp(cameraPosition, cameraPositionTarget, ref cameraVelocity, currentCamera.GetBetweenTime());
-            cameraLookAt = Vector3.SmoothDamp(cameraLookAt, cameraLookAtTarget, ref cameraLookAtVelocity, currentCamera.GetBetweenTime());
-
-            Vector3 lookDirection = cameraLookAt - cameraPosition;
-
-            Quaternion rotation = currentCamera.GetRotation(lookDirection, player);
-
-            cameraHelper.UpdateCameraPose(cameraPosition, rotation);
-            cameraHelper.UpdateFov(currentCamera.GetFOV());
         }
     }
 }

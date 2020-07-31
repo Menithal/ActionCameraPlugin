@@ -85,9 +85,7 @@ namespace MACPlugin
         }
         public static void Error(String source, String message)
         {
-        #if DEBUG
             debugger.Write("warn", source, message);
-        #endif
         }
     }
 }

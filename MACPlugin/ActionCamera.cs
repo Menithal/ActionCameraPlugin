@@ -29,12 +29,12 @@ namespace MACPlugin
         protected static readonly sbyte POSITIVE_SBYTE = 1;
         protected static readonly sbyte NEGATIVE_SBYTE = -1;
 
-        protected ActionCameraSettings pluginSettings;
+        protected ActionCameraConfig pluginSettings;
 
         protected sbyte currentSide;
         protected sbyte destinationSide;
         public Vector3 offset;
-        public ActionCamera(ActionCameraSettings pluginSettings,
+        public ActionCamera(ActionCameraConfig pluginSettings,
             float timeBetweenChange, Vector3 offset = new Vector3(),
             bool removeHead = false, bool staticCamera = false)
         {
@@ -46,7 +46,7 @@ namespace MACPlugin
             this.destinationSide = 1;
             this.offset = offset;
         }
-        public ActionCamera(ActionCameraSettings pluginSettings,
+        public ActionCamera(ActionCameraConfig pluginSettings,
            float timeBetweenChange)
         {
             this.pluginSettings = pluginSettings;
@@ -65,7 +65,7 @@ namespace MACPlugin
         {
             return timeBetweenChange;
         }
-        public virtual void SetPluginSettings(ActionCameraSettings settings)
+        public virtual void SetPluginSettings(ActionCameraConfig settings)
         {
             pluginSettings = settings;
             fov = settings.cameraDefaultFov;
@@ -83,7 +83,7 @@ namespace MACPlugin
     public class SimpleActionCamera : ActionCamera
     {
         public Vector3 lookAtOffset = new Vector3(0f, 0, 0.25f);
-        public SimpleActionCamera(ActionCameraSettings settings, float timeBetweenChange, Vector3 offset, bool removeHead = false, bool staticCamera = false) :
+        public SimpleActionCamera(ActionCameraConfig settings, float timeBetweenChange, Vector3 offset, bool removeHead = false, bool staticCamera = false) :
             base(settings, timeBetweenChange, offset, removeHead, staticCamera)
         {
         }
@@ -113,12 +113,12 @@ namespace MACPlugin
         Transform nonDominantHand;
         Vector3 dominantEye;
         Vector3 lookAtDirection;
-        public ScopeActionCamera(ActionCameraSettings settings) :
+        public ScopeActionCamera(ActionCameraConfig settings) :
             base(settings, 0.2f, Vector3.zero, true)
         {
             SetPluginSettings(settings);
         }
-        public override void SetPluginSettings(ActionCameraSettings settings)
+        public override void SetPluginSettings(ActionCameraConfig settings)
         {
 
             fov = settings.cameraGunFov;
@@ -162,7 +162,7 @@ namespace MACPlugin
         private readonly SimpleActionCamera betweenCamera;
         private bool swappingSides;
         // Predefining this to get around having to convert them.
-        public ShoulderActionCamera(ActionCameraSettings settings) :
+        public ShoulderActionCamera(ActionCameraConfig settings) :
             base(settings, 0)
         {
             Vector3 neutralOffset = offset;
@@ -173,7 +173,7 @@ namespace MACPlugin
 
             SetPluginSettings(settings);
         }
-        public override void SetPluginSettings(ActionCameraSettings settings)
+        public override void SetPluginSettings(ActionCameraConfig settings)
         {
             base.SetPluginSettings(settings);
 
@@ -258,7 +258,7 @@ namespace MACPlugin
         readonly ActionCamera sightsCamera;
         bool ironSightsEnabled;
         float blend = 0;
-        public FPSCamera(ActionCameraSettings settings, float timeBetweenChange) : base(settings, timeBetweenChange, Vector3.zero, true, false)
+        public FPSCamera(ActionCameraConfig settings, float timeBetweenChange) : base(settings, timeBetweenChange, Vector3.zero, true, false)
         {
             sightsCamera = new ScopeActionCamera(settings);
             ironSightsEnabled = false;
@@ -279,7 +279,7 @@ namespace MACPlugin
         {
             return sightsCamera;
         }
-        public override void SetPluginSettings(ActionCameraSettings settings)
+        public override void SetPluginSettings(ActionCameraConfig settings)
         {
             base.SetPluginSettings(settings);
             sightsCamera.SetPluginSettings(settings);
@@ -342,7 +342,7 @@ namespace MACPlugin
         private readonly SimpleActionCamera betweenCamera;
         private bool swappingSides = false;
 
-        public FullBodyActionCamera(ActionCameraSettings settings) :
+        public FullBodyActionCamera(ActionCameraConfig settings) :
             base(settings, 0, Vector3.zero, false, false)
         {
             SetBetweenTime(settings.cameraBodyPositioningTime / (settings.inBetweenCameraEnabled ? 2 : 1));
@@ -370,7 +370,7 @@ namespace MACPlugin
             lookAtOffset.y = pluginSettings.cameraBodyVerticalTargetOffset;
             lookAtOffset.z = pluginSettings.cameraBodyLookAtForward;
         }
-        public override void SetPluginSettings(ActionCameraSettings settings)
+        public override void SetPluginSettings(ActionCameraConfig settings)
         {
             pluginSettings = settings;
             SetBetweenTime(settings.cameraBodyPositioningTime / (settings.inBetweenCameraEnabled ? 2 : 1));
@@ -439,7 +439,7 @@ namespace MACPlugin
 
     public class TopDownActionCamera : ActionCamera
     {
-        public TopDownActionCamera(ActionCameraSettings settings, float timeBetweenChange, float distance) :
+        public TopDownActionCamera(ActionCameraConfig settings, float timeBetweenChange, float distance) :
             base(settings, timeBetweenChange, new Vector3(0, distance, 0), false, false)
         {
         }
