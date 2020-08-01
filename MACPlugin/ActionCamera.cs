@@ -25,6 +25,7 @@ namespace MACPlugin
         private float timeBetweenChange = 1f;
         public bool removeHead = false;
         public bool staticCamera = false;
+        public bool facingAvatar = false;
 
         protected static readonly sbyte POSITIVE_SBYTE = 1;
         protected static readonly sbyte NEGATIVE_SBYTE = -1;
@@ -233,6 +234,7 @@ namespace MACPlugin
             }
             else
             {
+
                 Vector3 cameraOffsetTarget = offset;
                 sbyte settingsReverse = pluginSettings.reverseShoulder ? NEGATIVE_SBYTE : POSITIVE_SBYTE;
 
@@ -351,7 +353,7 @@ namespace MACPlugin
             neutralOffset.y += 0.5f;
             neutralOffset.z = settings.cameraBodyDistance;
             betweenCamera = new SimpleActionCamera(settings, GetBetweenTime(), neutralOffset);
-
+            facingAvatar = true;
             CalculateOffset();
         }
         public void CalculateOffset()
@@ -442,6 +444,7 @@ namespace MACPlugin
         public TopDownActionCamera(ActionCameraConfig settings, float timeBetweenChange, float distance) :
             base(settings, timeBetweenChange, new Vector3(0, distance, 0), false, false)
         {
+            facingAvatar = true;
         }
 
         public override void ApplyBehavior(ref Vector3 cameraTarget, ref Vector3 lookAtTarget, LivPlayerEntity player, bool isCameraAlreadyPlaced)

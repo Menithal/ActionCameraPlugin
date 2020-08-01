@@ -12,11 +12,17 @@ namespace MACPlugin.Utility
     {
         private readonly String configPath;
         public ActionCameraConfig Config { get; private set; }
+
+        // Using Dictionaries for easier look up. Its not very efficient, but its easier to write. 
+        // But since we are dealing with less than 1000 lines, I dont think i need to worry about it.
         private readonly Dictionary<String, FloatConstraint> floatConfigs;
         private readonly Dictionary<String, BooleanConstraint> booleanConfigs;
         private readonly Dictionary<String, FieldInfo> configFieldInfos;
         private readonly HashSet<String> configValidationSet;
 
+        /**
+         * Utility Class that is used to read and write configurations from a single file.
+         */
         public ConfigUtility(String filename = "MACPluginDefault.config")
         {
             String drive = Environment.GetEnvironmentVariable("HOMEDRIVE");
@@ -28,12 +34,20 @@ namespace MACPlugin.Utility
             booleanConfigs = new Dictionary<string, BooleanConstraint>();
             configFieldInfos = new Dictionary<string, FieldInfo>();
             configValidationSet = new HashSet<string>();
-            
+
+#if DEBUG
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+#endif
             BuildConstraintDictionary();
 
             // See if file exists, else just create new from default else
             ReadConstraintConfig();
 
+#if DEBUG
+            sw.Stop();
+            PluginLog.Log("ConfigUtility", "Configuration Written and Read in " + sw.ElapsedMilliseconds + "ms");
+#endif
             // Write new file
         }
 
@@ -141,17 +155,15 @@ namespace MACPlugin.Utility
                 }
                 catch (FieldAccessException e)
                 {
-
-                    PluginLog.Error("ConfigUtility", "FieldAccessException: This error should not occur and indicates an untested case. Please file ticket " + e.Message);
+                    PluginLog.Error("ConfigUtility", "FieldAccessException: This error should not occur and indicates an untested case. Please file github issue " + e.Message);
                 }
                 catch (TargetException e)
                 {
-
-                    PluginLog.Error("ConfigUtility", "TargetException: This error should not occur and indicates an untested case. Please file ticket " + e.Message);
+                    PluginLog.Error("ConfigUtility", "TargetException: This error should not occur and indicates an untested case. Please github issue " + e.Message);
                 }
                 catch (ArgumentException e)
                 {
-                    PluginLog.Error("ConfigUtility", "ArgumentException: This error should not occur and indicates an untested case. Please file ticket " + e.Message);
+                    PluginLog.Error("ConfigUtility", "ArgumentException: This error should not occur and indicates an untested case. Please github issue " + e.Message);
                 }
 
                 Config.PrintContents();

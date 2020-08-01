@@ -102,14 +102,15 @@ namespace MACPlugin
 
         public void PrintContents()
         {
+#if DEBUG
             Type type = typeof(ActionCameraConfig);
             FieldInfo[] properties = type.GetFields();
-
-
+            
             foreach (FieldInfo property in properties)
             {
                 PluginLog.Log("ActionCameraConfig", property.Name + " = " + property.GetValue(this));
             }
         }
+#endif
     }
 }
