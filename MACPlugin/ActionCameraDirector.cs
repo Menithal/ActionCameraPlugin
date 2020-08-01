@@ -31,7 +31,6 @@ namespace MACPlugin
         private Vector3 cameraLookAt;
         private Vector3 cameraLookAtTarget;
 
-
         private Vector3 cameraLastLookAtVelocity = Vector3.zero;
         private Vector3 cameraLastVelocity = Vector3.zero;
 
@@ -46,7 +45,6 @@ namespace MACPlugin
 
         private readonly LivPlayerEntity player;
         private readonly System.Random randomizer;
-        private bool isCameraStatic = false;
         private bool inGunMode = false;
 
         // 30 checks a second 
@@ -83,16 +81,14 @@ namespace MACPlugin
             TacticalCamera.SetPluginSettings(settings);
         }
 
-        private void SetCamera(ActionCamera camera, bool saveLast = true, float timerOverride = 0)
+        private void SetCamera(ActionCamera camera, float timerOverride = 0)
         {
             if (currentCamera != camera)
             {
-                if (saveLast)
-                {
-                    lastCamera = currentCamera;
-                }
+
+                lastCamera = currentCamera;
+
                 currentCamera = camera;
-                isCameraStatic = false;
                 timerHelper.ResetGlobalCameraTimer();
                 timerHelper.ResetCameraActionTimer();
                 if (timerOverride > 0)
@@ -146,7 +142,7 @@ namespace MACPlugin
                     && Mathf.Abs(player.headRRadialDelta.y) < pluginSettings.controlVerticalMovementThreshold
                     && isAimingTwoHandedForward && (canSwapCamera || pluginSettings.FPSCameraOverride) && !inGunMode)
                 {
-                    SetCamera(FPSCamera, true);
+                    SetCamera(FPSCamera);
                     inGunMode = true;
                     SnapCamera(currentCamera);
                     timerHelper.ResetCameraGunTimer();
@@ -156,7 +152,7 @@ namespace MACPlugin
                 {
                     if (!(isAimingTwoHandedForward))
                     {
-                        SnapCamera(lastCamera, true);
+                        SnapCamera(lastCamera);
                         SetCamera(lastCamera);
                         PluginLog.Log("ActionCameraDirector", "Returning Back to earlier");
                         // Should actually just snap to the new positions instead, so
@@ -206,7 +202,7 @@ namespace MACPlugin
         {
 
             PluginLog.Log("ActionCameraDirector", "SNAP ");
-            camera.ApplyBehavior(ref cameraPositionTarget, ref cameraLookAtTarget, player, isCameraStatic);
+            camera.ApplyBehavior(ref cameraPositionTarget, ref cameraLookAtTarget, player);
 
             if (revert)
             {
@@ -224,15 +220,25 @@ namespace MACPlugin
             cameraPosition = cameraPositionTarget;
             cameraLookAt = cameraLookAtTarget;
         }
+
+        private Vector3 prevCameraTarget;
+        private Vector3 prevCameraLookAtTarget;
         public void HandleCameraView()
         {
-
             if (pluginSettings.ready)
             {
                 // Call the camera's behavior.
-                currentCamera.ApplyBehavior(ref cameraPositionTarget, ref cameraLookAtTarget, player, isCameraStatic);
-                isCameraStatic = currentCamera.staticCamera;
+                prevCameraTarget = cameraPositionTarget;
+                prevCameraLookAtTarget = cameraLookAtTarget;
 
+                if (lastCamera != null)
+                { // If We have a previous camera, lets also do calculations on its position at this moment.
+                    lastCamera.ApplyBehavior(ref prevCameraTarget, ref prevCameraLookAtTarget, player);
+                }
+
+                currentCamera.ApplyBehavior(ref cameraPositionTarget, ref cameraLookAtTarget, player);
+
+                // Do Direction Check. 
 
                 if (currentAvatar != null)
                 {
@@ -248,10 +254,24 @@ namespace MACPlugin
                 }
 
                 cameraPosition = Vector3.SmoothDamp(cameraPosition, cameraPositionTarget, ref cameraVelocity, currentCamera.GetBetweenTime());
-                cameraLookAt = Vector3.SmoothDamp(cameraLookAt, cameraLookAtTarget, ref cameraLookAtVelocity, currentCamera.GetBetweenTime());
+
+                if (lastCamera != null && !lastCamera.facingAvatar && currentCamera.facingAvatar && this.pluginSettings.alwaysHaveAvatarInFrame)
+                {
+                    if (Vector3.Distance(cameraPositionTarget, cameraPosition) > pluginSettings.cameraBodyDistance / 2)
+                    {
+                        cameraLookAt = Vector3.SmoothDamp(cameraLookAt, (player.waist.position + player.head.position) / 2, ref cameraLookAtVelocity, currentCamera.GetBetweenTime());
+                    }
+                    else
+                    {
+                        cameraLookAt = Vector3.SmoothDamp(cameraLookAt, cameraLookAtTarget, ref cameraLookAtVelocity, currentCamera.GetBetweenTime());
+                    }
+                }
+                else
+                {
+                    cameraLookAt = Vector3.SmoothDamp(cameraLookAt, cameraLookAtTarget, ref cameraLookAtVelocity, currentCamera.GetBetweenTime());
+                }
 
                 Vector3 lookDirection = cameraLookAt - cameraPosition;
-
                 Quaternion rotation = currentCamera.GetRotation(lookDirection, player);
 
                 cameraHelper.UpdateCameraPose(cameraPosition, rotation, currentCamera.GetFOV());

@@ -1,4 +1,19 @@
-﻿using System;
+﻿/**  Copyright 2020 Matti 'Menithal' Lahtinen
+
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*    http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+* 
+**/
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -13,12 +28,6 @@ namespace MACPlugin.Utility
         private readonly String configPath;
         public ActionCameraConfig Config { get; private set; }
 
-        // Using Dictionaries for easier look up. Its not very efficient, but its easier to write. 
-        // But since we are dealing with less than 1000 lines, I dont think i need to worry about it.
-        private readonly Dictionary<String, FloatConstraint> floatConfigs;
-        private readonly Dictionary<String, BooleanConstraint> booleanConfigs;
-        private readonly Dictionary<String, FieldInfo> configFieldInfos;
-        private readonly HashSet<String> configValidationSet;
 
         /**
          * Utility Class that is used to read and write configurations from a single file.
@@ -30,19 +39,13 @@ namespace MACPlugin.Utility
             configPath = drive + homePath + "\\Documents\\LIV\\Plugins\\" + filename;
 
             Config = new ActionCameraConfig();
-            floatConfigs = new Dictionary<string, FloatConstraint>();
-            booleanConfigs = new Dictionary<string, BooleanConstraint>();
-            configFieldInfos = new Dictionary<string, FieldInfo>();
-            configValidationSet = new HashSet<string>();
-
 #if DEBUG
             Stopwatch sw = new Stopwatch();
             sw.Start();
 #endif
-            BuildConstraintDictionary();
+            BuildConfig();
 
             // See if file exists, else just create new from default else
-            ReadConstraintConfig();
 
 #if DEBUG
             sw.Stop();
@@ -51,39 +54,43 @@ namespace MACPlugin.Utility
             // Write new file
         }
 
-        private void BuildConstraintDictionary()
+        private void BuildConfig()
         {
+
+            // Using Dictionaries for easier look up. Its not very efficient, but its easier to write. 
+            // But since we are dealing with less than 1000 lines, I dont think i need to worry about it.
+            Dictionary<String, FloatConstraint> floatConfigs = new Dictionary<string, FloatConstraint>();
+            Dictionary<String, BooleanConstraint> booleanConfigs = new Dictionary<string, BooleanConstraint>();
+            Dictionary<String, FieldInfo> configFieldInfos = new Dictionary<string, FieldInfo>();
+            HashSet<String> configValidationSet = new HashSet<string>();
+
+
             Type type = typeof(ActionCameraConfig);
 
             FieldInfo[] properties = type.GetFields();
 
-            SerializableFloatConfig floatConstraint;
-            SerializableBooleanConfig booleanConstraint;
+            SerializableFloatConfig floatConfigField;
+            SerializableBooleanConfig booleanConfigField;
 
             foreach (FieldInfo property in properties)
             {
-                floatConstraint = property.GetCustomAttribute<SerializableFloatConfig>();
-                if (floatConstraint != null)
+                floatConfigField = property.GetCustomAttribute<SerializableFloatConfig>();
+                if (floatConfigField != null)
                 {
                     configFieldInfos.Add(property.Name, property);
-                    floatConfigs.Add(property.Name, floatConstraint.Constraint);
+                    floatConfigs.Add(property.Name, floatConfigField.Constraint);
                     configValidationSet.Add(property.Name);
                     continue;
                 }
 
-                booleanConstraint = property.GetCustomAttribute<SerializableBooleanConfig>();
-                if (booleanConstraint != null)
+                booleanConfigField = property.GetCustomAttribute<SerializableBooleanConfig>();
+                if (booleanConfigField != null)
                 {
                     configFieldInfos.Add(property.Name, property);
-                    booleanConfigs.Add(property.Name, booleanConstraint.Constraint);
+                    booleanConfigs.Add(property.Name, booleanConfigField.Constraint);
                     configValidationSet.Add(property.Name);
                 }
             }
-        }
-
-
-        private void ReadConstraintConfig()
-        {
 
             using (FileStream fs = File.Open(configPath, FileMode.OpenOrCreate, FileAccess.ReadWrite))
             {
@@ -95,8 +102,10 @@ namespace MACPlugin.Utility
 
                     StreamReader sr = new StreamReader(fs);
                     string line;
+                    int lineIndex = 0;
                     while ((line = sr.ReadLine()) != null)
                     {
+                        lineIndex++;
                         line = Regex.Replace(line, @"\s+", ""); // Remove All whitespaces
 
                         // Check if contains # at the start, if does, ignore. does this contain an =?
@@ -106,6 +115,12 @@ namespace MACPlugin.Utility
 
                         String[] configSplit = commentSplit[0].Split(new char[] { '=' }, 2);
 
+                        if (configSplit.Length != 2)
+                        {
+                            PluginLog.Warn("ConfigUtility", "Skipping line " + lineIndex + ": " + line);
+
+                            continue;
+                        }
                         String key = configSplit[0];
                         String value = configSplit[1];
 
@@ -126,7 +141,7 @@ namespace MACPlugin.Utility
                         }
                         else
                         {
-                            PluginLog.Warn( "ConfigUtility", "Unknown Key " + key + ". You can remove this from the config file, its not being used by this plugin.");
+                            PluginLog.Warn("ConfigUtility", "Unknown Key " + key + ". You can remove this from the config file, its not being used by this plugin.");
                         }
 
                         // Do config binding here.
@@ -170,9 +185,12 @@ namespace MACPlugin.Utility
 
                 PluginLog.Debug("ConfigUtility", "Settings are now Loaded");
 
+
                 Config.ready = true;
             }
 
         }
+
+
     }
 }

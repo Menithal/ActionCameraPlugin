@@ -99,6 +99,8 @@ namespace MACPlugin
         [SerializableFloatConfig(0.2f, 0, 1f)]
         public float cameraGunSmoothing = 0.2f;
 
+        [SerializableBooleanConfig(true)]
+        public bool alwaysHaveAvatarInFrame = true;
 
         public void PrintContents()
         {
@@ -110,7 +112,7 @@ namespace MACPlugin
             {
                 PluginLog.Log("ActionCameraConfig", property.Name + " = " + property.GetValue(this));
             }
-        }
 #endif
+        }
     }
 }

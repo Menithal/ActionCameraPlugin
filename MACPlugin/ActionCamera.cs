@@ -24,7 +24,6 @@ namespace MACPlugin
         protected float fov = 90;
         private float timeBetweenChange = 1f;
         public bool removeHead = false;
-        public bool staticCamera = false;
         public bool facingAvatar = false;
 
         protected static readonly sbyte POSITIVE_SBYTE = 1;
@@ -37,12 +36,12 @@ namespace MACPlugin
         public Vector3 offset;
         public ActionCamera(ActionCameraConfig pluginSettings,
             float timeBetweenChange, Vector3 offset = new Vector3(),
-            bool removeHead = false, bool staticCamera = false)
+            bool removeHead = false)
         {
             this.pluginSettings = pluginSettings;
             this.timeBetweenChange = timeBetweenChange;
             this.removeHead = removeHead;
-            this.staticCamera = staticCamera;
+            this.facingAvatar = false;
             this.currentSide = 1;
             this.destinationSide = 1;
             this.offset = offset;
@@ -73,7 +72,7 @@ namespace MACPlugin
         }
 
         abstract public void ApplyBehavior(ref Vector3 cameraTarget, ref Vector3 lookAtTarget,
-            LivPlayerEntity player, bool isCameraAlreadyPlaced);
+            LivPlayerEntity player);
 
         public virtual Quaternion GetRotation(Vector3 lookDirection, LivPlayerEntity player)
         {
@@ -84,13 +83,13 @@ namespace MACPlugin
     public class SimpleActionCamera : ActionCamera
     {
         public Vector3 lookAtOffset = new Vector3(0f, 0, 0.25f);
-        public SimpleActionCamera(ActionCameraConfig settings, float timeBetweenChange, Vector3 offset, bool removeHead = false, bool staticCamera = false) :
-            base(settings, timeBetweenChange, offset, removeHead, staticCamera)
+        public SimpleActionCamera(ActionCameraConfig settings, float timeBetweenChange, Vector3 offset, bool removeHead = false) :
+            base(settings, timeBetweenChange, offset, removeHead)
         {
         }
 
         // Next to FPS Camera, simplest Camerda
-        public override void ApplyBehavior(ref Vector3 cameraTarget, ref Vector3 lookAtTarget, LivPlayerEntity player, bool isCameraAlreadyPlaced)
+        public override void ApplyBehavior(ref Vector3 cameraTarget, ref Vector3 lookAtTarget, LivPlayerEntity player)
         {
             cameraTarget = player.head.TransformPoint(offset);
             lookAtTarget = player.head.TransformPoint(lookAtOffset);
@@ -133,7 +132,7 @@ namespace MACPlugin
         {
             return Quaternion.LookRotation(lookAtDirection, player.head.up);
         }
-        public override void ApplyBehavior(ref Vector3 cameraTarget, ref Vector3 lookAtTarget, LivPlayerEntity player, bool isCameraAlreadyPlaced)
+        public override void ApplyBehavior(ref Vector3 cameraTarget, ref Vector3 lookAtTarget, LivPlayerEntity player)
         {
             // Automatic determination which is closest?
             if (pluginSettings.rightHandDominant)
@@ -200,7 +199,7 @@ namespace MACPlugin
             //  calculatedOffset.z = -Mathf.Sqrt(Mathf.Abs(Mathf.Pow(offset.z, 2) - Mathf.Pow(offset.x, 2)));
             this.offset = calculatedOffset;
         }
-        public override void ApplyBehavior(ref Vector3 cameraTarget, ref Vector3 lookAtTarget, LivPlayerEntity player, bool isCameraAlreadyPlaced)
+        public override void ApplyBehavior(ref Vector3 cameraTarget, ref Vector3 lookAtTarget, LivPlayerEntity player)
         {
 
             /**
@@ -230,7 +229,7 @@ namespace MACPlugin
 
             if (swappingSides && pluginSettings.inBetweenCameraEnabled)
             {
-                betweenCamera.ApplyBehavior(ref cameraTarget, ref lookAtTarget, player, isCameraAlreadyPlaced);
+                betweenCamera.ApplyBehavior(ref cameraTarget, ref lookAtTarget, player);
             }
             else
             {
@@ -260,7 +259,7 @@ namespace MACPlugin
         readonly ActionCamera sightsCamera;
         bool ironSightsEnabled;
         float blend = 0;
-        public FPSCamera(ActionCameraConfig settings, float timeBetweenChange) : base(settings, timeBetweenChange, Vector3.zero, true, false)
+        public FPSCamera(ActionCameraConfig settings, float timeBetweenChange) : base(settings, timeBetweenChange, Vector3.zero, true)
         {
             sightsCamera = new ScopeActionCamera(settings);
             ironSightsEnabled = false;
@@ -290,7 +289,7 @@ namespace MACPlugin
          * 
          * Logic for Scope should only occur when 
          */
-        public override void ApplyBehavior(ref Vector3 cameraTarget, ref Vector3 lookAtTarget, LivPlayerEntity player, bool isCameraAlreadyPlaced)
+        public override void ApplyBehavior(ref Vector3 cameraTarget, ref Vector3 lookAtTarget, LivPlayerEntity player)
         {
             Vector3 averageHandPosition = player.handAverage;
             Vector3 handDirection;
@@ -315,7 +314,7 @@ namespace MACPlugin
             {
                 ironSightsEnabled = true;
                 // Should have a smooth transition between Iron Sights and non iron sights.
-                sightsCamera.ApplyBehavior(ref cameraTarget, ref lookAtTarget, player, isCameraAlreadyPlaced);
+                sightsCamera.ApplyBehavior(ref cameraTarget, ref lookAtTarget, player);
                 blend += (pluginSettings.cameraGunSmoothing / 2) * Time.deltaTime;
             }
             else
@@ -345,7 +344,7 @@ namespace MACPlugin
         private bool swappingSides = false;
 
         public FullBodyActionCamera(ActionCameraConfig settings) :
-            base(settings, 0, Vector3.zero, false, false)
+            base(settings, 0, Vector3.zero, false)
         {
             SetBetweenTime(settings.cameraBodyPositioningTime / (settings.inBetweenCameraEnabled ? 2 : 1));
             Vector3 neutralOffset = offset;
@@ -391,7 +390,7 @@ namespace MACPlugin
             }
             return base.GetBetweenTime();
         }
-        public override void ApplyBehavior(ref Vector3 cameraTarget, ref Vector3 lookAtTarget, LivPlayerEntity player, bool isCameraAlreadyPlaced)
+        public override void ApplyBehavior(ref Vector3 cameraTarget, ref Vector3 lookAtTarget, LivPlayerEntity player)
         {
             Vector3 cameraPositionOffsetTarget = offset;
 
@@ -416,7 +415,7 @@ namespace MACPlugin
 
             if (swappingSides && pluginSettings.inBetweenCameraEnabled)
             {
-                betweenCamera.ApplyBehavior(ref cameraTarget, ref lookAtTarget, player, isCameraAlreadyPlaced);
+                betweenCamera.ApplyBehavior(ref cameraTarget, ref lookAtTarget, player);
             }
             else
             {
@@ -442,12 +441,12 @@ namespace MACPlugin
     public class TopDownActionCamera : ActionCamera
     {
         public TopDownActionCamera(ActionCameraConfig settings, float timeBetweenChange, float distance) :
-            base(settings, timeBetweenChange, new Vector3(0, distance, 0), false, false)
+            base(settings, timeBetweenChange, new Vector3(0, distance, 0), false)
         {
             facingAvatar = true;
         }
 
-        public override void ApplyBehavior(ref Vector3 cameraTarget, ref Vector3 lookAtTarget, LivPlayerEntity player, bool isCameraAlreadyPlaced)
+        public override void ApplyBehavior(ref Vector3 cameraTarget, ref Vector3 lookAtTarget, LivPlayerEntity player)
         {
             cameraTarget = player.head.position + offset;
             lookAtTarget = player.head.position;
