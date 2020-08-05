@@ -227,9 +227,11 @@ namespace MACPlugin
                 player.timerHelper.ResetCameraActionTimer();
             }
 
-            if (swappingSides && pluginSettings.inBetweenCameraEnabled)
+            if (swappingSides && pluginSettings.inBetweenCameraEnabled && pluginSettings.cameraShoulderFollowGaze)
             {
                 betweenCamera.ApplyBehavior(ref cameraTarget, ref lookAtTarget, player);
+
+                // TODO: Use Circular pathing instead with GetBetweenTime()/player.timerHelper.cameraActionTimer with a clamp
             }
             else
             {
@@ -238,15 +240,51 @@ namespace MACPlugin
                 sbyte settingsReverse = pluginSettings.reverseShoulder ? NEGATIVE_SBYTE : POSITIVE_SBYTE;
 
                 cameraOffsetTarget.x = -currentSide * Mathf.Abs(cameraOffsetTarget.x) * settingsReverse;
-                cameraTarget = player.head.TransformPoint(cameraOffsetTarget);
+               
+
+                if (pluginSettings.cameraShoulderUseRoomOriginCenter)
+                {
+                    cameraTarget = Vector3.zero;
+
+                    if (pluginSettings.cameraShoulderFollowGaze)
+                    {
+                        
+                        cameraTarget += (player.head.rotation * cameraOffsetTarget);
+
+                    } else {
+
+                        cameraTarget = cameraOffsetTarget;
+                    }
+                    cameraTarget.y = player.head.position.y;
+
+                } else
+                {
+                    if (pluginSettings.cameraShoulderFollowGaze)
+                    {
+                        cameraTarget = player.head.TransformPoint(cameraOffsetTarget);
+                    }
+                    else
+                    {
+                        cameraTarget = cameraOffsetTarget;
+                        cameraTarget.y = player.head.position.y;
+                    }
+                }
 
                 // Floor and Ceiling Avoidance. Camera should not be too high or too low in ratio to player head position
                 cameraTarget.y = Mathf.Clamp(cameraTarget.y, player.head.position.y * 0.2f, player.head.position.y * 1.2f);
 
-                lookAtTarget = player.head.TransformPoint(lookAtOffset);
 
-                if (pluginSettings.cameraVerticalLock)
+                if (pluginSettings.cameraShoulderFollowGaze)
                 {
+                    lookAtTarget = player.head.TransformPoint(lookAtOffset);
+
+                    if (pluginSettings.cameraVerticalLock)
+                    {
+                        lookAtTarget.y = (player.waist.position.y + player.head.position.y) / 2;
+                    }
+                } else
+                {
+                    lookAtTarget = lookAtOffset;
                     lookAtTarget.y = (player.waist.position.y + player.head.position.y) / 2;
                 }
             }
@@ -323,7 +361,6 @@ namespace MACPlugin
                 cameraTarget = player.head.TransformPoint(offset);
                 lookAtTarget = player.head.TransformPoint(lookAtOffset);
 
-
                 blend -= 1 / (pluginSettings.cameraGunSmoothing/2) * Time.deltaTime;
             }
 
@@ -366,7 +403,6 @@ namespace MACPlugin
             Vector3 calculatedOffset = new Vector3(x, 0.4f, y);
 
             //  calculatedOffset.z = Mathf.Sqrt(Mathf.Abs(Mathf.Pow(offset.z, 2f) - Mathf.Pow(offset.x, 2f)));
-            PluginLog.Log("FullBodyActionCamera", "Calculated Position " + calculatedOffset);
             offset = calculatedOffset;
             lookAtOffset.y = pluginSettings.cameraBodyVerticalTargetOffset;
             lookAtOffset.z = pluginSettings.cameraBodyLookAtForward;
@@ -416,18 +452,41 @@ namespace MACPlugin
             if (swappingSides && pluginSettings.inBetweenCameraEnabled)
             {
                 betweenCamera.ApplyBehavior(ref cameraTarget, ref lookAtTarget, player);
+                // TODO: If swapping sides, constrain to a circular path.
             }
             else
             {
                 sbyte settingsReverse = pluginSettings.reverseFBT ? NEGATIVE_SBYTE : POSITIVE_SBYTE;
                 cameraPositionOffsetTarget.x = -currentSide * Mathf.Abs(cameraPositionOffsetTarget.x) * settingsReverse;
 
-                cameraTarget = player.head.TransformPoint(cameraPositionOffsetTarget);
+                if (pluginSettings.cameraBodyUseRoomOriginCenter)
+                {
+                    cameraTarget = Vector3.zero;
+                    if (pluginSettings.cameraBodyFollowGaze) {
+                        cameraTarget += (player.head.rotation * cameraPositionOffsetTarget);
+                    } else
+                    {
+                        cameraTarget += cameraPositionOffsetTarget;
+                    }
+                    cameraTarget.y = (player.head.position.y * 2 + player.waist.position.y) / 3;
+                }
+                else
+                {
+                    cameraTarget = player.head.TransformPoint(cameraPositionOffsetTarget);
+                }
 
-                // Floor and Ceiling Avoidance. Camera should not be too high or too low in ratio to player head position
-                cameraTarget.y = Mathf.Clamp(cameraTarget.y, player.head.position.y * 0.2f, player.head.position.y * 1.2f);
+            }
 
+            // Floor and Ceiling Avoidance. Camera should not be too high or too low in ratio to player head position
+            cameraTarget.y = Mathf.Clamp(cameraTarget.y, player.head.position.y * 0.2f, player.head.position.y * 1.2f);
 
+            if (pluginSettings.cameraBodyUseRoomOriginCenter)
+            {
+                lookAtTarget = lookAtOffset;
+                lookAtTarget.z = lookAtOffset.z;
+            }
+            else
+            {
                 lookAtTarget = (player.waist.position + player.head.TransformPoint(lookAtOffset)) / 2;
 
                 if (pluginSettings.cameraVerticalLock)
@@ -435,6 +494,8 @@ namespace MACPlugin
                     lookAtTarget.y = (player.waist.position.y + player.head.position.y) / 2;
                 }
             }
+
+
         }
     }
 

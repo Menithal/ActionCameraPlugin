@@ -24,6 +24,11 @@ using MACPlugin.Utility;
 public class ActionCameraSettings : IPluginSettings
 {
     public string configurationName = "MACPluginDefault.config";
+    // Fov values must be transfered from json to config object on serialization. 
+    // json object is loaded first, but this config offload makes sure its smaller and less likely to fail badly.
+
+    public float cameraGunFov = 80f;
+    public float cameraDefaultFov = 80f;
 }
 
 namespace MACPlugin
@@ -53,7 +58,7 @@ namespace MACPlugin
         {
             PluginLog.Log("ActionCameraPlugin", "OnActivate");
             timerHelper = new TimerHelper();
-            ConfigUtility utility = new ConfigUtility(_settings.configurationName);
+            ConfigUtility utility = new ConfigUtility(_settings.configurationName, _settings.cameraDefaultFov, _settings.cameraGunFov);
             cameraDirector = new ActionCameraDirector(utility.Config, helper, ref timerHelper);
 
             AvatarManager avatarManager = Resources.FindObjectsOfTypeAll<AvatarManager>().FirstOrDefault();
@@ -95,7 +100,7 @@ namespace MACPlugin
         public void OnSettingsDeserialized()
         {
             PluginLog.Log("ActionCameraPlugin", "OnSettingsDeserialized");
-            ConfigUtility utility = new ConfigUtility(_settings.configurationName);
+            ConfigUtility utility = new ConfigUtility(_settings.configurationName, _settings.cameraDefaultFov, _settings.cameraGunFov);
             cameraDirector.SetSettings(utility.Config);
         }
 

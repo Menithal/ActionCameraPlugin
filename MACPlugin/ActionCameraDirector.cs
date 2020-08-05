@@ -79,6 +79,8 @@ namespace MACPlugin
             FPSCamera.SetPluginSettings(settings);
             FullBodyActionCamera.SetPluginSettings(settings);
             TacticalCamera.SetPluginSettings(settings);
+
+            settings.PrintContents();
         }
 
         private void SetCamera(ActionCamera camera, float timerOverride = 0)
@@ -255,16 +257,11 @@ namespace MACPlugin
 
                 cameraPosition = Vector3.SmoothDamp(cameraPosition, cameraPositionTarget, ref cameraVelocity, currentCamera.GetBetweenTime());
 
-                if (lastCamera != null && !lastCamera.facingAvatar && currentCamera.facingAvatar && this.pluginSettings.alwaysHaveAvatarInFrame)
+                if (lastCamera != null && this.pluginSettings.alwaysHaveAvatarInFrame && lastCamera.facingAvatar && !currentCamera.facingAvatar)
                 {
-                    if (Vector3.Distance(cameraPositionTarget, cameraPosition) > pluginSettings.cameraBodyDistance / 2)
-                    {
-                        cameraLookAt = Vector3.SmoothDamp(cameraLookAt, (player.waist.position + player.head.position) / 2, ref cameraLookAtVelocity, currentCamera.GetBetweenTime());
-                    }
-                    else
-                    {
-                        cameraLookAt = Vector3.SmoothDamp(cameraLookAt, cameraLookAtTarget, ref cameraLookAtVelocity, currentCamera.GetBetweenTime());
-                    }
+            
+                    float distance = Mathf.Clamp(Vector3.Distance(cameraPositionTarget, cameraPosition) / (pluginSettings.cameraBodyDistance / 2), 0f, 1f);
+                    cameraLookAt = Vector3.SmoothDamp(cameraLookAt, Vector3.Lerp(cameraLookAtTarget, prevCameraLookAtTarget, distance), ref cameraLookAtVelocity, currentCamera.GetBetweenTime());
                 }
                 else
                 {
@@ -274,7 +271,13 @@ namespace MACPlugin
                 Vector3 lookDirection = cameraLookAt - cameraPosition;
                 Quaternion rotation = currentCamera.GetRotation(lookDirection, player);
 
+
                 cameraHelper.UpdateCameraPose(cameraPosition, rotation, currentCamera.GetFOV());
+            }
+            else
+            {
+                // Loading state, Setup FOV and Everything before moving on.
+                cameraHelper.UpdateCameraPose(new Vector3(0, 10f, 0), Quaternion.LookRotation(-Vector3.up), currentCamera.GetFOV());
             }
         }
     }

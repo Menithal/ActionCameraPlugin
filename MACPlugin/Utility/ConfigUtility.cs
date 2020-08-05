@@ -32,13 +32,17 @@ namespace MACPlugin.Utility
         /**
          * Utility Class that is used to read and write configurations from a single file.
          */
-        public ConfigUtility(String filename = "MACPluginDefault.config")
+        public ConfigUtility(String filename, float defaultFov, float gunFov)
         {
             String drive = Environment.GetEnvironmentVariable("HOMEDRIVE");
             String homePath = Environment.GetEnvironmentVariable("HOMEPATH");
             configPath = drive + homePath + "\\Documents\\LIV\\Plugins\\" + filename;
 
-            Config = new ActionCameraConfig();
+            Config = new ActionCameraConfig
+            {
+                cameraDefaultFov = defaultFov,
+                cameraGunFov = gunFov
+            };
 #if DEBUG
             Stopwatch sw = new Stopwatch();
             sw.Start();
@@ -124,24 +128,38 @@ namespace MACPlugin.Utility
                         String key = configSplit[0];
                         String value = configSplit[1];
 
-                        configValidationSet.Remove(key);
-
-                        if (floatConfigs.ContainsKey(key))
+                        try
                         {
-                            FloatConstraint floatConstraint = floatConfigs[key];
+                            configValidationSet.Remove(key);
+                            if (floatConfigs.ContainsKey(key))
+                            {
+                                FloatConstraint floatConstraint = floatConfigs[key];
 
-                            configFieldInfos[key].SetValue(Config, floatConstraint.Constrain(float.Parse(value)));
+                                configFieldInfos[key].SetValue(Config, floatConstraint.Constrain(float.Parse(value)));
 
+                            }
+                            else if (booleanConfigs.ContainsKey(key))
+                            {
+                                BooleanConstraint booleanConstraint = booleanConfigs[key];
+
+                                configFieldInfos[key].SetValue(Config, booleanConstraint.Constrain(Boolean.Parse(value)));
+                            }
+                            else
+                            {
+                                PluginLog.Warn("ConfigUtility", "Config " + key + " is unknown. You can remove this from the config file, its not being used by this plugin.");
+                            }
                         }
-                        else if (booleanConfigs.ContainsKey(key))
+                        catch (FormatException)
                         {
-                            BooleanConstraint booleanConstraint = booleanConfigs[key];
-
-                            configFieldInfos[key].SetValue(Config, booleanConstraint.Constrain(Boolean.Parse(value)));
+                            PluginLog.Error("ConfigUtility", "Config " + key + " format is invalid, Double check that input value is correct " + value);
                         }
-                        else
+                        catch (ArgumentException)
                         {
-                            PluginLog.Warn("ConfigUtility", "Unknown Key " + key + ". You can remove this from the config file, its not being used by this plugin.");
+                            PluginLog.Error("ConfigUtility", "Config " + key + " is empty when it shouldnt be.");
+                        }
+                        catch (OverflowException)
+                        {
+                            PluginLog.Error("ConfigUtility", "Config " + key + " is big... Too big. Double check the values.");
                         }
 
                         // Do config binding here.
@@ -181,7 +199,6 @@ namespace MACPlugin.Utility
                     PluginLog.Error("ConfigUtility", "ArgumentException: This error should not occur and indicates an untested case. Please github issue " + e.Message);
                 }
 
-                Config.PrintContents();
 
                 PluginLog.Debug("ConfigUtility", "Settings are now Loaded");
 

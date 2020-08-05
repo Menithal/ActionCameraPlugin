@@ -45,7 +45,7 @@ namespace MACPlugin
         public bool disableGunCamera = false;
         [SerializableBooleanConfig(false)]
         public bool inBetweenCameraEnabled = true;
-        [SerializableFloatConfig(80f, 45f, 120f)]
+        //[SerializableFloatConfig(80f, 45f, 120f)]
         public float cameraDefaultFov = 80f;
         [SerializableBooleanConfig(false)]
         public bool FPSCameraOverride = false;
@@ -81,7 +81,7 @@ namespace MACPlugin
         [SerializableBooleanConfig(true)]
         public bool rightHandDominant = true;
 
-        [SerializableFloatConfig(80f, 45f, 120f)]
+        //[SerializableFloatConfig(80f, 45f, 120f)]
         public float cameraGunFov = 80f;
         [SerializableBooleanConfig(false)]
         public bool cameraFovLerp = false;
@@ -102,6 +102,14 @@ namespace MACPlugin
         [SerializableBooleanConfig(true)]
         public bool alwaysHaveAvatarInFrame = true;
 
+        [SerializableBooleanConfig(false)]
+        public bool cameraBodyUseRoomOriginCenter = false;
+        [SerializableBooleanConfig(false)]
+        public bool cameraShoulderUseRoomOriginCenter = false;
+        [SerializableBooleanConfig(true)]
+        public bool cameraShoulderFollowGaze = true;
+        [SerializableBooleanConfig(true)]
+        public bool cameraBodyFollowGaze = true;
         public void PrintContents()
         {
 #if DEBUG
