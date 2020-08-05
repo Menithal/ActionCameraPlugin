@@ -24,6 +24,7 @@ namespace MACPlugin
         protected float fov = 90;
         private float timeBetweenChange = 1f;
         public bool removeHead = false;
+        public bool inAvatar = false;
         public bool facingAvatar = false;
 
         protected static readonly sbyte POSITIVE_SBYTE = 1;
@@ -86,6 +87,7 @@ namespace MACPlugin
         public SimpleActionCamera(ActionCameraConfig settings, float timeBetweenChange, Vector3 offset, bool removeHead = false) :
             base(settings, timeBetweenChange, offset, removeHead)
         {
+            
         }
 
         // Next to FPS Camera, simplest Camerda
@@ -120,7 +122,7 @@ namespace MACPlugin
         }
         public override void SetPluginSettings(ActionCameraConfig settings)
         {
-
+            inAvatar = true;
             fov = settings.cameraGunFov;
             pluginSettings = settings;
             offset = new Vector3(0, -settings.cameraGunEyeVerticalOffset, 0);
@@ -299,6 +301,7 @@ namespace MACPlugin
         float blend = 0;
         public FPSCamera(ActionCameraConfig settings, float timeBetweenChange) : base(settings, timeBetweenChange, Vector3.zero, true)
         {
+            inAvatar = true;
             sightsCamera = new ScopeActionCamera(settings);
             ironSightsEnabled = false;
         }

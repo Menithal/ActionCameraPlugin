@@ -110,6 +110,9 @@ namespace MACPlugin
         public bool cameraShoulderFollowGaze = true;
         [SerializableBooleanConfig(true)]
         public bool cameraBodyFollowGaze = true;
+
+        [SerializableFloatConfig(0.1f, 0, 0.5f)]
+        public float minimumCameraDistance = 0.5f;
         public void PrintContents()
         {
 #if DEBUG

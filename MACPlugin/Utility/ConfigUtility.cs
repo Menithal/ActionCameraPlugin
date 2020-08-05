@@ -28,7 +28,6 @@ namespace MACPlugin.Utility
         private readonly String configPath;
         public ActionCameraConfig Config { get; private set; }
 
-
         /**
          * Utility Class that is used to read and write configurations from a single file.
          */

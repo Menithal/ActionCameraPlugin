@@ -15,6 +15,8 @@
 **/
 using LIV.Avatar;
 using UnityEngine;
+using MACPlugin.Utility;
+
 namespace MACPlugin
 {
     public class ActionCameraDirector
@@ -267,6 +269,18 @@ namespace MACPlugin
                 {
                     cameraLookAt = Vector3.SmoothDamp(cameraLookAt, cameraLookAtTarget, ref cameraLookAtVelocity, currentCamera.GetBetweenTime());
                 }
+
+                Vector3 flatDistance = cameraPosition - player.head.position;
+                flatDistance.y = 0;
+
+                if (flatDistance.magnitude < pluginSettings.minimumCameraDistance && !currentCamera.inAvatar)
+                {
+                    // Clamp to acircle
+                    Vector3 newPosition = (player.head.position + player.waist.position)/2 + CameraUtil.ClampToCircle(flatDistance, pluginSettings.minimumCameraDistance);
+                    newPosition.y = cameraPosition.y;
+                    cameraPosition = newPosition;
+                }
+
 
                 Vector3 lookDirection = cameraLookAt - cameraPosition;
                 Quaternion rotation = currentCamera.GetRotation(lookDirection, player);
