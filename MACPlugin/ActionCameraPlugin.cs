@@ -46,19 +46,20 @@ namespace MACPlugin
 #endif
         public string ID => "ActionCamera";
         public string author => "MA 'Menithal' Lahtinen";
-        public string version => "1.0.0a";
+        public string version => "1.0.0";
 
         public event EventHandler ApplySettings;
         private ActionCameraDirector cameraDirector;
         private TimerHelper timerHelper;
         private AvatarReferenceSignal avatarRefSignal;
-
+        private ConfigUtility utility;
         // Called when the Plugin is selected
         public void OnActivate(PluginCameraHelper helper)
         {
             PluginLog.Log("ActionCameraPlugin", "OnActivate");
             timerHelper = new TimerHelper();
-            ConfigUtility utility = new ConfigUtility(_settings.configurationName, _settings.cameraDefaultFov, _settings.cameraGunFov);
+            utility = new ConfigUtility(_settings.configurationName, _settings.cameraDefaultFov, _settings.cameraGunFov);
+
             cameraDirector = new ActionCameraDirector(utility.Config, helper, ref timerHelper);
 
             AvatarManager avatarManager = Resources.FindObjectsOfTypeAll<AvatarManager>().FirstOrDefault();
@@ -100,7 +101,7 @@ namespace MACPlugin
         public void OnSettingsDeserialized()
         {
             PluginLog.Log("ActionCameraPlugin", "OnSettingsDeserialized");
-            ConfigUtility utility = new ConfigUtility(_settings.configurationName, _settings.cameraDefaultFov, _settings.cameraGunFov);
+            utility = new ConfigUtility(_settings.configurationName, _settings.cameraDefaultFov, _settings.cameraGunFov);
             cameraDirector.SetSettings(utility.Config);
         }
 
@@ -114,7 +115,14 @@ namespace MACPlugin
         public void OnUpdate()
         {
             timerHelper.AddTime(Time.deltaTime);
-            cameraDirector.SelectCamera();
+            if (utility.Config.useDanceGestures)
+            {
+                //cameraDirector.SelectCameraDance();
+            }
+            else {
+                cameraDirector.SelectCameraLegacy();
+            }
+            
             cameraDirector.HandleCameraView();
         }
     }

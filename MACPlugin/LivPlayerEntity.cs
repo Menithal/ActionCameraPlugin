@@ -21,6 +21,8 @@ namespace MACPlugin
     {
         private PluginCameraHelper pluginCameraHelper;
         public Transform waist { get { return pluginCameraHelper.playerHead; } }
+
+        public Vector3 chestEstimate { get { return (head.position + head.position + waist.position) / 3; } }
         public Transform rightHand { get { return pluginCameraHelper.playerRightHand; } }
         public Transform leftHand { get { return pluginCameraHelper.playerLeftHand; } }
         public Transform head { get { return pluginCameraHelper.playerHead; } }
@@ -64,6 +66,7 @@ namespace MACPlugin
         public Vector3 headForwardDownDirection { get; private set; } = Vector3.zero;
 
         public Vector3 headForwardDirection { get; private set; } = Vector3.zero;
+        public Vector3 headBackwardDirection { get; private set; } = Vector3.zero;
         public Vector3 leftHandForwardDirection { get; private set; } = Vector3.zero;
         public Vector3 rightHandForwardDirection { get; private set; } = Vector3.zero;
 
@@ -74,7 +77,10 @@ namespace MACPlugin
         private Vector3 dampedForwardCamera = Vector3.zero;
         private Vector3 dampedRightHand = Vector3.zero;
         private Vector3 dampedLeftHand = Vector3.zero;
+        public Vector3 preCalculatedBackDirection { get; private set; } = Vector3.zero;
 
+        public sbyte currentSide = 1;
+        public bool swappingSides = false;
         public void SetOffsets(float horizontalOffset, float verticalOffset, float distance)
         {
             preCalculatedAbovePlayer = new Vector3(0, verticalOffset, 0);
@@ -84,6 +90,7 @@ namespace MACPlugin
             preCalculatedAboveHeadDirection = new Vector3(0, verticalOffset, distance);
             preCalculatedBelowHeadDirection = new Vector3(0, -verticalOffset, distance);
             preCalculatedFrontDirection = new Vector3(0, 0, distance);
+            preCalculatedBackDirection = new Vector3(0, 0, -0.2f);
         }
         public void CalculateInfo()
         {
@@ -100,6 +107,7 @@ namespace MACPlugin
             headForwardUpDirection = head.TransformPoint(preCalculatedAboveHeadDirection);
             headForwardDownDirection = head.TransformPoint(preCalculatedBelowHeadDirection);
 
+            headBackwardDirection = head.TransformPoint(preCalculatedBackDirection);
             headForwardDirection = head.TransformPoint(preCalculatedFrontDirection);
             rightHandForwardDirection = rightHand.TransformPoint(preCalculatedFrontDirection);
             leftHandForwardDirection = leftHand.TransformPoint(preCalculatedFrontDirection);

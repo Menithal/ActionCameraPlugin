@@ -26,9 +26,9 @@ namespace MACPlugin
         [SerializableFloatConfig(0.1f, 5)]
         public float controlVerticalMovementThreshold = 2; // Meters per framea
                                                            // Users tend to have headset a bit higher, so when they are looking down sights they are not 
-        [SerializableFloatConfig(0, 5)]
+        //[SerializableFloatConfig(0, 5)]
         public float forwardVerticalOffset = 0;
-        [SerializableFloatConfig(5, 5)]
+        //[SerializableFloatConfig(5, 5)]
         public float forwardHorizontalOffset = 5;
         //  [SerializableFloatConfig(15)] 
         public float forwardDistance = 10; // Maybe this value should not be adjustable...
@@ -43,8 +43,6 @@ namespace MACPlugin
         public bool disableFPSCamera = false;
         [SerializableBooleanConfig(false)]
         public bool disableGunCamera = false;
-        [SerializableBooleanConfig(false)]
-        public bool inBetweenCameraEnabled = true;
         //[SerializableFloatConfig(80f, 45f, 120f)]
         public float cameraDefaultFov = 80f;
         [SerializableBooleanConfig(false)]
@@ -113,6 +111,17 @@ namespace MACPlugin
 
         [SerializableFloatConfig(0.1f, 0, 0.5f)]
         public float minimumCameraDistance = 0.5f;
+
+
+        [SerializableBooleanConfig(true)]
+        public bool useEyePosition = true;
+        [SerializableBooleanConfig(true)]
+        public bool rightEyeDominant = true;
+        [SerializableBooleanConfig(false)]
+        public bool linearCameraMovement = false;
+
+
+        public bool useDanceGestures = false;
         public void PrintContents()
         {
 #if DEBUG

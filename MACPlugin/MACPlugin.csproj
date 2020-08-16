@@ -54,6 +54,7 @@
     <Compile Include="ActionCamera.cs" />
     <Compile Include="ActionCameraDirector.cs" />
     <Compile Include="ActionCameraConfig.cs" />
+    <Compile Include="Utility\CameraUtility.cs" />
     <Compile Include="Utility\ConfigUtility.cs" />
     <Compile Include="Utility\SerializableConfigAttributes.cs" />
     <Compile Include="Utility\DebugUtility.cs" />

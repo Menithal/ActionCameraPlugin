@@ -1,21 +1,20 @@
 ﻿# Menithal's Dynamic Action Camera
 
-This allows you LIV Avatars to express your self via some gesture and camera automation to avoid having to have a separate person or
-a game pad strapped to control specifically the camera.
-
 See License.
 
 ## Installation
 
-Make sure you are running LIV SDK2 build (1.3.5+)
+Make sure you are running latest LIV build (2.0.0+)
 Install by moving the ActionCamera.dll from Releases into your Liv Plugins CameraBehaviours directory at
 
 `%HOMEPATH%/Documents/Liv/Plugins/CameraBehaviours/`
 
-## Use
-When in Liv, Set an Avatar Camera, and make sure to select Plugin > "Menithal' Action Camera" to start using the plugin.
-Closing Liv now wil update your settings file. You can then create and configure multiple profiles with different configurations in Liv and modifying the json file. See Configuration for more detail
+After putting it in the directory, make sure to check that the dll is not blocked by right clicking it, 
+properties, and checking at the bottom of the window and making sure its not being blocked. An option to unblock is will be visible otherwise.
 
+## Use
+
+in VR with the LIV compositor active, to Set an Avatar Camera, and make sure to select Plugin > "Menithal' Action Camera" to start using the plugin.
 
 ### Available Cameras
 
@@ -23,11 +22,11 @@ Closing Liv now wil update your settings file. You can then create and configure
 what you will see before you do.  You can reverse this with the `reverseShoulder` config.
 - *FullBodyAction* - Front side view of your Liv Avatar. Turning your head moves the point of view similar to the shoulder view. You can reverse this with the `reverseShoulder` config. Can be turned off with `disableFBTCamera`.
 - *FirstPerson* - FPS view of the game. Smoothened, and similar to how the game would play, but you can turn on avatar visibility with `removeAvatarInsteadOfHead`.  Can be turned off with `disableFPSCamera`.
-- *GunCam/Sights* - Down Sights view of the game when holding a weapon two handed, and looking down the sights. Shows avatar if 
-`removeAvatarInsteadOfHead` is disabled.  Can be turned off with `disableGunCamera`.
+- *AimDownSights* - Down Sights view of the game when holding a weapon two handed, and looking down the sights. Shows avatar if 
+`removeAvatarInsteadOfHead` is disabled.  Can be turned off with `disableGunCamera`. Occurs only when in First Person
 - *Tactical* - Top down view of the game. Can be turned off with `disableFBTCamera`. Default off due to some bugs with liv.
 
-### Controlling Cameras and Gestures
+### Controlling Cameras and Command Gestures
 
 You direct the camera direction with head movement (for now) with your controllers behaving as keylocks You must be mostly pointing forwards with your controllers for commands to work.. 
 
@@ -38,13 +37,9 @@ Passively this works best with games where you are doing alot of aiming, dodging
 into cover than games where you can mostly stand still (like BeatSaber):
 It can work, in Beatsaber, but you have to really exaggerate your head movements to get the camera to work in your favor, but its all about practice.
 
-
 - If you Point your fingers forward (controller forward) and turn your head left or right You **direct the camera to go over your shoulders.**
-
 - If you **Angle the controllers slightly down before you look down**, your gesture direct to
 show something on your body, *view will swap to either FPS or Dynamic Full body camera*
-
-
 - If you **Angle the controllers slighly up before looking up**, you direct the camera to show an up comming action OR the surroundings:
 *view will swap to either a Dynamic Full body camera, or rarely, a tactical perspective from top down (default disabled).*
 
@@ -56,79 +51,28 @@ gives you a small edge in some multiplayer games that support LIV. The intention
 
 ## Configuring
 
-Configurable after setting as a plugin for a camera, and closing Liv Composer AND App. It is a bit fiddly, but with sufficient configuration you can do quite a bit.
+When you first start using the plugin, a configuration file is created at
 
-You can find the settings at
-`%LOCALAPPDATA%/Liv/App/<LivVersion>.json`
+`%HOMEPATH%/Documents/Liv/Plugins/MACPluginDefault.config`
 
-## Default Setting Example: 
-```
-[...]
-"pluginCameraBehaviourSettings": {
-    "selectedPluginCameraBehaviourID": "ActionCamera",
-    "pluginSettings": {
-        "ActionCamera": {
-            "cameraSwapTimeLock": 8,
-            "cameraPositionTimeLock": 0.8,
-            "reverseFBT": false,
-            "reverseShoulder": false,
-            "controlMovementThreshold": 3,
-            "forwardVerticalOffset": 0,
-            "forwardHorizontalOffset": 5,
-            "forwardDistance": 10,
-            
-            "removeAvatarInsteadOfHead": true,
-            "disableTopCamera": true,
-            "disableFBTCamera": false,
-            "disableFPSCamera": true,
-            "disableGunCamera": true,
-            "inBetweenCameraEnabled": true,
-            "cameraVerticalLock": false,
-            "cameraDefaultFov": 80.0,
-            
-            "cameraShoulderPositioningTime": 0.9,
-            "cameraShoulderdistance": 1.8,
-            "cameraShoulderAngle": 35,
-            "cameraShoulderSensitivity": 2,
+You can find example configurations (Default, Dedicated Action, Static Dancing, Static Dancing without Front) in the [Examples Directory](Examples/)
 
-            "cameraBodyPositioningTime": 2,
-            "cameraBodyLookAtForward": 1,
-            "cameraBodyDistance": 1.4,
-            "cameraBodyAngle": 45,
-            "cameraBodySensitivity": 2,
-
-            "averageHandsWithHead": true,
-            "useDominantHand": false,
-            "rightHandDominant": true,
-            "disableGunCamera": true,
-            "cameraGunFov": 80.0,
-            "cameraGunZoom": 0.25,
-            "cameraGunHeadDistanceTrigger": 0.25,
-            "cameraMaxTwoHandedDistance": 0.4,
-            "cameraMinTwoHandedDistance": 0.08
-        }
-    }
-}
-[...]
-```
+You can copy the values from the files and transplant them over the MACPluginDefault.config file
 
 ### Configurables: 
 
 - `cameraSwapTimeLock`: Time in seconds, before changing cameras again.
 - `cameraPositionTimeLock`:  Time in seconds, before changing camera positioning when in action mode
-- `reverseFBT`: If true, inverses the side for full body camera. defaults false.
-- `reverseShoulder`: If true, inverses the side of the shoulder camera. defaults false.
+- `reverseFBT`: If `True`, inverses the side for full body camera. defaults false.
+- `reverseShoulder`: If `True`, inverses the side of the shoulder camera. defaults false.
 - `controlMovementThreshold`:  Numeric value that defines that relative radial velocity of the controllers / hmd before a gesture is accepted. 2.0 is default.
 - `controlMovementVerticalThreshold`:  Numeric value that defines that relative radial velocity of the controllers / hmd before a gesture is accepted for up and down movements.. 4.0 is default.
-- `forwardVerticalOffset`: Defaults to 0, Adds vertical offset to gesture detection points. Increase value if you tend to have your pointing higher or lower than normal when looking at first person view.
-- `forwardHorizontalOffset`:  Offset for gesture detection points from center of your view.
-- `forwardDistance`:  Forward distance from where the radial velocity is measured from     
-- `removeAvatarInsteadOfHead`: Instead of removing the head of the avatar when in first person mode, when set to true, will remove the avatar. defaults true.
-- `disableTopCamera`: If true, Disables Top Down Camera. defaults true.
-- `disableFBTCamera`: If true, Disables Full body Front-side Camera. defaults false.
-- `disableFPSCamera`:  If true, Disables FPS Camera. defaults false.
-- `inBetweenCameraEnabled`: If true, enables experimental inbetween cameras when swapping direction in an Action Camera (shoulder or body). Tries to keep an arc.
-- `cameraVerticalLock`: If true, locks the camera look at positioning to be between the user head and waist,       
+- `removeAvatarInsteadOfHead`: Instead of removing the head of the avatar when in first person mode, when set to true, will remove the avatar. defaults `True`.
+- `disableTopCamera`: If `True`, Disables Top Down Camera. defaults true.
+- `disableFBTCamera`: If `True`, Disables Full body Front-side Camera. defaults false.
+- `disableFPSCamera`:  If `True`, Disables FPS Camera. defaults false.
+- `linearCameraMovement`: by default  `False`. if `True`,  camera will move in a Linear Manner between camera sides without trying to orbit. (unless it gets too close avatar during transitions)
+- `cameraVerticalLock`: If `True`, locks the camera look at positioning to be between the user head and waist,       
 - `cameraShoulderPositioningTime`: Time in seconds how long the camera takes to move to the new side when over shoulder
 - `cameraShoulderDistance`: Distance from the avatar the Shoulder Camera should be at
 - `cameraShoulderAngle`: The Angle (in Degrees) the camera will be behind the avatar/
@@ -140,7 +84,6 @@ You can find the settings at
 - `cameraBodyAngle`: The Angle (in Degrees) the camera will be infront of the avatar
 - `cameraBodySensitivity`: How fast to detect a turn to swap sides. Smaller the value, the more sensitive.
 - `disableGunCamera`: Disable Gun / Scope Camera
-- `cameraGunFov`: Degrees the camera will goto. 45 is default, CHANGE ONLY IF GAME SUPPORTS THIS ON RUN TIME. Suggested 40-90
 - `cameraGunHeadAlignAngleTrigger`: the amount of degrees your head must be aligned with the path your weapons to count as looking down the sights. by default it is 25 degrees
 - `cameraGunHeadDistanceTrigger`: Distance at which the gun camera starts to be triggered.
 - `cameraGunEyeVerticalOffset`:  the amount of vertical offset from your dominant eye to down the ironsight raycast.
@@ -148,69 +91,41 @@ You can find the settings at
 - `cameraGunMinTwoHandedDistance`: Minimum Distance between hands when still counting as using the gun camera.
 - `cameraGunSmoothing`: Time it takes to get to new point
 - `rightHandDominant` Sets either your right hand dominant or left hand dominant. This effects which eye and hand is used to measure two handness. If right handed, the right hand must be close to the right eye, if left handed, vice versa. by default assumes righthandness
+- `alwaysHaveAvatarInFrame`: by default `True`. When camera is transitioning between camera positions, try to keep avatar in frame.
+- `cameraBodyUseRoomOriginCenter`: by default `False`. if `True` Body camera will Use the center of the room as the anchor point instead of moving and rotating avatar, pointing towards the roomspace forward
+- `cameraShoulderUseRoomOriginCenter`: by default `False`. if `True` Shoulder camera will Use the center of the room as the anchor point, instead of the player head. Will however use the player height.
+- `cameraShoulderFollowGaze`: by default `True`. if `False` Shoulder camera will look towards where the player is looking at, instead using the common roomspace forward.
+- `minimumCameraDistance`: by default `0.2`. Determines the distance the camera will circle around the avatar when passing by, instead of phasing right through them.
+- `linearCameraMovement`: by default  `False`. if `True`,  camera will m
 
-By default the setting are configured for CQC Pistol Combat (ala pistolwhip) but playing aroudn with the values allows you to create entries for other games, such as Beat Saber or Audica.
+By default the setting are configured forPS Combat (ala pistolwhip) But with enough configuration You can tune how it works for other types of games separatedly.
 
-### Example "Dancing/Sabering" Profile
+
+## Profile Specific Configuration
+
+Sometimes you want to have different configurations per each liv profile / game you want to play, you will then have to modify the LIV settings to point to a separate configuration file.
+
+You can find the profile settings on LIV at
+`%LOCALAPPDATA%/Liv/App/<LivVersion>.json`
+
+### Liv Settings
+
+Find a line under the profile you want to edit and modify a `configurationName`
+
 ```
-[...]
-"pluginCameraBehaviourSettings": {
-    "selectedPluginCameraBehaviourID": "ActionCamera",
-    "pluginSettings": {
-        "ActionCamera": {
-            "shoulderCameraPositioningTime": 2,
-            "bodyCameraPositioningTime": 2,
-            "cameraSwapTimeLock": 10,
-            "cameraPositionTimeLock": 3,
-            "reverseFBT": false,
-            "reverseShoulder": false,
-            "controlMovementThreshold": 1,
-            "forwardVerticalOffset": 0,
-            "forwardHorizontalOffset": 5,
-            "forwardDistance": 10,
-            "removeAvatarInsteadOfHead": true,
-            "disableGunCamera": true,
-            "disableTopCamera": true,
-            "disableFBTCamera": false,
-            "disableFPSCamera": true,
-            "inBetweenCameraEnabled": false,
-            "cameraVerticalLock": true,
-            "cameraDefaultFov": 90.0,
-            
-            "cameraShoulderPositioningTime": 1.8,
-            "cameraShoulderDistance": 2.6,
-            "cameraShoulderAngle": 35,
-            "cameraShoulderSensitivity": 1,
-            "cameraBodyPositioningTime": 4,
-            "cameraBodyLookAtForward": 1.6,
-            "cameraBodyDistance": 3,
-            "cameraBodyAngle": 45,
-            "cameraBodySensitivity": 1,
-
-            "averageHandsWithHead": true,
-            "useDominantHand": false,
-            "rightHandDominant": true,
-
-            "cameraGunFov": 90,
-            "cameraGunZoom": 0.25,
-            "cameraGunHeadDistanceTrigger": 0.25,
-            "cameraMaxTwoHandedDistance": 0.4,
-            "cameraMinTwoHandedDistance": 0.08
+ "pluginCameraBehaviourSettings": {
+        "selectedPluginCameraBehaviourID": "ActionCamera",
+        "pluginSettings": {
+            "ActionCamera": {
+                "configurationName": "MACPluginDefault.config",
+                "cameraDefaultFov": 80,
+                "cameraGunFoV": 80
+            }
         }
     }
-}
-[...]
 ```
 
-
-
-#### Not yet in use
-
-These have not yet been set to be used, but will be related to any other gestures with the controllers
-`averageHandsWithHead`
-`useDominantHand`
-
-Additionally, there might be later some behavior chaining, so that transitions between different types of cameras would be smoother, but this is underworks.
+In the above example `configurationName` is pointing to a file name of `MACPluginDefault.config` which it will look for in the `%HOMEPATH%/Documents/Liv/Plugins/` directory. You can also use this to modify any FoV values what you want to use.
 
 
 ### Contributing, Developing and Building

@@ -59,14 +59,12 @@ namespace MACPlugin.Utility
 
         private void BuildConfig()
         {
-
             // Using Dictionaries for easier look up. Its not very efficient, but its easier to write. 
             // But since we are dealing with less than 1000 lines, I dont think i need to worry about it.
             Dictionary<String, FloatConstraint> floatConfigs = new Dictionary<string, FloatConstraint>();
             Dictionary<String, BooleanConstraint> booleanConfigs = new Dictionary<string, BooleanConstraint>();
             Dictionary<String, FieldInfo> configFieldInfos = new Dictionary<string, FieldInfo>();
             HashSet<String> configValidationSet = new HashSet<string>();
-
 
             Type type = typeof(ActionCameraConfig);
 
