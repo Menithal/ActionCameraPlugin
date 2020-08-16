@@ -1,6 +1,21 @@
 ﻿# Menithal's Dynamic Action Camera
 
-See License.
+
+See [LICENSE](LICENSE.txt)
+
+## Table of Contents
+- [Installation](#installation)
+- [How To Use](#how-to-use)
+  * [Available Cameras](#available-cameras)
+  * [Controlling Cameras and Command Gestures](#controlling-cameras-and-command-gestures)
+- [Configuring](#configuring)
+  * [Configurables:](#configurables-)
+- [Profile Specific Configuration](#profile-specific-configuration)
+  * [Liv Settings](#liv-settings)
+- [Contributing, Developing and Building](#contributing--developing-and-building)
+- [Bug Reports](#bug-reports)
+
+<small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
 
 ## Installation
 
@@ -12,7 +27,7 @@ Install by moving the ActionCamera.dll from Releases into your Liv Plugins Camer
 After putting it in the directory, make sure to check that the dll is not blocked by right clicking it, 
 properties, and checking at the bottom of the window and making sure its not being blocked. An option to unblock is will be visible otherwise.
 
-## Use
+## How To Use
 
 in VR with the LIV compositor active, to Set an Avatar Camera, and make sure to select Plugin > "Menithal' Action Camera" to start using the plugin.
 
@@ -128,13 +143,13 @@ Find a line under the profile you want to edit and modify a `configurationName`
 In the above example `configurationName` is pointing to a file name of `MACPluginDefault.config` which it will look for in the `%HOMEPATH%/Documents/Liv/Plugins/` directory. You can also use this to modify any FoV values what you want to use.
 
 
-### Contributing, Developing and Building
+## Contributing, Developing and Building
 
 Note if building using DEBUG, a textfile will be output to `%HOMEPATH%/Documents/Liv/Output` 
 and written into with debug messages. 
 
 When building a release, make sure NOT to have the DEBUG flag set, otherwise the debug file will be filled to brim. We do not want to flood end users disks with logs.
 
-### Bug Reports 
+## Bug Reports 
 
 You can comments, suggestions, bug reports to me over Discord Malactus#3957 or just leave them as Github Issues
