@@ -201,6 +201,7 @@ namespace MACPlugin.Utility
 
 
                 Config.ready = true;
+                Config.PrintContents();
             }
 
         }

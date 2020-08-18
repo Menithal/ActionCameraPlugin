@@ -1,5 +1,7 @@
 ﻿# Menithal's Dynamic Action Camera
 
+This is a camera plugin for [LIV ](https://liv.tv/) Avatars,
+which allows you to have a more dynamic, varied camera for your audience.
 
 See [LICENSE](LICENSE.txt)
 
@@ -48,7 +50,7 @@ You direct the camera direction with head movement (for now) with your controlle
 Most of the swapping of the camera directions are done by pointing forwards (where your body is pointing towards), while you turn your head.
 Your Head velocity (as of now) controls the camera after.
 
-Passively this works best with games where you are doing alot of aiming, dodging or ducking (PistolWhip / H3 )
+Passively this works best with games where you are doing alot of aiming, dodging or ducking (PistolWhip / H3VR )
 into cover than games where you can mostly stand still (like BeatSaber):
 It can work, in Beatsaber, but you have to really exaggerate your head movements to get the camera to work in your favor, but its all about practice.
 
@@ -86,6 +88,7 @@ You can copy the values from the files and transplant them over the MACPluginDef
 - `disableTopCamera`: If `True`, Disables Top Down Camera. defaults true.
 - `disableFBTCamera`: If `True`, Disables Full body Front-side Camera. defaults false.
 - `disableFPSCamera`:  If `True`, Disables FPS Camera. defaults false.
+- `FPSCameraOverride`: If `True`, Fps camera is always prioritized over any other camera.
 - `linearCameraMovement`: by default  `False`. if `True`,  camera will move in a Linear Manner between camera sides without trying to orbit. (unless it gets too close avatar during transitions)
 - `cameraVerticalLock`: If `True`, locks the camera look at positioning to be between the user head and waist,       
 - `cameraShoulderPositioningTime`: Time in seconds how long the camera takes to move to the new side when over shoulder

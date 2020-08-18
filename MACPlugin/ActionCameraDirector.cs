@@ -150,7 +150,8 @@ namespace MACPlugin
                 if (!pluginSettings.disableGunCamera && areHandsAboveThreshold
                     && Mathf.Abs(player.headRRadialDelta.x) < pluginSettings.controlMovementThreshold
                     && Mathf.Abs(player.headRRadialDelta.y) < pluginSettings.controlVerticalMovementThreshold
-                    /*&& isAimingTwoHandedForward */&& (canSwapCamera || pluginSettings.FPSCameraOverride) && !inGunMode)
+                    && (canSwapCamera || pluginSettings.FPSCameraOverride) && !inGunMode
+                    && timerHelper.cameraGunTimer > 4)
                 {
                     SetCamera(FPSCamera);
                     inGunMode = true;
@@ -184,23 +185,16 @@ namespace MACPlugin
                 {
                     // Hands Are Pointing up-ish, while head is moving up (probably checking on something, wrist, etc.)
 
-                    PluginLog.Log("ActionCameraDirector", "Pointing Up, Moving Head Up: Tactical or FullBody");
+
                     if (randomizer.Next(0, 100) > 80 && !pluginSettings.disableTopCamera || pluginSettings.disableFBTCamera)
                     {
+                        PluginLog.Log("ActionCameraDirector", "Pointing Up, Tact");
                         SetCamera(TacticalCamera);
                     }
                     else
                     {
-                        if (randomizer.Next(0, 100) > 50)
-                        {
-                            SetCamera(FullBodyActionCamera);
-
-                        }
-                        else
-                        {
-                            SetCamera(OverShoulderCamera);
-
-                        }
+                        PluginLog.Log("ActionCameraDirector", "Pointing Up, Overshoulder");
+                        SetCamera(OverShoulderCamera);
                     }
 
                 }
@@ -249,7 +243,6 @@ namespace MACPlugin
             {
 
                 TimerHelper timerHelper = player.timerHelper;
-                player.timerHelper.AddTime(Time.deltaTime);
 
                 sbyte estimatedSide = ((player.headRRadialDelta.x < 0f) ? (sbyte)(-1) : (sbyte)1);
 
@@ -325,8 +318,9 @@ namespace MACPlugin
                 if (this.pluginSettings.alwaysHaveAvatarInFrame && lastCamera != null)
                 {
                     float distance = Mathf.Clamp(Vector3.Distance(cameraPositionTarget, cameraPosition) / (pluginSettings.cameraBodyDistance), 0f, 1f);
+                    float lookAtDistance = player.headRRadialDelta.magnitude;
 
-                    if (!lastCamera.facingAvatar && currentCamera.facingAvatar)
+                    if (!lastCamera.facingAvatar && currentCamera.facingAvatar || lookAtDistance > 2)
                     {
                         // Look at the player as soon as possible.
                         cameraLookAt = Vector3.SmoothDamp(cameraLookAt, cameraLookAtTarget, ref cameraLookAtVelocity, currentCamera.GetBetweenTime() / 4);
