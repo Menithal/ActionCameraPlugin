@@ -9,7 +9,8 @@
 - Refactored Configuration Method, now separate file is used for configuring than Liv settings.
     - New Config files can be found under the Liv/Plugin Folder next to the CameraBehavior Folder. Fov is still in JSON as its the very first thing to be loaded, and to avoid racing issue when opening apps that do not support FOV swapping on the go.
     - Liv Profile settings can still be used to point to another config.
-        - ```
+      
+~~~
 "pluginCameraBehaviourSettings": {
     "selectedPluginCameraBehaviourID": "ActionCamera",
     "pluginSettings": {
@@ -19,9 +20,9 @@
             "cameraGunFoV": 80
         }
     }
- }
-         ```
-    - If the file doesnt exist, is simply creates a new file with the default config.
+ } 
+ ~~~
+- If the file doesnt exist, is simply creates a new file with the default config.
     - Supports # for commenting
     - Simpler key=value without having to know JSON Formating
     - Due to the new configuration method, there is a small delay when starting the plugin when its reading/writing configuration files. During this moment, the camera will be looking from the top down.
