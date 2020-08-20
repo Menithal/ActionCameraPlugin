@@ -114,7 +114,7 @@ You can copy the values from the files and transplant them over the MACPluginDef
 - `cameraShoulderUseRoomOriginCenter`: by default `False`. if `True` Shoulder camera will Use the center of the room as the anchor point, instead of the player head. Will however use the player height.
 - `cameraShoulderFollowGaze`: by default `True`. if `False` Shoulder camera will look towards where the player is looking at, instead using the common roomspace forward.
 - `minimumCameraDistance`: by default `0.2`. Determines the distance the camera will circle around the avatar when passing by, instead of phasing right through them.
-- `linearCameraMovement`: by default  `False`. if `True`,  camera will m
+- `linearCameraMovement`: by default  `False`. if `True`,  camera will move using circular paths between sides and avoid going in straight lines unless swapping from front/back/top/fps
 
 By default the setting are configured forPS Combat (ala pistolwhip) But with enough configuration You can tune how it works for other types of games separatedly.
 
