@@ -101,6 +101,9 @@ namespace MACPlugin
         public bool alwaysHaveAvatarInFrame = true;
 
         [SerializableBooleanConfig(false)]
+        public bool cameraUseWaistAsHeight = false;
+
+        [SerializableBooleanConfig(false)]
         public bool cameraBodyUseRoomOriginCenter = false;
         [SerializableBooleanConfig(false)]
         public bool cameraShoulderUseRoomOriginCenter = false;

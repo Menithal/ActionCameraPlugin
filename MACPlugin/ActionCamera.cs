@@ -113,6 +113,7 @@ namespace MACPlugin
         public new string name = "ShoulderActionCamera";
         // This one really needs an intermediary camera
         private readonly Vector3 lookAtOffset = new Vector3(0f, 0, 5f);
+        private float lookAtMultiplier = 1f;
         // Predefining this to get around having to convert them.
         public ShoulderActionCamera(ActionCameraConfig settings) :
             base(settings, 0)
@@ -142,7 +143,7 @@ namespace MACPlugin
             float y = pluginSettings.cameraShoulderDistance * Mathf.Cos(radianAngle);
             float x = pluginSettings.cameraShoulderDistance * Mathf.Sin(radianAngle);
 
-            Vector3 calculatedOffset = new Vector3(x, 0.5f, -y);
+            Vector3 calculatedOffset = new Vector3(x, 0, -y);
 
             // PluginLog.Log("ShoulderActionCamera", "Calculated Offset " + calculatedOffset + " vs " + offset);
             // Gotta be from back not from front. 
@@ -160,8 +161,6 @@ namespace MACPlugin
             */
 
 
-
-
             Vector3 cameraOffsetTarget = offset;
             sbyte settingsReverse = (sbyte)(pluginSettings.reverseShoulder ? -1 : 1);
 
@@ -173,43 +172,68 @@ namespace MACPlugin
 
                 if (pluginSettings.cameraShoulderFollowGaze)
                 {
-
                     cameraTarget += (player.head.rotation * cameraOffsetTarget);
-
                 }
                 else
                 {
-
                     cameraTarget = cameraOffsetTarget;
                 }
 
                 cameraTarget.y = player.chestEstimate.y;
-                relativeTo = new Vector3(player.head.position.x, player.chestEstimate.y, player.head.position.z);
-
             }
             else
             {
                 if (pluginSettings.cameraShoulderFollowGaze)
                 {
-                    cameraTarget = player.head.TransformPoint(cameraOffsetTarget);
+
+                    if (pluginSettings.cameraUseWaistAsHeight)
+                    {
+                        cameraTarget = player.chestEstimate + player.head.rotation * cameraOffsetTarget;
+
+                    }
+                    else
+                    {
+                        cameraTarget = player.head.TransformPoint(cameraOffsetTarget);
+
+                    }
+                    // If Head then Clamp
+                    // cameraTarget.y = player.chestEstimate.y;
                 }
                 else
                 {
                     cameraTarget = cameraOffsetTarget;
-                    cameraTarget.y = player.head.position.y;
+                    if (pluginSettings.cameraUseWaistAsHeight)
+                    {
+                        cameraTarget.y = player.chestEstimate.y;
+                    }
+                    else
+                    {
+                        cameraTarget.y = player.head.position.y;
+                        // If Head then Clamp
+                    }
                 }
-
-                relativeTo = player.head.position;
-
             }
 
-            // Floor and Ceiling Avoidance. Camera should not be too high or too low in ratio to player head position
-            cameraTarget.y = Mathf.Clamp(cameraTarget.y, player.head.position.y * 0.2f, player.head.position.y * 1.2f);
+            if (pluginSettings.cameraUseWaistAsHeight)
+            {
+                cameraTarget.y = Mathf.Clamp(cameraTarget.y, player.chestEstimate.y * 0.2f, player.head.position.y + 1f);
+
+            }
+            else
+            {
+                cameraTarget.y = Mathf.Clamp(cameraTarget.y, player.head.position.y * 0.2f, player.head.position.y + 1f);
+                // TODO: The close the camera is to the player, the more we should multiply the lookAt point to focal
+            }
+
+            //lookAtMultiplier = 1 + Mathf.Abs( (pluginSettings.cameraShoulderDistance  - Vector2.Distance(calculated, headPositionFlat))*100);
+
+
+            relativeTo = player.head.position;
 
 
             if (pluginSettings.cameraShoulderFollowGaze)
             {
-                lookAtTarget = player.head.TransformPoint(lookAtOffset);
+                lookAtTarget = player.head.TransformPoint(lookAtOffset * lookAtMultiplier);
 
                 if (pluginSettings.cameraVerticalLock)
                 {
@@ -415,7 +439,7 @@ namespace MACPlugin
         public FullBodyActionCamera(ActionCameraConfig settings) :
             base(settings, 0, Vector3.zero, false)
         {
-            SetBetweenTime(settings.cameraBodyPositioningTime );
+            SetBetweenTime(settings.cameraBodyPositioningTime);
             Vector3 neutralOffset = offset;
             neutralOffset.x = 0;
             neutralOffset.y += 0.5f;
@@ -432,7 +456,7 @@ namespace MACPlugin
             float y = pluginSettings.cameraBodyDistance * Mathf.Cos(radianAngle);
             float x = pluginSettings.cameraBodyDistance * Mathf.Sin(radianAngle);
 
-            Vector3 calculatedOffset = new Vector3(x, 0.4f, y);
+            Vector3 calculatedOffset = new Vector3(x, 0.0f, y);
 
             //  calculatedOffset.z = Mathf.Sqrt(Mathf.Abs(Mathf.Pow(offset.z, 2f) - Mathf.Pow(offset.x, 2f)));
             offset = calculatedOffset;
@@ -473,20 +497,46 @@ namespace MACPlugin
                 {
                     cameraTarget += cameraPositionOffsetTarget;
                 }
-                cameraTarget.y = (player.waist.position.y + player.head.position.y) / 2;
+
+                if (pluginSettings.cameraUseWaistAsHeight)
+                {
+                    cameraTarget.y = player.chestEstimate.y;
+
+                }
+                else
+                {
+                    cameraTarget.y = player.head.position.y / 2;
+                }
 
 
                 relativeTo = new Vector3(player.head.position.x, cameraTarget.y, player.head.position.z);
             }
             else
             {
-                cameraTarget = player.head.TransformPoint(cameraPositionOffsetTarget);
+
+                if (pluginSettings.cameraUseWaistAsHeight)
+                {
+                    cameraTarget = player.chestEstimate + player.head.rotation * cameraPositionOffsetTarget;
+
+                }
+                else
+                {
+                    cameraTarget = player.head.TransformPoint(cameraPositionOffsetTarget);
+
+                }
+
                 relativeTo = player.head.position;
             }
 
 
-            // Floor and Ceiling Avoidance. Camera should not be too high or too low in ratio to player head position
-            cameraTarget.y = Mathf.Clamp(cameraTarget.y, player.head.position.y * 0.2f, player.head.position.y * 1.2f);
+            if (pluginSettings.cameraUseWaistAsHeight)
+            {
+                cameraTarget.y = Mathf.Clamp(cameraTarget.y, player.chestEstimate.y * 0.2f, player.head.position.y + 1f);
+            }
+            else
+            {
+                cameraTarget.y = Mathf.Clamp(cameraTarget.y, player.head.position.y * 0.2f, player.head.position.y + 1f);
+            }
 
             if (pluginSettings.cameraBodyUseRoomOriginCenter)
             {

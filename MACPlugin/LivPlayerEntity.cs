@@ -22,7 +22,7 @@ namespace MACPlugin
         private PluginCameraHelper pluginCameraHelper;
         public Transform waist { get { return pluginCameraHelper.playerHead; } }
 
-        public Vector3 chestEstimate { get { return (head.position + head.position + waist.position) / 3; } }
+        public Vector3 chestEstimate { get { return (head.position +  waist.position) / 2; } }
         public Transform rightHand { get { return pluginCameraHelper.playerRightHand; } }
         public Transform leftHand { get { return pluginCameraHelper.playerLeftHand; } }
         public Transform head { get { return pluginCameraHelper.playerHead; } }
