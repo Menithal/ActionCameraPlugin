@@ -17,6 +17,7 @@ using UnityEngine;
 namespace MACPlugin
 {
 
+
     // Predefining this to get around having to convert them.
     public abstract class ActionCamera
     {
@@ -102,7 +103,7 @@ namespace MACPlugin
 
             if (pluginSettings.cameraVerticalLock)
             {
-                lookAtTarget.y = player.chestEstimate.y;
+                lookAtTarget.y = player.waist.position.y;
             }
 
             cameraTarget.y = Mathf.Clamp(cameraTarget.y, player.head.position.y * 0.2f, player.head.position.y * 1.2f);
@@ -145,9 +146,6 @@ namespace MACPlugin
 
             Vector3 calculatedOffset = new Vector3(x, 0, -y);
 
-            // PluginLog.Log("ShoulderActionCamera", "Calculated Offset " + calculatedOffset + " vs " + offset);
-            // Gotta be from back not from front. 
-            //  calculatedOffset.z = -Mathf.Sqrt(Mathf.Abs(Mathf.Pow(offset.z, 2) - Mathf.Pow(offset.x, 2)));
             this.offset = calculatedOffset;
         }
         public override void ApplyBehavior(ref Vector3 cameraTarget, ref Vector3 lookAtTarget, LivPlayerEntity player)
@@ -179,7 +177,7 @@ namespace MACPlugin
                     cameraTarget = cameraOffsetTarget;
                 }
 
-                cameraTarget.y = player.chestEstimate.y;
+                cameraTarget.y = player.waist.position.y;
             }
             else
             {
@@ -188,45 +186,27 @@ namespace MACPlugin
 
                     if (pluginSettings.cameraUseWaistAsHeight)
                     {
-                        cameraTarget = player.chestEstimate + player.head.rotation * cameraOffsetTarget;
-
+                        cameraTarget = player.waist.position + player.head.rotation * cameraOffsetTarget;
                     }
                     else
                     {
                         cameraTarget = player.head.TransformPoint(cameraOffsetTarget);
-
                     }
-                    // If Head then Clamp
-                    // cameraTarget.y = player.chestEstimate.y;
                 }
                 else
                 {
                     cameraTarget = cameraOffsetTarget;
-                    if (pluginSettings.cameraUseWaistAsHeight)
-                    {
-                        cameraTarget.y = player.chestEstimate.y;
-                    }
-                    else
-                    {
-                        cameraTarget.y = player.head.position.y;
-                        // If Head then Clamp
-                    }
                 }
             }
 
             if (pluginSettings.cameraUseWaistAsHeight)
             {
-                cameraTarget.y = Mathf.Clamp(cameraTarget.y, player.chestEstimate.y * 0.2f, player.head.position.y + 1f);
-
+                cameraTarget.y = Mathf.Clamp(player.waist.position.y, 0.2f, player.head.position.y + 1f);
             }
             else
             {
-                cameraTarget.y = Mathf.Clamp(cameraTarget.y, player.head.position.y * 0.2f, player.head.position.y + 1f);
-                // TODO: The close the camera is to the player, the more we should multiply the lookAt point to focal
+                cameraTarget.y = Mathf.Clamp(player.head.position.y, 0.2f, 3f);
             }
-
-            //lookAtMultiplier = 1 + Mathf.Abs( (pluginSettings.cameraShoulderDistance  - Vector2.Distance(calculated, headPositionFlat))*100);
-
 
             relativeTo = player.head.position;
 
@@ -237,13 +217,13 @@ namespace MACPlugin
 
                 if (pluginSettings.cameraVerticalLock)
                 {
-                    lookAtTarget.y = player.chestEstimate.y;
+                    lookAtTarget.y = player.waist.position.y;
                 }
             }
             else
             {
                 lookAtTarget = lookAtOffset;
-                lookAtTarget.y = player.chestEstimate.y;
+                lookAtTarget.y = player.waist.position.y;
             }
         }
 
@@ -309,7 +289,7 @@ namespace MACPlugin
 
             if (handDistance < pluginSettings.cameraGunMinTwoHandedDistance * 1.2)
             {
-                handDirection.y = handDirection.y * 0.5f;
+                handDirection.y *= 0.5f;
                 handDirection = handDirection.normalized;
             }
 
@@ -497,52 +477,37 @@ namespace MACPlugin
                 {
                     cameraTarget += cameraPositionOffsetTarget;
                 }
-
-                if (pluginSettings.cameraUseWaistAsHeight)
-                {
-                    cameraTarget.y = player.chestEstimate.y;
-
-                }
-                else
-                {
-                    cameraTarget.y = player.head.position.y / 2;
-                }
-
-
-                relativeTo = new Vector3(player.head.position.x, cameraTarget.y, player.head.position.z);
             }
             else
             {
 
-                if (pluginSettings.cameraUseWaistAsHeight)
+                if (pluginSettings.cameraBodyFollowGaze)
                 {
-                    cameraTarget = player.chestEstimate + player.head.rotation * cameraPositionOffsetTarget;
-
+                    cameraTarget = player.waist.position + player.head.rotation * cameraPositionOffsetTarget;
                 }
                 else
                 {
                     cameraTarget = player.head.TransformPoint(cameraPositionOffsetTarget);
-
                 }
-
-                relativeTo = player.head.position;
             }
 
 
             if (pluginSettings.cameraUseWaistAsHeight)
             {
-                cameraTarget.y = Mathf.Clamp(cameraTarget.y, player.chestEstimate.y * 0.2f, player.head.position.y + 1f);
+                relativeTo = player.waist.position;
+                cameraTarget.y = Mathf.Clamp(player.waist.position.y, 0.2f, player.head.position.y + 1f);
             }
             else
             {
-                cameraTarget.y = Mathf.Clamp(cameraTarget.y, player.head.position.y * 0.2f, player.head.position.y + 1f);
+                relativeTo = new Vector3(player.head.position.x, player.head.position.y/2, player.head.position.z);
+                cameraTarget.y = Mathf.Clamp(player.head.position.y, 0.2f, 3f);
             }
 
             if (pluginSettings.cameraBodyUseRoomOriginCenter)
             {
                 lookAtTarget = lookAtOffset;
                 lookAtTarget.z = lookAtOffset.z;
-                lookAtTarget.y = player.chestEstimate.y;
+                lookAtTarget.y = player.waist.position.y;
             }
             else
             {
@@ -550,14 +515,13 @@ namespace MACPlugin
 
                 if (pluginSettings.cameraVerticalLock)
                 {
-                    lookAtTarget.y = player.chestEstimate.y;
+                    lookAtTarget.y = player.waist.position.y;
                 }
             }
 
 
         }
     }
-
     public class TopDownActionCamera : ActionCamera
     {
         public new string name = "TopDownActionCamera";
@@ -567,7 +531,6 @@ namespace MACPlugin
             facingAvatar = true;
             inAvatar = true;
         }
-
         public override void ApplyBehavior(ref Vector3 cameraTarget, ref Vector3 lookAtTarget, LivPlayerEntity player)
         {
             cameraTarget = player.head.position + offset;

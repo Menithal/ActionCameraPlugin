@@ -243,17 +243,11 @@ namespace MACPlugin
             {
 
                 TimerHelper timerHelper = player.timerHelper;
-
-                sbyte estimatedSide = ((player.headRRadialDelta.x < 0f) ? (sbyte)(-1) : (sbyte)1);
-
-
                 // Call the camera's behavior.
 
                 currentCamera.ApplyBehavior(ref cameraPositionTarget, ref cameraLookAtTarget, player);
 
-
                 // Do Direction Check. 
-
                 if (currentAvatar != null)
                 {
                     if (pluginSettings.removeAvatarInsteadOfHead)
@@ -267,62 +261,70 @@ namespace MACPlugin
                     timerHelper.ResetRemoveAvatarTimer();
                 }
 
-
-
-                //PluginLog.Log("ActionCameraDirector", "SidedActionCamera, checking side. " + player.headRRadialDelta.x + " " + estimatedSide);
+                sbyte estimatedSide = ((player.headRRadialDelta.x < 0f) ? (sbyte)(-1) : (sbyte)1);
+             
                 if (!player.swappingSides
                     && Mathf.Abs(player.headRRadialDelta.x) > pluginSettings.cameraShoulderSensitivity &&
-                    player.timerHelper.cameraActionTimer > currentCamera.GetBetweenTime() &&
+                    player.timerHelper.cameraActionTimer > currentCamera.GetBetweenTime() * 2 &&
                     estimatedSide != player.currentSide)
                 {
-                    Debug.Log("ActionCameraDirector: Swapping " + estimatedSide);
-                    // FullBodyActionCamera.SwapSides(estimatedSide);
-
-
                     player.currentSide = estimatedSide;
                     player.swappingSides = true;
                     player.timerHelper.ResetCameraActionTimer();
                     distanceFromTargetSwap = (cameraPosition - currentCamera.relativeTo).magnitude;
                 }
-                else if (player.swappingSides && player.timerHelper.cameraActionTimer > currentCamera.GetBetweenTime())
+                else if (player.swappingSides && player.timerHelper.cameraActionTimer > currentCamera.GetBetweenTime() * 2)
                 {
 
-                    Debug.Log("ActionCameraDirector: End Swap");
                     player.swappingSides = false;
                     player.timerHelper.ResetCameraActionTimer();
                 }
-
                 Vector3 newPosition;
+                // First Pass: Check if we are doing an arc to position.
                 if (!pluginSettings.linearCameraMovement // LinearMovement is not preferred.
                     && player.swappingSides // Is Currently Swapping sides
                     && (currentCamera.Equals(OverShoulderCamera) || currentCamera.Equals(FullBodyActionCamera))
                     && player.timerHelper.cameraTimer >= currentCamera.GetBetweenTime() // Is also currently not swapping cameras, just sides
                     && ((lastCamera != null && !lastCamera.inAvatar) || lastCamera == null))  // is Not transitioning from an fps camera outwards.
                 {
+
                     Vector3 linearCameraPosition = Vector3.SmoothDamp(cameraPosition, cameraPositionTarget, ref cameraVelocity, currentCamera.GetBetweenTime());
                     // Do interpolation between current point and next point
 
-                    Vector3 relativePosition = linearCameraPosition - currentCamera.relativeTo;
+                    Vector3 planarPosition = (linearCameraPosition - player.head.position);
+                    planarPosition.y = 0;
+                    Debug.Log(planarPosition.magnitude);
 
-                    newPosition = currentCamera.relativeTo;
-                    newPosition += CameraUtility.ClampToCircle(relativePosition, distanceFromTargetSwap);
-                    newPosition.y = Mathf.SmoothDamp(cameraPosition.y, cameraPositionTarget.y, ref cameraVelocity.y, currentCamera.GetBetweenTime());
-                    cameraPosition = newPosition;
+                    if (planarPosition.magnitude < distanceFromTargetSwap)
+                    {
+                        Vector3 relativePosition = linearCameraPosition - currentCamera.relativeTo;
 
+                        newPosition = currentCamera.relativeTo;
+                        newPosition += CameraUtility.ClampToCircle(relativePosition, distanceFromTargetSwap);
+                        newPosition.y = Mathf.SmoothDamp(cameraPosition.y, cameraPositionTarget.y, ref cameraVelocity.y, currentCamera.GetBetweenTime());
+                        cameraPosition = newPosition;
+                        Debug.Log("ActionCameraDirector: Swapping Sides.");
+                    }
+                    else
+                    {
+                        cameraPosition = linearCameraPosition;
+                    }
                 }
                 else
                 {
                     cameraPosition = Vector3.SmoothDamp(cameraPosition, cameraPositionTarget, ref cameraVelocity, currentCamera.GetBetweenTime());
                 }
 
+                Vector3 distanceFromHead = cameraPosition - player.head.position;
+                distanceFromHead.y = 0;
+
                 if (this.pluginSettings.alwaysHaveAvatarInFrame && lastCamera != null)
                 {
                     float distance = Mathf.Clamp(Vector3.Distance(cameraPositionTarget, cameraPosition) / (pluginSettings.cameraBodyDistance), 0f, 1f);
                     float lookAtDistance = player.headRRadialDelta.magnitude;
 
-                    if (!lastCamera.facingAvatar && currentCamera.facingAvatar || lookAtDistance > 2)
+                    if ((!lastCamera.facingAvatar && currentCamera.facingAvatar) || lookAtDistance > 4)
                     {
-                        // Look at the player as soon as possible.
                         cameraLookAt = Vector3.SmoothDamp(cameraLookAt, cameraLookAtTarget, ref cameraLookAtVelocity, currentCamera.GetBetweenTime() / 4);
                     }
                     else
@@ -332,35 +334,23 @@ namespace MACPlugin
                 }
                 else
                 {
-
                     // If las
                     cameraLookAt = Vector3.SmoothDamp(cameraLookAt, cameraLookAtTarget, ref cameraLookAtVelocity, currentCamera.GetBetweenTime());
                 }
 
-                Vector3 distanceFromHead = cameraPosition - player.head.position;
-                distanceFromHead.y = 0;
-
-                if (distanceFromHead.magnitude < pluginSettings.minimumCameraDistance && !currentCamera.inAvatar && lastCamera != null && !lastCamera.inAvatar)
+                // This part is causing the camera direction issues. investigate.
+                if (distanceFromHead.magnitude < pluginSettings.minimumCameraDistance &&
+                    !currentCamera.inAvatar && lastCamera != null &&
+                    !lastCamera.inAvatar)
                 {
-                    Debug.Log("ActionCameraDirector: In Avatar Head. Aaah.");
                     // Clamp to a circle
                     newPosition = player.head.position + CameraUtility.ClampToCircle(distanceFromHead, pluginSettings.minimumCameraDistance);
                     newPosition.y = cameraPosition.y;
                     cameraPosition = newPosition;
                 }
 
-
-
                 Vector3 lookDirection = cameraLookAt - cameraPosition;
                 Quaternion rotation = currentCamera.GetRotation(lookDirection, player);
-
-
-
-                /*
-                simulatedCamera.transform.position = cameraPosition;
-                simulatedCamera.transform.rotation = rotation;
-                simulatedCamera.fieldOfView = currentCamera.GetFOV();
-                */
 
                 cameraHelper.UpdateCameraPose(cameraPosition, rotation, pluginSettings.cameraDefaultFov);
             }
