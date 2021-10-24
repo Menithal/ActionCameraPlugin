@@ -14,12 +14,12 @@ Install by moving the ActionCamera.dll from Releases into your Liv Plugins Camer
 
 ## Use
 When in Liv, Set an Avatar Camera, and make sure to select Plugin > "Menithal' Action Camera" to start using the plugin.
-Closing Liv now wil update your settings file. You can then create and configure multiple profiles with different configurations in Liv and modifying the json file. See Configuration for more detail
+Closing Liv now wil update your settings file. You can then create and configure multiple profiles with different configurations in Liv and modifying the json file. See Configuration for more detail.
 
 
 ### Available Cameras
 
-- *OverShoulderAction* - Main feature of the plugin, Shows point of view over your shoulder. Looking around corners will always move the camera around to that shoulder towards where you are looking at, allowing your spectators to see
+- *OverShoulderAction* - Main feature of the plugin, shows point of view over your shoulder. Looking around corners will always move the camera around to that shoulder towards where you are looking at, allowing your spectators to see
 what you will see before you do.  You can reverse this with the `reverseShoulder` config.
 - *FullBodyAction* - Front side view of your Liv Avatar. Turning your head moves the point of view similar to the shoulder view. You can reverse this with the `reverseShoulder` config. Can be turned off with `disableFBTCamera`.
 - *FirstPerson* - FPS view of the game. Smoothened, and similar to how the game would play, but you can turn on avatar visibility with `removeAvatarInsteadOfHead`.  Can be turned off with `disableFPSCamera`.
@@ -29,7 +29,7 @@ what you will see before you do.  You can reverse this with the `reverseShoulder
 
 ### Controlling Cameras and Gestures
 
-You direct the camera direction with head movement (for now) with your controllers behaving as keylocks You must be mostly pointing forwards with your controllers for commands to work.. 
+You direct the camera direction with head movement (for now) with your controllers behaving as keylocks. You must be mostly pointing forwards with your controllers for commands to work.
 
 Most of the swapping of the camera directions are done by pointing forwards (where your body is pointing towards), while you turn your head.
 Your Head velocity (as of now) controls the camera after.
@@ -149,7 +149,7 @@ You can find the settings at
 - `cameraGunSmoothing`: Time it takes to get to new point
 - `rightHandDominant` Sets either your right hand dominant or left hand dominant. This effects which eye and hand is used to measure two handness. If right handed, the right hand must be close to the right eye, if left handed, vice versa. by default assumes righthandness
 
-By default the setting are configured for CQC Pistol Combat (ala pistolwhip) but playing aroudn with the values allows you to create entries for other games, such as Beat Saber or Audica.
+By default the setting are configured for CQC Pistol Combat (ala pistolwhip) but playing around with the values allows you to create entries for other games, such as Beat Saber or Audica.
 
 ### Example "Dancing/Sabering" Profile
 ```
