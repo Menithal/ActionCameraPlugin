@@ -18,6 +18,7 @@ using System.Linq;
 using UnityEngine;
 using LIV.Avatar;
 using MACPlugin.Utility;
+using BlastonCameraBehaviour;
 
 // Keeping out of Namespace since otherwise Serialization wasnt succesfull (probably something
 // to do with the Reflection done on the other end?)
@@ -61,6 +62,8 @@ namespace MACPlugin
             avatarRefSignal?.OnChanged.AddListener(OnAvatarChanged);
 
             OnAvatarChanged(avatarRefSignal?.Value);
+
+            ActionController.Instance.Initialize();
         }
 
         // called when the Plugin is deselected OR when Liv is being closed down.
@@ -99,7 +102,7 @@ namespace MACPlugin
             cameraDirector.SetSettings(utility.Config);
         }
 
-        public void OnAvatarChanged(Avatar avatar)
+        public void OnAvatarChanged(LIV.Avatar.Avatar avatar)
         {
             PluginLog.Log("ActionCameraPlugin", "OnAvatarChanged ");
             cameraDirector.SetAvatar(avatar);
@@ -109,8 +112,22 @@ namespace MACPlugin
         public void OnUpdate()
         {
             timerHelper.AddTime(Time.deltaTime);
+            UpdateInput();
             cameraDirector.SelectCamera();
             cameraDirector.HandleCameraView();
+        }
+
+        private void UpdateInput()
+        {
+            if (ActionController.Instance.aAction.IsStarted)
+            {
+                cameraDirector.ForceSelectCamera(cameraDirector.FullBodyActionCamera);
+            }
+
+            if (ActionController.Instance.bAction.IsStarted)
+            {
+                cameraDirector.ForceSelectCamera(cameraDirector.TacticalCamera);
+            }
         }
     }
 

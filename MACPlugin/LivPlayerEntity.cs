@@ -125,6 +125,8 @@ namespace MACPlugin
         public float removeAvatarTimer { get; private set; }
         public float cameraGunTimer { get; private set; }
 
+        public float manualCameraSeconds { get; private set; }
+
         public TimerHelper()
         {
             globalTimer = 0;
@@ -132,6 +134,7 @@ namespace MACPlugin
             cameraActionTimer = 0;
             removeAvatarTimer = 0;
             cameraGunTimer = 0;
+            manualCameraSeconds = 0;
         }
 
         public void AddTime(float delta)
@@ -142,6 +145,7 @@ namespace MACPlugin
             cameraTimer += delta;
             removeAvatarTimer += delta;
             cameraGunTimer += delta;
+            manualCameraSeconds += delta;
         }
         public void ResetGlobalCameraTimer()
         {
@@ -155,6 +159,11 @@ namespace MACPlugin
         public void SetGlobalTimer(float timer)
         {
             globalTimer = timer;
+        }
+
+        public void SetManualCameraSeconds(float seconds)
+        {
+            manualCameraSeconds = seconds;
         }
 
         public void ResetCameraActionTimer()
@@ -172,6 +181,11 @@ namespace MACPlugin
         public void ResetCameraGunTimer()
         {
             cameraGunTimer = 0;
+        }
+
+        public void ResetManualCameraSeconds()
+        {
+            manualCameraSeconds = 0;
         }
     }
 

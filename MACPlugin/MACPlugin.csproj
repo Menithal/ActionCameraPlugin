@@ -18,7 +18,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\..\..\..\LIV\Plugins\CameraBehaviours\</OutputPath>
+    <OutputPath>$([System.Environment]::GetFolderPath(SpecialFolder.MyDocuments))\LIV\Plugins\CameraBehaviours\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -29,7 +29,7 @@
     <VIVRAssemblies>$(LIVBaseDirectory)\resources\VIVR\VIVR_Data\Managed</VIVRAssemblies>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Deploy|x64'">
-    <OutputPath>..\..\..\..\..\LIV\Plugins\CameraBehaviours\</OutputPath>
+    <OutputPath>$([System.Environment]::GetFolderPath(SpecialFolder.MyDocuments))\LIV\Plugins\CameraBehaviours\</OutputPath>
     <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
@@ -43,10 +43,12 @@
     <Reference Include="UnityEngine, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>E:\Steam\steamapps\common\LIV\resources\VIVR\VIVR_Data\Managed\UnityEngine.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>E:\Steam\steamapps\common\LIV\resources\VIVR\VIVR_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+      <Private>False</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -54,6 +56,7 @@
     <Compile Include="ActionCamera.cs" />
     <Compile Include="ActionCameraDirector.cs" />
     <Compile Include="ActionCameraConfig.cs" />
+    <Compile Include="ActionController.cs" />
     <Compile Include="Utility\ConfigUtility.cs" />
     <Compile Include="Utility\SerializableConfigAttributes.cs" />
     <Compile Include="Utility\DebugUtility.cs" />

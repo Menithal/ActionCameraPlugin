@@ -13,7 +13,6 @@
 * limitations under the License.
 * 
 **/
-using LIV.Avatar;
 using UnityEngine;
 namespace MACPlugin
 {
@@ -31,7 +30,6 @@ namespace MACPlugin
         private Vector3 cameraLookAt;
         private Vector3 cameraLookAtTarget;
 
-
         private Vector3 cameraLastLookAtVelocity = Vector3.zero;
         private Vector3 cameraLastVelocity = Vector3.zero;
 
@@ -42,15 +40,17 @@ namespace MACPlugin
         private ActionCamera currentCamera;
         private ActionCamera lastCamera;
         private ActionCameraConfig pluginSettings;
-        private Avatar currentAvatar;
+        private LIV.Avatar.Avatar currentAvatar;
 
         private readonly LivPlayerEntity player;
         private readonly System.Random randomizer;
         private bool isCameraStatic = false;
         private bool inGunMode = false;
+        private float manualCameraDurationSeconds = 5.0f;
 
         // 30 checks a second 
         private static float CONTROLLER_THROTTLE = 1f;
+
         public ActionCameraDirector(ActionCameraConfig pluginSettings, PluginCameraHelper helper, ref TimerHelper timerHelper)
         {
             this.player = new LivPlayerEntity(helper, ref timerHelper);
@@ -66,9 +66,11 @@ namespace MACPlugin
             FPSCamera = new FPSCamera(pluginSettings, 0.2f);
             TacticalCamera = new TopDownActionCamera(pluginSettings, 0.6f, 6f);
 
+            timerHelper.SetManualCameraSeconds(manualCameraDurationSeconds);
+
             SetCamera(OverShoulderCamera);
         }
-        public void SetAvatar(Avatar avatar)
+        public void SetAvatar(LIV.Avatar.Avatar avatar)
         {
             currentAvatar = avatar;
         }
@@ -102,11 +104,22 @@ namespace MACPlugin
                 inGunMode = false;
             }
         }
+
+        /// <summary>
+        /// Selects a camera for a given duration. After the duration, the camera reverts to automatic control.
+        /// </summary>
+        public void ForceSelectCamera(ActionCamera camera, float durationSeconds = 0.0f)
+        {
+            SetCamera(camera);
+            timerHelper.ResetManualCameraSeconds();
+            manualCameraDurationSeconds = durationSeconds;
+        }
+
         public void SelectCamera()
         {
-
             player.CalculateInfo();
-            if (timerHelper.controllerTimer >= CONTROLLER_THROTTLE)
+
+            if (timerHelper.manualCameraSeconds >= manualCameraDurationSeconds && timerHelper.controllerTimer >= CONTROLLER_THROTTLE)
             {
                 // TODO: Take account movements of hands as well
                 /* If user swining alot, an sample from x amount of time could tell if user is swinginig their hands in multiple directions 
@@ -199,7 +212,6 @@ namespace MACPlugin
 
                 timerHelper.ResetControllerTimer();
             }
-            HandleCameraView();
         }
 
         public void SnapCamera(ActionCamera camera, bool revert = false)
