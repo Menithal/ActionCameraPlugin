@@ -119,6 +119,8 @@ namespace MACPlugin
 
         private void UpdateInput()
         {
+            ActionController.Instance.Update();
+
             if (ActionController.Instance.aAction.IsStarted)
             {
                 cameraDirector.ForceSelectCamera(cameraDirector.FullBodyActionCamera);

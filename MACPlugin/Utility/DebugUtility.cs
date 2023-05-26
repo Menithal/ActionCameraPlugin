@@ -28,11 +28,8 @@ namespace MACPlugin
 
         public DebugUtility()
         {
-
-            String drive = Environment.GetEnvironmentVariable("HOMEDRIVE");
-            String homePath = Environment.GetEnvironmentVariable("HOMEPATH");
-            debugPath = drive + homePath + "\\Documents\\LIV\\Output\\PluginLogs.txt";
-
+            var documentsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            debugPath = Path.Combine(documentsPath, "LIV/PluginLogs.txt");
         }
         public void Write(String type, String source, String message, bool throttleOverride = false)
         {

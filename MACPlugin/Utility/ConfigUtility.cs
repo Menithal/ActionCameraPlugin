@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using MACPlugin.Utility;
+
 namespace MACPlugin.Utility
 {
     public class ConfigUtility
@@ -19,9 +20,8 @@ namespace MACPlugin.Utility
 
         public ConfigUtility(String filename = "MACPluginDefault.config")
         {
-            String drive = Environment.GetEnvironmentVariable("HOMEDRIVE");
-            String homePath = Environment.GetEnvironmentVariable("HOMEPATH");
-            configPath = drive + homePath + "\\Documents\\LIV\\Plugins\\" + filename;
+            var documentsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            configPath = Path.Combine(documentsPath, "LIV/Plugins/" + filename);
 
             Config = new ActionCameraConfig();
             floatConfigs = new Dictionary<string, FloatConstraint>();
